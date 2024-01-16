@@ -1,0 +1,113 @@
+<app-frame-nav cdkDropListGroup>
+  <div id="parent" #parent class="grid grid-flow-col  p-4 w-full bg-slate-200 overflow-auto" (wheel)="onWheel($event)" (mousedown) ="startDragging($event, false)" (pointerup) ="stopDragging($event, false)" (mouseleave) ="stopDragging($event, false)" (mousemove)="moveEvent($event)">
+    <div
+      class="flex flex-col min-w-64 w-64 rounded-xl min-h-64 h-fit bg-slate-900 p-2 text-gray-300 overflow-hidden select-none"
+    >
+      <!-- <div class="w-full mt-[-9px] mb-[-8px] bg-yellow-300 h-1">
+
+      </div> -->
+      <div class="flex p-2 items-center">
+        <h1 class="border-b-2 border-blue-600">Técnicos</h1>
+        <span class="ml-auto material-symbols-outlined"> more_horiz </span>
+      </div>
+
+      <div
+        class="p-2 pb-6 rounded-b-md min-h-48"
+      >
+      <div>
+        <p>Current Time: {{ currentTime$ | async }}</p>
+        <p>Current Time: {{ tecnicosSubject$ | async }}</p>
+
+      </div>
+          @for (item of tecnicosData$ | async ; track item.id) {
+            <div
+              class="bg-slate-700 rounded-full w-full px-2 py-1 flex items-center cursor-pointer hover:bg-slate-600 mt-2"
+            >
+              <!-- <span class="me-3 flex h-3 w-3 rounded-full bg-green-500"></span> -->
+              <img
+                class="h-6 w-6 rounded-full"
+                src="https://as2.ftcdn.net/v2/jpg/05/49/98/39/1000_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"
+              />
+              <span class="ml-2 text-sm truncate">{{ item.servicos }}</span>
+            </div>
+          }
+      </div>
+
+      <div class="h-8 flex items-center p-1">
+        <span class="material-symbols-outlined"> add </span>
+        <h1>Add Técnico</h1>
+      </div>
+    </div>
+
+    <div
+      class="flex flex-col min-w-64 w-64 ml-4 rounded-xl min-h-64 h-fit bg-slate-900 p-2 text-gray-300 select-none"
+    >
+      <!-- <div class="w-full mt-[-9px] mb-[-8px] bg-yellow-300 h-1">
+
+        </div> -->
+      <div class="flex p-2 items-center">
+        <h1 class="border-b-2 border-yellow-300">Serviços</h1>
+        <span class="ml-auto material-symbols-outlined"> more_horiz </span>
+      </div>
+
+      <div
+          class="p-2 pb-6 rounded-b-md min-h-48"
+          cdkDropList
+          [cdkDropListData]="servicos"
+          (cdkDropListDropped)="drop($event)"
+        >
+          @for (item of servicos; track item) {
+          <div
+            class="bg-slate-700 rounded-full w-full px-2 py-1 flex items-center cursor-pointer hover:bg-slate-600 mt-2"
+            cdkDrag
+          >
+            <!-- <span class="me-3 flex h-3 w-3 rounded-full bg-green-500"></span> -->
+            <span class="material-symbols-outlined text-base"> call </span>
+            <span class="ml-2 text-sm truncate">{{ item }}</span>
+          </div>
+          }
+      </div>
+
+      <div class="h-8 flex items-center p-1">
+        <span class="material-symbols-outlined"> add </span>
+        <h1>Add Serviço</h1>
+      </div>
+    </div>
+
+    <!-- <div class="border h-full border-yellow-300 border-dashed ml-[7px] mr-[7px]"></div> -->
+
+    @for (tecnico of tecnicos; track tecnico) {
+      <div
+      class="flex flex-col min-w-64 w-64 rounded-xl min-h-64 h-fit ml-4 bg-slate-900 p-2 text-gray-300 select-none"
+    >
+      <div class="flex p-2 items-center">
+        <h1 class="border-b-2 border-purple-600">{{tecnico.nome}}</h1>
+        <span class="ml-auto material-symbols-outlined"> more_horiz </span>
+      </div>
+
+      <div
+          class="p-2 pb-6 rounded-b-md min-h-48"
+          cdkDropList
+          [cdkDropListData]="tecnico?.servicos"
+          (cdkDropListDropped)="drop($event)"
+        >
+          @for (item of tecnico.servicos; track item) {
+          <div
+            class="bg-slate-700 rounded-full w-full px-2 py-1 flex items-center cursor-pointer hover:bg-slate-600 mt-2"
+            cdkDrag
+          >
+            <!-- <span class="me-3 flex h-3 w-3 rounded-full bg-green-500"></span> -->
+            <span class="material-symbols-outlined text-base"> call </span>
+            <span class="ml-2 text-sm truncate">{{ item }}</span>
+          </div>
+          }
+      </div>
+
+      <div class="h-8 flex items-center p-1">
+        <span class="material-symbols-outlined"> add </span>
+        <h1>Add Serviço</h1>
+      </div>
+    </div>
+    }
+  </div>
+</app-frame-nav>
