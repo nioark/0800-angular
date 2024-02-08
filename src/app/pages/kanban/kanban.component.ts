@@ -26,6 +26,7 @@ import PocketBase from 'pocketbase';
 import { BehaviorSubject, Observable, from, interval, map, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { ViewServiceComponent } from './components/view-service/view-service.component';
+import { PocketCollectionsService } from '../../services/pocket-collections.service';
 
 
 interface TecnicoServicos {
@@ -65,23 +66,18 @@ export class KanbanComponent implements OnInit  {
   startX: any;
   scrollLeft: any;
 
+
+
   @ViewChild('parent') slider: ElementRef;
-  constructor(private change:ChangeDetectorRef, public dialog: MatDialog) {
+  constructor(private change:ChangeDetectorRef, public dialog: MatDialog, public pocketCollectionsSrv: PocketCollectionsService) {
     this.slider = new ElementRef(null);
   }
 
-  async getChamados(){
-  const pb = new PocketBase('http://127.0.0.1:8090');
-
-    const adminData = await pb.admins.authWithPassword('adm@hardtec.srv.br', 'nany88483240');
-
-    const result = await pb.collection('Chamado').getList(1, 20)
-    console.log(result)
-  }
-
   ngOnInit() {
-    
-    this.getChamados()
+
+    this.pocketCollectionsSrv.getTecnicos().subscribe((tecnicos) => {
+      console.log(tecnicos)
+    })
 
     // Create an observable that emits the current time every second
     this.currentTime$ = interval(1000).pipe(map(() => new Date()));

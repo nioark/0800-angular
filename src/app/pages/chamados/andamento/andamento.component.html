@@ -11,28 +11,30 @@
         </p>
       </div>
 
-      <div
-        class="mt-8 flow-root w-[600px] cursor-pointer rounded-md border-2 border-transparent bg-green-100 px-4 py-3 hover:border-2 hover:border-blue-500"
-      >
-        <dl class="-my-3 divide-y divide-gray-100 text-sm">
-          <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
-            <dt class="font-medium text-gray-900">Cliente</dt>
-            <dd class="text-gray-700 sm:col-span-2">
-              RIOFRÁS COMÉRCIO DE TRATORES IMPLEMENTOS LTDA
-            </dd>
-          </div>
+      @for (item of chamados ; track item.id) {
+        <div
+          class="mt-8 flow-root w-[600px] cursor-pointer rounded-md border-2 border-transparent bg-green-100 px-4 py-3 hover:border-2 hover:border-blue-500"
+        >
+          <dl class="-my-3 divide-y divide-gray-100 text-sm">
+            <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
+              <dt class="font-medium text-gray-900">Cliente</dt>
+              <dd class="text-gray-700 sm:col-span-2">
+                {{item.cliente}}
+              </dd>
+            </div>
 
-          <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
-            <dt class="font-medium text-gray-900">Descrição</dt>
-            <dd class="text-red-700 sm:col-span-2">Outlook não funciona</dd>
-          </div>
+            <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
+              <dt class="font-medium text-gray-900">Descrição</dt>
+              <dd class="text-red-700 sm:col-span-2">{{item.title}}</dd>
+            </div>
 
-          <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
-            <dt class="font-medium text-gray-900">Técnico</dt>
-            <dd class="text-gray-700 sm:col-span-2">Jeferson</dd>
-          </div>
-        </dl>
-      </div>
+            <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
+              <dt class="font-medium text-gray-900">Técnico</dt>
+              <dd class="text-gray-700 sm:col-span-2">Jeferson</dd>
+            </div>
+          </dl>
+        </div>
+      }
     </div>
   </div>
 </app-frame-nav>

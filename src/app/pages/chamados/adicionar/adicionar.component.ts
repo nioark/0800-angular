@@ -1,6 +1,8 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FrameNavComponent } from '../../../components/frame-nav/frame-nav.component';
 import PocketBase from 'pocketbase';
+import Client from 'pocketbase';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-adicionar',
@@ -10,28 +12,41 @@ import PocketBase from 'pocketbase';
   styleUrl: './adicionar.component.scss'
 })
 export class AdicionarComponent {
-  @ViewChild('cliente') cliente:ElementRef | undefined;
-  @ViewChild('descricao') descricao:ElementRef | undefined;
+  @ViewChild('cliente') cliente :ElementRef | undefined;
+  @ViewChild('descricao') descricao :ElementRef | undefined;
+  @ViewChild('inputBox') deixar_aberto :HTMLInputElement | undefined;
+
+  constructor(public authSrv : AuthService){
+    
+  }
 
   async createChamado(event : Event) {
     event.preventDefault()
     const cliente = this.cliente?.nativeElement.value
-    const descricao = this.cliente?.nativeElement.value
+    const descricao = this.descricao?.nativeElement.value
+    const vl = this.deixar_aberto as any
+    const deixar_aberto = vl.nativeElement.checked
 
-    const pb = new PocketBase('http://127.0.0.1:8090');
+    const pb = this.authSrv.GetPocketBase()
 
-    const adminData = await pb.admins.authWithPassword('adm@hardtec.srv.br', 'nany88483240');
-
+    if (!pb.authStore.isValid && !pb.authStore.model) 
+      return
+    
+    console.log(pb.authStore.model)
     // example create data
     const data = {
-        "user": "5kj10axm80tq671",
-        "messages": [
-            
-        ],
-        "description": cliente, 
-        "title": descricao
+        "users": [ pb.authStore.model?.["id"]],
+        "messages": [],
+        "description": "", 
+        "title": descricao,
+        "cliente": cliente,
+        "status" : deixar_aberto ? "em_espera" : "em_andamento",
     };
 
+    console.log(deixar_aberto)
+    console.log("Data model: ", data)
+
     const record = await pb.collection('Chamado').create(data);
+    console.log(record)
   }
 }
