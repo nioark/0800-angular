@@ -1,109 +1,131 @@
 <app-frame-nav cdkDropListGroup>
-  <div id="parent" #parent class="grid grid-flow-col  p-4 w-full bg-slate-200 overflow-auto" (wheel)="onWheel($event)" (mousedown) ="startDragging($event, false)" (pointerup) ="stopDragging($event, false)" (mouseleave) ="stopDragging($event, false)" (mousemove)="moveEvent($event)">
+  <div id="parent" #parent class="grid w-full grid-flow-col overflow-auto bg-slate-200 p-4" (wheel)="onWheel($event)" (mousedown) ="startDragging($event, false)" (pointerup) ="stopDragging($event, false)" (mouseleave) ="stopDragging($event, false)" (mousemove)="moveEvent($event)">
     <div
-      class="flex flex-col min-w-64 w-64 rounded-xl min-h-64 h-fit bg-slate-900 p-2 text-gray-300 overflow-hidden select-none"
+      class="flex h-fit min-h-64 w-64 min-w-64 select-none flex-col overflow-hidden rounded-xl bg-slate-900 p-2 text-gray-300"
     >
-      <!-- <div class="w-full mt-[-9px] mb-[-8px] bg-yellow-300 h-1">
+      <!-- <div class="mb-[-8px] mt-[-9px] h-1 w-full bg-yellow-300">
 
       </div> -->
-      <div class="flex p-2 items-center">
+      <div class="flex items-center p-2">
         <h1 class="border-b-2 border-blue-600">Técnicos</h1>
-        <span class="ml-auto material-symbols-outlined"> more_horiz </span>
-      </div>
+        <span class="material-symbols-outlined ml-auto"> more_horiz </span>
+        </div>
 
-      <div
-        class="p-2 pb-6 rounded-b-md min-h-48"
-      >
-      <div>
-        <p>Current Time: {{ currentTime$ | async }}</p>
-        <p>Current Time: {{ tecnicosSubject$ | async }}</p>
+        <div
+          class="min-h-48 rounded-b-md p-2 pb-6"
+        >
+        <div>
 
-      </div>
-          @for (item of tecnicosData$ | async ; track item.id) {
+      </div >
+
+      <!-- lista de técnicos -->
+      <div >
+          @for (item of tecnicos ; track item.id) {
             <div
-              class="bg-slate-700 rounded-full w-full px-2 py-1 flex items-center cursor-pointer hover:bg-slate-600 mt-2"
+              cdkDropList
+              [cdkDropListData]="item.servicos"
+              (cdkDropListDropped)="drop($event)"
+              (cdkDropListEntered)="tecnicoEntered($event)"
+
+              class="mt-2 flex h-8 max-h-8 w-full cursor-pointer items-center rounded-full bg-slate-700 px-2 py-1 hover:bg-slate-600"
             >
-              <!-- <span class="me-3 flex h-3 w-3 rounded-full bg-green-500"></span> -->
               <img
                 class="h-6 w-6 rounded-full"
                 src="https://as2.ftcdn.net/v2/jpg/05/49/98/39/1000_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"
               />
-              <span class="ml-2 text-sm truncate">{{ item.servicos }}</span>
+              @if (item.servicos.length == 0) {
+                <span class="ml-1 mr-1 flex h-2 w-2 rounded-full bg-green-500"></span>
+              }
+              @if (item.servicos.length > 0 && item.servicos.length < 3) {
+                <span class="ml-1 mr-1 flex h-2 w-2 rounded-full bg-yellow-400"></span>
+              }
+              @if (item.servicos.length > 2) {
+                <span class="ml-1 mr-1 flex h-2 w-2 rounded-full bg-red-500"></span>
+              }
+
+              <span class="truncate text-sm">{{ item.nome}}</span>
+
             </div>
           }
       </div>
+    </div>
 
-      <div class="h-8 flex items-center p-1">
+      <div class="flex h-8 items-center p-1">
         <span class="material-symbols-outlined"> add </span>
         <h1>Add Técnico</h1>
       </div>
     </div>
 
     <div
-      class="flex flex-col min-w-64 w-64 ml-4 rounded-xl min-h-64 h-fit bg-slate-900 p-2 text-gray-300 select-none"
+      class="ml-4 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col rounded-xl bg-slate-900 p-2 text-gray-300"
     >
-      <!-- <div class="w-full mt-[-9px] mb-[-8px] bg-yellow-300 h-1">
+      <!-- <div class="mb-[-8px] mt-[-9px] h-1 w-full bg-yellow-300">
 
         </div> -->
-      <div class="flex p-2 items-center">
+      <div class="flex items-center p-2">
         <h1 class="border-b-2 border-yellow-300">Serviços</h1>
-        <span class="ml-auto material-symbols-outlined"> more_horiz </span>
+        <span class="material-symbols-outlined ml-auto"> more_horiz </span>
       </div>
 
       <div
-          class="p-2 pb-6 rounded-b-md min-h-48"
+          class="min-h-48 rounded-b-md p-2 pb-6"
           cdkDropList
           [cdkDropListData]="servicos"
           (cdkDropListDropped)="drop($event)"
+          (cdkDropListEntered)="updateStyle()"
+
         >
           @for (item of servicos; track item) {
           <div
-            class="bg-slate-700 rounded-full w-full px-2 py-1 flex items-center cursor-pointer hover:bg-slate-600 mt-2"
+            (click)="openService(item)"
+            class="mt-2 flex w-full cursor-pointer items-center rounded-full bg-slate-700 px-2 py-1 hover:bg-slate-600"
             cdkDrag
           >
+
             <!-- <span class="me-3 flex h-3 w-3 rounded-full bg-green-500"></span> -->
             <span class="material-symbols-outlined text-base"> call </span>
-            <span class="ml-2 text-sm truncate">{{ item }}</span>
+            <span class="ml-2 truncate text-sm">{{ item }}</span>
           </div>
           }
       </div>
 
-      <div class="h-8 flex items-center p-1">
+      <div class="flex h-8 items-center p-1">
         <span class="material-symbols-outlined"> add </span>
         <h1>Add Serviço</h1>
       </div>
     </div>
 
-    <!-- <div class="border h-full border-yellow-300 border-dashed ml-[7px] mr-[7px]"></div> -->
+    <!-- <div class="ml-[7px] mr-[7px] h-full border border-dashed border-yellow-300"></div> -->
 
     @for (tecnico of tecnicos; track tecnico) {
       <div
-      class="flex flex-col min-w-64 w-64 rounded-xl min-h-64 h-fit ml-4 bg-slate-900 p-2 text-gray-300 select-none"
+      class="ml-4 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col rounded-xl bg-slate-900 p-2 text-gray-300"
     >
-      <div class="flex p-2 items-center">
+      <div class="flex items-center p-2">
         <h1 class="border-b-2 border-purple-600">{{tecnico.nome}}</h1>
-        <span class="ml-auto material-symbols-outlined"> more_horiz </span>
+        <span class="material-symbols-outlined ml-auto"> more_horiz </span>
       </div>
 
       <div
-          class="p-2 pb-6 rounded-b-md min-h-48"
+          class="min-h-48 rounded-b-md p-2 pb-6"
           cdkDropList
           [cdkDropListData]="tecnico?.servicos"
           (cdkDropListDropped)="drop($event)"
         >
           @for (item of tecnico.servicos; track item) {
           <div
-            class="bg-slate-700 rounded-full w-full px-2 py-1 flex items-center cursor-pointer hover:bg-slate-600 mt-2"
+            (click)="openService(item)"
+            class="mt-2 flex w-full cursor-pointer items-center rounded-full bg-slate-700 px-2 py-1 hover:bg-slate-600"
             cdkDrag
           >
             <!-- <span class="me-3 flex h-3 w-3 rounded-full bg-green-500"></span> -->
             <span class="material-symbols-outlined text-base"> call </span>
-            <span class="ml-2 text-sm truncate">{{ item }}</span>
+            <span class="ml-2 truncate text-sm">{{ item }}</span>
           </div>
           }
       </div>
 
-      <div class="h-8 flex items-center p-1">
+      <div class="flex h-8 items-center p-1">
         <span class="material-symbols-outlined"> add </span>
         <h1>Add Serviço</h1>
       </div>

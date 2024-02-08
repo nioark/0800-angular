@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostBinding, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { FrameNavComponent } from '../../components/frame-nav/frame-nav.component';
 import {
   CdkDragDrop,
@@ -7,9 +7,25 @@ import {
   CdkDropListGroup,
   moveItemInArray,
   transferArrayItem,
+  CdkDragEnter,
+  CdkDragExit,
 } from '@angular/cdk/drag-drop';
-import { BehaviorSubject, Observable, interval, map } from 'rxjs';
+
+import {
+  MatDialog,
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+  MatDialogTitle,
+  MatDialogContent,
+  MatDialogActions,
+  MatDialogClose,
+} from '@angular/material/dialog';
+
+import PocketBase from 'pocketbase';
+
+import { BehaviorSubject, Observable, from, interval, map, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { ViewServiceComponent } from './components/view-service/view-service.component';
 
 
 interface TecnicoServicos {
@@ -26,6 +42,7 @@ interface TecnicoServicos {
   styleUrl: './kanban.component.scss'
 })
 export class KanbanComponent implements OnInit  {
+
   tecnicos: TecnicoServicos[] = [
     { nome: 'jeferson', servicos: ["Instalação de softwares"], id: 1 },
     { nome: 'rafa', servicos: [], id: 2 },
@@ -33,16 +50,39 @@ export class KanbanComponent implements OnInit  {
     { nome: 'kevin', servicos: [], id: 4 },
   ];
 
+  servicos = ["Outlook não funciona", "Problema no micro", "Problema no Windows"]
+
   tecnicosSubject$: BehaviorSubject<TecnicoServicos[]> = new BehaviorSubject<TecnicoServicos[]>([])
   tecnicosData$: Observable<TecnicoServicos[]> | undefined
 
-  servicos = ["Outlook não funciona", "Problema no micro", "Problema no Windows"]
+  servicosSubject$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
+  servicosData$: Observable<string[]> | undefined
+
   cards : string[][] = [[], []]
-
-
   currentTime$: Observable<Date> | undefined;
 
+  mouseDown = false;
+  startX: any;
+  scrollLeft: any;
+
+  @ViewChild('parent') slider: ElementRef;
+  constructor(private change:ChangeDetectorRef, public dialog: MatDialog) {
+    this.slider = new ElementRef(null);
+  }
+
+  async getChamados(){
+  const pb = new PocketBase('http://127.0.0.1:8090');
+
+    const adminData = await pb.admins.authWithPassword('adm@hardtec.srv.br', 'nany88483240');
+
+    const result = await pb.collection('Chamado').getList(1, 20)
+    console.log(result)
+  }
+
   ngOnInit() {
+    
+    this.getChamados()
+
     // Create an observable that emits the current time every second
     this.currentTime$ = interval(1000).pipe(map(() => new Date()));
 
@@ -51,21 +91,48 @@ export class KanbanComponent implements OnInit  {
     this.tecnicosData$.subscribe((tecnicos) => {
       console.log(tecnicos)
     })
-  }
 
-
-  @ViewChild('parent') slider: ElementRef;
-  constructor() {
-    this.slider = new ElementRef(null);
-
+    this.tecnicosSubject$.next([...this.tecnicos])
 
   }
 
-  mouseDown = false;
+  ngOnChanges(changes: SimpleChanges) {
+    console.log(changes)
+    if (changes['tecnicos']) {
+      this.tecnicosSubject$.next([...this.tecnicos]);
+    }
+  }
 
-  startX: any;
+  tecnicoEntered(event: CdkDragEnter<any>) {
+    window.document.querySelector<any>('.cdk-drag-placeholder').style.opacity = "0"
+  }
 
-  scrollLeft: any;
+  updateStyle(){
+    window.document.querySelector<any>('.cdk-drag-placeholder').style.opacity = "1"
+
+    // window.document.querySelector<any>('.cdk-drag-placeholder').style.display = "block"
+  }
+
+  drop(event: CdkDragDrop<any>) {
+
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex,
+      );
+    }
+
+
+    let new_array = JSON.parse(JSON.stringify(this.tecnicos));
+    this.tecnicosSubject$.next(new_array);
+
+
+
+  }
 
   startDragging(e : MouseEvent, flag : boolean) {
     const element = e.target as any as HTMLElement
@@ -77,9 +144,11 @@ export class KanbanComponent implements OnInit  {
     this.startX = e.pageX - this.slider?.nativeElement.offsetLeft;
     this.scrollLeft = this.slider?.nativeElement.scrollLeft;
   }
+
   stopDragging(e : any, flag : boolean) {
     this.mouseDown = false;
   }
+
   moveEvent(e : any) {
 
     e.preventDefault();
@@ -115,18 +184,9 @@ export class KanbanComponent implements OnInit  {
     event.preventDefault();
   }
 
-  drop(event: CdkDragDrop<any>) {
-    this.tecnicosSubject$.next({...this.tecnicos})
-
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex,
-      );
-    }
+  openService(element : any ){
+    const dialogRef = this.dialog.open(ViewServiceComponent);
   }
+
+
 }

@@ -1,0 +1,111 @@
+<div class="flex flex-col h-screen w-screen items-center bg-transparent p-8">
+	<div>
+		<div class="w-[800px] bg-slate-900  rounded-lg p-4">
+			<div class="flex items-center h-8 w-full text-white">
+				<span class="material-symbols-outlined mr-2 text-3xl">
+				home_repair_service
+				</span>
+
+				<h1 class="text-xl w-128">Instalação de software</h1>
+
+				<div  mat-dialog-close class="text-white flex flex-grow justify-end">
+					<span class="material-symbols-outlined text-3xl h-10 hover:cursor-pointer hover:bg-slate-600 rounded-full transition all p-1">
+						close
+					</span>
+				</div>
+			</div>
+
+			<div class="flex mt-4 text-white">
+				<div class="flex flex-col ml-8">
+					<h1 class="text-sm font-bold">Técnicos</h1>
+					<div class="flex items-center h-8">
+						<span class="material-symbols-outlined mr-2 text-xl">
+							account_circle
+						</span>
+
+						<h1 class="">Jeferson</h1>
+					</div>
+				</div>
+
+				<div class="flex flex-col ml-8">
+					<h1 class="text-sm font-bold">Tempo Decorrido</h1>
+					<div class="flex items-center h-8">
+						<span class="material-symbols-outlined mr-2 text-xl">
+							timer
+						</span>
+
+						<h1 class="">{{time}}</h1>
+					</div>
+				</div>
+			</div>
+
+			<div class="flex flex-col ml-8 mt-4 text-white">
+					<h1 class="text-sm font-bold">Empresa</h1>
+					<div class="flex items-center h-8">
+						<span class="material-symbols-outlined mr-2 text-xl">
+							corporate_fare
+						</span>
+
+						<h1 class="">H.BREMER E FILHOS LTDA</h1>
+					</div>
+				</div>
+
+			<div class="flex items-center h-8 mt-6 text-white">
+				<span class="material-symbols-outlined mr-2 text-3xl">
+				subject
+				</span>
+
+				<h1 class="text-xl">Descrição</h1>
+			</div>
+
+			<div class="flex mt-4 text-white">
+				<div class="text-gray-100 w-[500px] ml-10">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam auctor enim a dictum mattis. Nulla facilisi. Quisque ullamcorper condimentum dui elementum finibus. Duis vitae neque in libero pellentesque porttitor eu at dolor. 
+				</div>
+			</div>
+
+			<div class="flex items-center h-8 mt-6 text-white">
+				<span class="material-symbols-outlined mr-2 text-3xl">
+				wysiwyg
+				</span>
+
+				<h1 class="text-xl">Relátorios</h1>
+			</div>
+
+			<div class="p-0">
+		<!-- 		<textarea class="peer bg-slate-800 w-[500px] ml-10 p-2 text-gray-300 rounded-md mt-2" placeholder="Escrever mensagem..."></textarea>
+
+				<div class="peer-focus:visible invisible">Teste</div>
+		 -->	
+
+				<div id="editorjs"  class="rounded-md content bg-slate-200 w-[700px] ml-10 mt-2 p-2 pl-14">
+				</div>
+
+				<app-service-relatorio
+					avatar_url="url"
+					name="Jeferson"
+				    timestamp="1:39:02 PM"
+				    message="Quisque ullamcorper condimentum dui elementum finibus."
+
+				/>
+
+				<app-service-relatorio
+					avatar_url="url"
+					name="Jeferson"
+				    timestamp="1:35:12 PM"
+				    message="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam auctor enim a dictum mattis. Nulla facilisi. Quisque ullamcorper condimentum dui elementum finibus."
+				/>
+
+				<app-service-relatorio
+					avatar_url="url"
+					name="Jeferson"
+				    timestamp="1:27:32 PM"
+				    message="Quisque ullamcorper condimentum dui elementum finibus."
+				    image_url="image_url"
+				/>
+				
+			</div>
+		</div>
+		<div class="h-8"></div>
+	</div>
+</div>
