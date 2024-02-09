@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, forkJoin, from, switchMap } from 'rxjs';
 import { RecordSubscription, RecordModel } from 'pocketbase'; // Assuming these imports are correct
 import PocketBase from 'pocketbase';
 
@@ -18,12 +18,11 @@ export class PocketCollectionsService {
   public em_espera_event = new Subject<Number>;
   public em_andamento_event = new Subject<Number>;
 
-
   constructor() { 
     console.log("Subscribed")
     this.chamadosEvent = new Subject<RecordSubscription<RecordModel>>();
     
-    this.pb.collection('Chamado').subscribe('*', (e) => {
+    this.pb.collection('chamados').subscribe('*', (e) => {
       this.chamadosEvent.next(e);
     })
 
@@ -47,7 +46,7 @@ export class PocketCollectionsService {
 
     let chamados: RecordModel[] = [];
 
-    this.pb.collection('chamado').getList(1, 50, { filter: `status = '${status}'` }).then((res) => {;
+    this.pb.collection('chamados').getList(1, 50, { filter: `status = '${status}'` }).then((res) => {;
       chamados = res.items;
       // console.log("Buscado items:", chamados);
 
@@ -92,12 +91,25 @@ export class PocketCollectionsService {
     return chamadoSubject.asObservable();
   }
 
+  getChamadosEmpty(): Observable<RecordModel[]>{
+    const chamadoSubject = new Subject<RecordModel[]>; 
+
+    let chamados: RecordModel[] = [];
+
+    this.pb.collection('chamados').getFullList({filter: "users:length = 0"}).then((chamados) => {
+      chamadoSubject.next(chamados);
+    })
+
+
+    return chamadoSubject.asObservable();
+  }
+
   countChamadosWithStatus(status : string): Observable<Number>{
     const chamadoSubject = new Subject<Number>;
 
     const pb = new PocketBase('http://localhost:8090');
 
-    pb.collection('chamado').getList(1, 50, { filter: `status = '${status}'` }).then((res) => {;
+    pb.collection('chamados').getList(1, 50, { filter: `status = '${status}'` }).then((res) => {;
       chamadoSubject.next(res.totalItems);
     }).catch((err) => {
       console.error(err);
@@ -106,7 +118,7 @@ export class PocketCollectionsService {
     this.chamadosEvent.subscribe((e) => {
         const { action, record } = e;
       // console.log("Ação:", action, "Record:", record)
-        pb.collection('chamado').getList(1, 1, { filter: `status = '${status}'` }).then((res) => {;
+        pb.collection('chamados').getList(1, 1, { filter: `status = '${status}'` }).then((res) => {;
 
           chamadoSubject.next(res.totalItems);
         }).catch((err) => {
@@ -117,21 +129,69 @@ export class PocketCollectionsService {
     return chamadoSubject.asObservable();
   }
 
-  getTecnicos(): Observable<RecordModel[]>{
+  getTecnicosJoinChamados(): Observable<RecordModel[]>{
     const chamadoSubject = new Subject<RecordModel[]>;
 
     let chamados: RecordModel[] = [];
 
-    this.pb.collection('users').getList(1, 50).then((res) => {;
-      chamados = res.items;
-      console.log("Buscado items:", chamados);
+    //old rule @request.auth.chamados.id ?= @request.data.id
+    /*.pipe(
+        switchMap((users : RecordModel[]) => {
+          const userFilters = users.map(user => `users.id="${user.id}"`).join('||');
+          return this.pb.collection('chamados').getFullList({ filter: userFilters });
+        })
+      )
+    */
 
-      chamadoSubject.next(chamados);
-    })
+    this.pb.collection('users').getFullList().then(users => {
+      from(this.pb.collection('chamados').getFullList({requestKey: 'chamados'})).pipe(
+        switchMap((chamados : RecordModel[]) => {
+          const userFilters = users.map(user => `users.id="${user.id}"`).join('||');
+          return this.pb.collection('chamados').getFullList({ filter: userFilters });
+        })
+      ).subscribe({
+        next: chamados => {
+          users.map(user => {
+            user["chamados"] = []
+            return user
+          })
+
+          chamados.forEach(chamado => {
+            chamado['users'].forEach((userID : any) => {
+              let userFound = users.find(user => user.id == userID)
+              if (userFound) {
+                userFound["chamados"].push(chamado)
+              }
+            })
+          })
+
+          chamadoSubject.next(users);
+
+          // Your further processing here...
+        },
+        error: error => {
+          console.error("Error fetching users and chamados:", error);
+        }
+      });
+    });
+
 
     this.chamadosEvent.subscribe((e) => {
     })
   
     return chamadoSubject.asObservable();
+  }
+
+  pushTenicoChamado(id_tecnico : string, chamado : any){
+
+    console.log("id_tecnico:", id_tecnico, "id_chamado:", chamado.id);''
+
+    this.pb.collection('chamados').update(chamado.id, {
+      "status": "em_andamento"
+    }).then(() => {
+      this.pb.collection('users').update(id_tecnico, {
+        "chamados+": chamado.id,
+      })
+    })
   }
 }

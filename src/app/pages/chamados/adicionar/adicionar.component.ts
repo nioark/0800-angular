@@ -46,7 +46,7 @@ export class AdicionarComponent {
     console.log(deixar_aberto)
     console.log("Data model: ", data)
 
-    const record = await pb.collection('Chamado').create(data);
+    const record = await pb.collection('chamados').create(data);
     console.log(record)
   }
 }

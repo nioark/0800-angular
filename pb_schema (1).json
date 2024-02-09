@@ -1,7 +1,50 @@
 [
   {
+    "id": "2300zz5gog6q0qr",
+    "name": "cargos",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "system": false,
+        "id": "vx8e59wh",
+        "name": "name",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "system": false,
+        "id": "sr0eici3",
+        "name": "permission_level",
+        "type": "number",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "noDecimal": false
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
     "id": "ha1yrl5upi8etbq",
-    "name": "ChamadoMessage",
+    "name": "chamadoMessage",
     "type": "base",
     "system": false,
     "schema": [
@@ -33,49 +76,6 @@
           "minSelect": null,
           "maxSelect": 1,
           "displayFields": null
-        }
-      }
-    ],
-    "indexes": [],
-    "listRule": null,
-    "viewRule": null,
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "options": {}
-  },
-  {
-    "id": "2300zz5gog6q0qr",
-    "name": "Cargos",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "system": false,
-        "id": "vx8e59wh",
-        "name": "name",
-        "type": "text",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "system": false,
-        "id": "sr0eici3",
-        "name": "permission_level",
-        "type": "number",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "noDecimal": false
         }
       }
     ],
@@ -150,7 +150,7 @@
     "listRule": "",
     "viewRule": "",
     "createRule": "",
-    "updateRule": "id = @request.auth.id",
+    "updateRule": "id = @request.auth.id && @request.data.chamados.status = \"em_andamento\"",
     "deleteRule": "id = @request.auth.id",
     "options": {
       "allowEmailAuth": true,
@@ -166,7 +166,7 @@
   },
   {
     "id": "89kljbthcrjlduf",
-    "name": "Chamado",
+    "name": "chamados",
     "type": "base",
     "system": false,
     "schema": [
@@ -230,24 +230,7 @@
       },
       {
         "system": false,
-        "id": "e5r81be7",
-        "name": "status",
-        "type": "select",
-        "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "maxSelect": 1,
-          "values": [
-            "em_andamento",
-            "finalizado",
-            "em_espera"
-          ]
-        }
-      },
-      {
-        "system": false,
-        "id": "evsaxq4x",
+        "id": "pnk0swz6",
         "name": "users",
         "type": "relation",
         "required": false,
@@ -260,12 +243,107 @@
           "maxSelect": null,
           "displayFields": null
         }
+      },
+      {
+        "system": false,
+        "id": "uymcmwvz",
+        "name": "status",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "maxSelect": 1,
+          "values": [
+            "em_espera",
+            "pausado",
+            "em_andamento",
+            "finalizado",
+            "cancelado"
+          ]
+        }
       }
     ],
     "indexes": [],
-    "listRule": "@request.auth.cargo.permission_level > -1",
-    "viewRule": "@request.auth.cargo.permission_level > -1",
-    "createRule": "@request.auth.cargo.permission_level > -1 &&\n@request.data.users.id = @request.auth.id",
+    "listRule": "@request.auth.cargo.permission_level > -1 ",
+    "viewRule": "@request.auth.cargo.permission_level > -1 ",
+    "createRule": "@request.auth.cargo.permission_level > -1 ",
+    "updateRule": "",
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "4f196r7jcwn6r16",
+    "name": "horas",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "system": false,
+        "id": "zsbyqsmn",
+        "name": "date",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "min": "",
+          "max": ""
+        }
+      },
+      {
+        "system": false,
+        "id": "svx0her0",
+        "name": "user",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "collectionId": "_pb_users_auth_",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": null
+        }
+      },
+      {
+        "system": false,
+        "id": "1i5ckylq",
+        "name": "action",
+        "type": "select",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "maxSelect": 1,
+          "values": [
+            "iniciado",
+            "pausado"
+          ]
+        }
+      },
+      {
+        "system": false,
+        "id": "im1jzgxg",
+        "name": "chamado",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "collectionId": "89kljbthcrjlduf",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": null
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": "@request.auth.cargo.permission_level > -1 &&\n@request.auth.id = user.id &&\nchamado.users.id ?= @collection.chamados:user.id",
     "updateRule": null,
     "deleteRule": null,
     "options": {}

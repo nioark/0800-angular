@@ -43,30 +43,14 @@ interface TecnicoServicos {
   styleUrl: './kanban.component.scss'
 })
 export class KanbanComponent implements OnInit  {
-
-  tecnicos: TecnicoServicos[] = [
-    { nome: 'jeferson', servicos: ["Instalação de softwares"], id: 1 },
-    { nome: 'rafa', servicos: [], id: 2 },
-    { nome: 'vini', servicos: [], id: 3 },
-    { nome: 'kevin', servicos: [], id: 4 },
-  ];
-
-  servicos = ["Outlook não funciona", "Problema no micro", "Problema no Windows"]
-
-  tecnicosSubject$: BehaviorSubject<TecnicoServicos[]> = new BehaviorSubject<TecnicoServicos[]>([])
-  tecnicosData$: Observable<TecnicoServicos[]> | undefined
-
-  servicosSubject$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
-  servicosData$: Observable<string[]> | undefined
-
-  cards : string[][] = [[], []]
   currentTime$: Observable<Date> | undefined;
 
   mouseDown = false;
   startX: any;
   scrollLeft: any;
 
-
+  tecnicosdata: any
+  chamadosdata: any;
 
   @ViewChild('parent') slider: ElementRef;
   constructor(private change:ChangeDetectorRef, public dialog: MatDialog, public pocketCollectionsSrv: PocketCollectionsService) {
@@ -75,28 +59,27 @@ export class KanbanComponent implements OnInit  {
 
   ngOnInit() {
 
-    this.pocketCollectionsSrv.getTecnicos().subscribe((tecnicos) => {
-      console.log(tecnicos)
+    this.pocketCollectionsSrv.getTecnicosJoinChamados().subscribe((tecnicos) => {
+      this.tecnicosdata = tecnicos
+      console.log("Técnicos: ",tecnicos)
     })
 
+    this.pocketCollectionsSrv.getChamadosEmpty().subscribe((chamados) => {
+      this.chamadosdata = chamados
+      console.log("Chamados: ", chamados)
+    })
+
+    let pb = this.pocketCollectionsSrv.pb
+    const data = {
+      "date": "2022-01-01 10:00:00.123Z",
+      "user": "5kj10axm80tq671",
+      "action": "iniciado",
+      "chamado": "jrynbi0050jfmrn"
+    };
+
+    const record = pb.collection('horas').create(data);
     // Create an observable that emits the current time every second
     this.currentTime$ = interval(1000).pipe(map(() => new Date()));
-
-    this.tecnicosData$ = this.tecnicosSubject$.asObservable()
-
-    this.tecnicosData$.subscribe((tecnicos) => {
-      console.log(tecnicos)
-    })
-
-    this.tecnicosSubject$.next([...this.tecnicos])
-
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    console.log(changes)
-    if (changes['tecnicos']) {
-      this.tecnicosSubject$.next([...this.tecnicos]);
-    }
   }
 
   tecnicoEntered(event: CdkDragEnter<any>) {
@@ -109,22 +92,30 @@ export class KanbanComponent implements OnInit  {
     // window.document.querySelector<any>('.cdk-drag-placeholder').style.display = "block"
   }
 
+  dropTecnico(event: CdkDragDrop<any>, user : any) {
+    const chamado = event.previousContainer.data[0]
+    console.log(chamado, user.username, user.id)
+    this.pocketCollectionsSrv.pushTenicoChamado(user.id, chamado)
+  }
+
   drop(event: CdkDragDrop<any>) {
 
     if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      // moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      console.log(event.container.data)
     } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex,
-      );
+      console.log(event.previousContainer.data, event.container.data)
+      // transferArrayItem(
+      //   event.previousContainer.data,
+      //   event.container.data,
+      //   event.previousIndex,
+      //   event.currentIndex,
+      // );
     }
 
 
-    let new_array = JSON.parse(JSON.stringify(this.tecnicos));
-    this.tecnicosSubject$.next(new_array);
+    // let new_array = JSON.parse(JSON.stringify(this.tecnicos));
+    // this.tecnicosSubject$.next(new_array);
 
 
 

@@ -1,5 +1,5 @@
-<app-frame-nav cdkDropListGroup>
-  <div id="parent" #parent class="grid w-full grid-flow-col overflow-auto bg-slate-200 p-4" (wheel)="onWheel($event)" (mousedown) ="startDragging($event, false)" (pointerup) ="stopDragging($event, false)" (mouseleave) ="stopDragging($event, false)" (mousemove)="moveEvent($event)">
+<app-frame-nav cdkDropListGroup class="w-full bg-slate-200">
+  <div id="parent" #parent class="grid grid-flow-col overflow-auto bg-slate-200 p-4" (wheel)="onWheel($event)" (mousedown) ="startDragging($event, false)" (pointerup) ="stopDragging($event, false)" (mouseleave) ="stopDragging($event, false)" (mousemove)="moveEvent($event)">
     <div
       class="flex h-fit min-h-64 w-64 min-w-64 select-none flex-col overflow-hidden rounded-xl bg-slate-900 p-2 text-gray-300"
     >
@@ -20,11 +20,11 @@
 
       <!-- lista de técnicos -->
       <div >
-          @for (item of tecnicos ; track item.id) {
+          @for (item of tecnicosdata ; track item.id) {
             <div
               cdkDropList
-              [cdkDropListData]="item.servicos"
-              (cdkDropListDropped)="drop($event)"
+              [cdkDropListData]="item.expand?.chamados"
+              (cdkDropListDropped)="dropTecnico($event, item)"
               (cdkDropListEntered)="tecnicoEntered($event)"
 
               class="mt-2 flex h-8 max-h-8 w-full cursor-pointer items-center rounded-full bg-slate-700 px-2 py-1 hover:bg-slate-600"
@@ -33,17 +33,17 @@
                 class="h-6 w-6 rounded-full"
                 src="https://as2.ftcdn.net/v2/jpg/05/49/98/39/1000_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"
               />
-              @if (item.servicos.length == 0) {
+              @if (item.chamados.length == 0) {
                 <span class="ml-1 mr-1 flex h-2 w-2 rounded-full bg-green-500"></span>
               }
-              @if (item.servicos.length > 0 && item.servicos.length < 3) {
+              @if (item.chamados.length > 0 && item.chamados.length < 3) {
                 <span class="ml-1 mr-1 flex h-2 w-2 rounded-full bg-yellow-400"></span>
               }
-              @if (item.servicos.length > 2) {
+              @if (item.chamados.length > 2) {
                 <span class="ml-1 mr-1 flex h-2 w-2 rounded-full bg-red-500"></span>
               }
 
-              <span class="truncate text-sm">{{ item.nome}}</span>
+              <span class="truncate text-sm">{{ item.username}}</span>
 
             </div>
           }
@@ -55,6 +55,8 @@
         <h1>Add Técnico</h1>
       </div>
     </div>
+
+
 
     <div
       class="ml-4 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col rounded-xl bg-slate-900 p-2 text-gray-300"
@@ -70,12 +72,14 @@
       <div
           class="min-h-48 rounded-b-md p-2 pb-6"
           cdkDropList
-          [cdkDropListData]="servicos"
+          [cdkDropListData]="chamadosdata"
           (cdkDropListDropped)="drop($event)"
           (cdkDropListEntered)="updateStyle()"
 
         >
-          @for (item of servicos; track item) {
+
+        <!-- Lista de chamados -->
+        @for (item of chamadosdata; track item) {
           <div
             (click)="openService(item)"
             class="mt-2 flex w-full cursor-pointer items-center rounded-full bg-slate-700 px-2 py-1 hover:bg-slate-600"
@@ -84,9 +88,9 @@
 
             <!-- <span class="me-3 flex h-3 w-3 rounded-full bg-green-500"></span> -->
             <span class="material-symbols-outlined text-base"> call </span>
-            <span class="ml-2 truncate text-sm">{{ item }}</span>
+            <span class="ml-2 truncate text-sm">{{ item.title }}</span>
           </div>
-          }
+        }
       </div>
 
       <div class="flex h-8 items-center p-1">
@@ -97,22 +101,23 @@
 
     <!-- <div class="ml-[7px] mr-[7px] h-full border border-dashed border-yellow-300"></div> -->
 
-    @for (tecnico of tecnicos; track tecnico) {
+    <!-- Kanba pra cada técnico -->
+    @for (tecnico of tecnicosdata; track tecnico) {
       <div
       class="ml-4 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col rounded-xl bg-slate-900 p-2 text-gray-300"
     >
       <div class="flex items-center p-2">
-        <h1 class="border-b-2 border-purple-600">{{tecnico.nome}}</h1>
+        <h1 class="border-b-2 border-purple-600">{{tecnico.username}}</h1>
         <span class="material-symbols-outlined ml-auto"> more_horiz </span>
       </div>
 
       <div
           class="min-h-48 rounded-b-md p-2 pb-6"
           cdkDropList
-          [cdkDropListData]="tecnico?.servicos"
-          (cdkDropListDropped)="drop($event)"
+          [cdkDropListData]="tecnico.expand?.chamados"
+          (cdkDropListDropped)="dropTecnico($event, tecnico)"
         >
-          @for (item of tecnico.servicos; track item) {
+          @for (item of tecnico.chamados; track item) {
           <div
             (click)="openService(item)"
             class="mt-2 flex w-full cursor-pointer items-center rounded-full bg-slate-700 px-2 py-1 hover:bg-slate-600"
@@ -120,7 +125,7 @@
           >
             <!-- <span class="me-3 flex h-3 w-3 rounded-full bg-green-500"></span> -->
             <span class="material-symbols-outlined text-base"> call </span>
-            <span class="ml-2 truncate text-sm">{{ item }}</span>
+            <span class="ml-2 truncate text-sm">{{ item.title }}</span>
           </div>
           }
       </div>

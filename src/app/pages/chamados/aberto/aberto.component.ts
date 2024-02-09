@@ -44,7 +44,7 @@ export class AbertoComponent {
 
   async fetchChamados() {
     try {
-      const res = await this.pb.collection('chamado').getList(1, 50, { filter: "status = 'em_espera'" });
+      const res = await this.pb.collection('chamados').getList(1, 50, { filter: "status = 'em_espera'" });
       console.log(res);
       this.chamados = res.items;
     } catch (error) {
