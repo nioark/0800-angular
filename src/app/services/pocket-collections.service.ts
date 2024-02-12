@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, forkJoin, from, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, forkJoin, from, map, switchMap } from 'rxjs';
 import { RecordSubscription, RecordModel } from 'pocketbase'; // Assuming these imports are correct
 import PocketBase from 'pocketbase';
 
@@ -46,10 +46,9 @@ export class PocketCollectionsService {
 
     let chamados: RecordModel[] = [];
 
-    this.pb.collection('chamados').getList(1, 50, { filter: `status = '${status}'` }).then((res) => {;
+    this.pb.collection('chamados').getList(1, 50, { filter: `status = '${status}'`, requestKey: "chamadosstatus" }).then((res) => {;
       chamados = res.items;
       // console.log("Buscado items:", chamados);
-
       chamadoSubject.next(chamados);
     })
 
@@ -58,7 +57,8 @@ export class PocketCollectionsService {
       // console.log("Ação:", action, "Record:", record);
 
       if (action === "create") {
-        chamados.push(record);
+        if (record["status"] == status)
+          chamados.push(record);
       } else if (action === "delete") {
         const idToRemove = record.id;
         const indexToRemove = chamados.findIndex(chamado => chamado.id === idToRemove);
@@ -129,69 +129,157 @@ export class PocketCollectionsService {
     return chamadoSubject.asObservable();
   }
 
+
+  _findUser(users: RecordModel[], userId: string): RecordModel | undefined {
+    return users.find((user: RecordModel) => user.id === userId);
+  }
+
+  _expandUsers(record: RecordModel, users: RecordModel[]): RecordModel {
+    let usersExpands: RecordModel[] = [];
+    record['users'].forEach((userId: string) => {
+      let userFound = this._findUser(users, userId);
+      if (userFound) {
+        usersExpands.push(userFound);
+      }
+    });
+
+    record.expand = { users: usersExpands };
+    return record;
+  }
+
+  _updateUserChamados(users: RecordModel[], newChamado: RecordModel): RecordModel[] {
+    let updatedAndRemoved = users.map((user: RecordModel) => {
+      user['chamados'] = user['chamados'].map((chamado: RecordModel) => {
+        if (chamado.id === newChamado.id) {
+          if (!newChamado['users'].includes(user.id)) {
+            return null;
+          }
+          return newChamado;
+        }
+        return chamado;
+      }).filter((chamado: RecordModel | null) => chamado !== null);
+      return user;
+    });
+
+    //Add missing chamados
+    updatedAndRemoved.forEach((user: RecordModel) => {
+      if (newChamado['users'].includes(user.id)) {
+        if (!user['chamados'].includes(newChamado)) {
+          user['chamados'].push(newChamado);
+        }
+      }
+    })
+    return updatedAndRemoved;
+  }
+
+
   getTecnicosJoinChamados(): Observable<RecordModel[]>{
     const chamadoSubject = new Subject<RecordModel[]>;
 
     let chamados: RecordModel[] = [];
+    let usersWithChamadosR: RecordModel[] = [];
 
-    //old rule @request.auth.chamados.id ?= @request.data.id
-    /*.pipe(
-        switchMap((users : RecordModel[]) => {
-          const userFilters = users.map(user => `users.id="${user.id}"`).join('||');
-          return this.pb.collection('chamados').getFullList({ filter: userFilters });
-        })
-      )
-    */
+    from(this.pb.collection('users').getFullList()).pipe(
+      switchMap(users => {
+        const userFilters = users.map(user => `users.id?="${user.id}"`).join('||');
+        return from(this.pb.collection('chamados').getFullList({ filter: userFilters, expand: 'users' })).pipe(
+          map((chamados : RecordModel[]) => ({ users, chamados }))
+        );
+      })
+    ).subscribe({
+      next: ({ users, chamados }) => {
+        // Initialize the list for tecnicos
+        const usersWithChamados = users.map((user: RecordModel) => {
+          user['chamados'] = [];
+          return user;
+        });
 
-    this.pb.collection('users').getFullList().then(users => {
-      from(this.pb.collection('chamados').getFullList({requestKey: 'chamados'})).pipe(
-        switchMap((chamados : RecordModel[]) => {
-          const userFilters = users.map(user => `users.id="${user.id}"`).join('||');
-          return this.pb.collection('chamados').getFullList({ filter: userFilters });
-        })
-      ).subscribe({
-        next: chamados => {
-          users.map(user => {
-            user["chamados"] = []
-            return user
-          })
+        chamados.forEach((chamado : RecordModel) => {
+          chamado['users'].forEach((userID: any) => {
+            const userFound = usersWithChamados.find((user : RecordModel) => user.id === userID);
+            if (userFound) {
+              userFound['chamados'].push(chamado);
+            }
+          });
+        });
 
-          chamados.forEach(chamado => {
-            chamado['users'].forEach((userID : any) => {
-              let userFound = users.find(user => user.id == userID)
-              if (userFound) {
-                userFound["chamados"].push(chamado)
-              }
-            })
-          })
-
-          chamadoSubject.next(users);
-
-          // Your further processing here...
-        },
-        error: error => {
-          console.error("Error fetching users and chamados:", error);
-        }
-      });
+        usersWithChamadosR = usersWithChamados;
+        chamadoSubject.next(usersWithChamados);
+        // Your further processing here...
+      },
+      error: error => {
+        console.error("Error fetching users and chamados:", error);
+      }
     });
 
-
     this.chamadosEvent.subscribe((e) => {
+      const { action, record } = e;
+      if (action === "update" || action === "create") {
+        let recordExpanded = this._expandUsers(record, usersWithChamadosR);
+        usersWithChamadosR = this._updateUserChamados(usersWithChamadosR, record);
+        chamadoSubject.next(usersWithChamadosR);
+      }
+
     })
+
+
+    //Realtime server updates
+    // this.chamadosEvent.subscribe((e) => {
+    //   const { action, record } = e;
+    //   console.log("Ação:", action, "Record:", record);   
+
+    //   if (action === "update") {
+    //     let usersFound: any[] = []
+    //     // console.log("Users no update:", record['users'])
+
+    //     usersWithChamadosR.forEach((user : RecordModel, userIndex: number) => {
+    //       // console.log("chamados do user: ", user['chamados'], "id pesquisa: ", record.id)
+
+    //       user['chamados'].forEach((chamado : RecordModel, chamadosIndex: number) => {
+    //         if (chamado.id === record.id) {
+    //           // console.log("chamados ID: ", chamado, "chamados update:", record)
+    //           // usersFound.push(user);
+
+    //           //Get full user infos "expands"
+    //           let usersExpands : any = []
+    //           record['users'].forEach((userID: any) => {
+    //             let userFound = usersWithChamadosR.find((user : RecordModel) => user.id === userID);
+    //             if (userFound) {
+    //               usersExpands.push(userFound)
+    //             }
+    //           })
+
+    //           record['expand'] = []
+    //           record['expand']['users'] = usersExpands
+
+    //           usersWithChamadosR[userIndex]['chamados'][chamadosIndex] = record
+    //           // console.log("after update: ", usersWithChamadosR[userIndex]['chamados'][chamadosIndex])
+    //         }
+    //       })
+    //     })
+
+    //    // chamadoSubject.next(JSON.parse(JSON.stringify(usersWithChamadosR)));
+    //   chamadoSubject.next(usersWithChamadosR);
+    //     // record['users'].forEach((userID: any) => {
+    //     //   let userFound = usersWithChamadosR.find((user : RecordModel) => userID === record.id);
+    //     //   if (userFound) {
+    //     //     userFound['chamados'].push(record); 
+    //     //   }
+    //     // })
+
+    //     console.log("usersFound:", usersFound);
+    //   }
+    // })
   
     return chamadoSubject.asObservable();
   }
 
-  pushTenicoChamado(id_tecnico : string, chamado : any){
+  pushTecnicoChamado(id_tecnico : string, chamado : any){
 
     console.log("id_tecnico:", id_tecnico, "id_chamado:", chamado.id);''
 
     this.pb.collection('chamados').update(chamado.id, {
-      "status": "em_andamento"
-    }).then(() => {
-      this.pb.collection('users').update(id_tecnico, {
-        "chamados+": chamado.id,
-      })
+      "users+": id_tecnico
     })
   }
 }

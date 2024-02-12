@@ -17,8 +17,8 @@ import { AuthService } from './services/auth.service';
 export class AppComponent {
   title = '0800 Sac';
 
-  constructor(authSrv : AuthService) {
-     authSrv.Login('jeferson@hardtec.srv.br', 'ampdtbaf').subscribe();
+  constructor() {
+
   }
 
   ngOnInit(): void {

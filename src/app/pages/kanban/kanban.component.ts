@@ -21,6 +21,9 @@ import {
   MatDialogClose,
 } from '@angular/material/dialog';
 
+import {MatTooltipModule} from '@angular/material/tooltip';
+
+
 import PocketBase from 'pocketbase';
 
 import { BehaviorSubject, Observable, from, interval, map, tap } from 'rxjs';
@@ -38,7 +41,7 @@ interface TecnicoServicos {
 @Component({
   selector: 'app-kanban',
   standalone: true,
-  imports: [FrameNavComponent, CdkDropListGroup, CdkDropList, CdkDrag, AsyncPipe],
+  imports: [FrameNavComponent, CdkDropListGroup, CdkDropList, CdkDrag, AsyncPipe, MatTooltipModule],
   templateUrl: './kanban.component.html',
   styleUrl: './kanban.component.scss'
 })
@@ -64,20 +67,11 @@ export class KanbanComponent implements OnInit  {
       console.log("Técnicos: ",tecnicos)
     })
 
-    this.pocketCollectionsSrv.getChamadosEmpty().subscribe((chamados) => {
+    this.pocketCollectionsSrv.getChamadosWithStatus("em_espera").subscribe((chamados) => {
       this.chamadosdata = chamados
       console.log("Chamados: ", chamados)
     })
 
-    let pb = this.pocketCollectionsSrv.pb
-    const data = {
-      "date": "2022-01-01 10:00:00.123Z",
-      "user": "5kj10axm80tq671",
-      "action": "iniciado",
-      "chamado": "jrynbi0050jfmrn"
-    };
-
-    const record = pb.collection('horas').create(data);
     // Create an observable that emits the current time every second
     this.currentTime$ = interval(1000).pipe(map(() => new Date()));
   }
@@ -93,9 +87,10 @@ export class KanbanComponent implements OnInit  {
   }
 
   dropTecnico(event: CdkDragDrop<any>, user : any) {
-    const chamado = event.previousContainer.data[0]
-    console.log(chamado, user.username, user.id)
-    this.pocketCollectionsSrv.pushTenicoChamado(user.id, chamado)
+    const chamado = event.previousContainer.data[event.previousIndex]
+    // console.log(event.previousContainer, event.previousIndex)
+    // console.log(chamado, user.username, user.id)
+    this.pocketCollectionsSrv.pushTecnicoChamado(user.id, chamado)
   }
 
   drop(event: CdkDragDrop<any>) {
@@ -172,7 +167,11 @@ export class KanbanComponent implements OnInit  {
   }
 
   openService(element : any ){
-    const dialogRef = this.dialog.open(ViewServiceComponent);
+    const dialogRef = this.dialog.open(ViewServiceComponent, {data: element});
+  }
+
+  getUserNames(tecnicos : any){
+   return tecnicos.map((user : any) => user.username).join(',\n') 
   }
 
 

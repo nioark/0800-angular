@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { PocketCollectionsService } from '../../services/pocket-collections.service';
 import { Subscription } from 'rxjs';
+import Client, { AuthModel, RecordModel } from 'pocketbase';
 
 @Component({
   selector: 'app-frame-nav',
@@ -19,7 +20,18 @@ export class FrameNavComponent {
   sub1 : Subscription | undefined
   sub2 : Subscription | undefined
 
+  user : AuthModel
+
+  pb : Client
+
   constructor(public router: Router, pocketCollectionsSrv: PocketCollectionsService) {
+    this.pb = pocketCollectionsSrv.pb
+    if (!this.pb.authStore.isValid) {
+      this.router.navigate(['/login']) 
+    }
+
+    this.user = this.pb.authStore.model
+
     this.chamados_em_espera = pocketCollectionsSrv.chamados_em_espera
     this.sub1 = pocketCollectionsSrv.em_espera_event.subscribe(
       (count) => {
@@ -45,5 +57,10 @@ export class FrameNavComponent {
 
   navigate(path: string): void {
     this.router.navigate([path]);
+  }
+
+  logout(): void {
+    this.pb.authStore.clear();
+    this.router.navigate(['/login']) 
   }
 }

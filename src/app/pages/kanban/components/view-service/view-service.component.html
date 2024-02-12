@@ -6,7 +6,7 @@
 				home_repair_service
 				</span>
 
-				<h1 class="text-xl w-128">Instalação de software</h1>
+				<h1 class="text-xl w-128">{{data.title}}</h1>
 
 				<div  mat-dialog-close class="text-white flex flex-grow justify-end">
 					<span class="material-symbols-outlined text-3xl h-10 hover:cursor-pointer hover:bg-slate-600 rounded-full transition all p-1">
@@ -17,14 +17,17 @@
 
 			<div class="flex mt-4 text-white">
 				<div class="flex flex-col ml-8">
-					<h1 class="text-sm font-bold">Técnicos</h1>
-					<div class="flex items-center h-8">
-						<span class="material-symbols-outlined mr-2 text-xl">
-							account_circle
-						</span>
+					<h1 class="text-sm font-bold mb-1">Técnicos</h1>
+					@for (tecnico of data.expand.users; track tecnico) {
+						<div class="flex items-center h-6">
+							<span class="material-symbols-outlined mr-2 text-xl">
+								account_circle
+							</span>
+							
+							<h1 class="">{{tecnico.username}}</h1>
+						</div>
+					}
 
-						<h1 class="">Jeferson</h1>
-					</div>
 				</div>
 
 				<div class="flex flex-col ml-8">
@@ -46,23 +49,26 @@
 							corporate_fare
 						</span>
 
-						<h1 class="">H.BREMER E FILHOS LTDA</h1>
+						<h1 class="">{{data.cliente}}</h1>
 					</div>
 				</div>
 
-			<div class="flex items-center h-8 mt-6 text-white">
-				<span class="material-symbols-outlined mr-2 text-3xl">
-				subject
-				</span>
+			@if (data.description != ""){
+				<div class="flex items-center h-8 mt-6 text-white">
+					<span class="material-symbols-outlined mr-2 text-3xl">
+					subject
+					</span>
 
-				<h1 class="text-xl">Descrição</h1>
-			</div>
-
-			<div class="flex mt-4 text-white">
-				<div class="text-gray-100 w-[500px] ml-10">
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam auctor enim a dictum mattis. Nulla facilisi. Quisque ullamcorper condimentum dui elementum finibus. Duis vitae neque in libero pellentesque porttitor eu at dolor. 
+					<h1 class="text-xl">Descrição</h1>
 				</div>
-			</div>
+
+				<div class="flex mt-4 text-white">
+					<div class="text-gray-100 w-[500px] ml-10">
+						{{data.description}}
+					</div>
+				</div>
+			}
+			
 
 			<div class="flex items-center h-8 mt-6 text-white">
 				<span class="material-symbols-outlined mr-2 text-3xl">

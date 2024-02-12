@@ -35,12 +35,11 @@ export class AdicionarComponent {
     console.log(pb.authStore.model)
     // example create data
     const data = {
-        "users": [ pb.authStore.model?.["id"]],
+        "users": deixar_aberto ? [] : [pb.authStore.model?.["id"]],
         "messages": [],
         "description": "", 
         "title": descricao,
         "cliente": cliente,
-        "status" : deixar_aberto ? "em_espera" : "em_andamento",
     };
 
     console.log(deixar_aberto)

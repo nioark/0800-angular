@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { Observable, interval, map } from 'rxjs';
 import { ServiceRelatorioComponent } from './components/service-relatorio/service-relatorio.component';
 import EditorJS, { ToolSettings } from '@editorjs/editorjs';
@@ -33,10 +33,12 @@ export class ViewServiceComponent implements OnInit {
   clockObserver$: Observable<String>;
   time: String = "";
 
-  constructor() {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.clockObserver$ = interval(1000).pipe(
       map(() => (new Date()).toLocaleTimeString().toString())
     );
+    
+    console.log(data)
   }
 
   ngOnInit(): void {
