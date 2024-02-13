@@ -2,7 +2,7 @@ import {HttpInterceptorFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
-  console.log("Added token")
+  console.log(req)
   const pocketbase_auth = localStorage.getItem('pocketbase_auth');
 
   if (!pocketbase_auth) {
