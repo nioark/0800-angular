@@ -2,9 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { initFlowbite } from 'flowbite';
-import { from } from 'rxjs';
-import PocketBase from 'pocketbase';
-import { AuthService } from './services/auth.service';
+import { HttpClient } from '@angular/common/http';
 
 
 @Component({
@@ -17,8 +15,9 @@ import { AuthService } from './services/auth.service';
 export class AppComponent {
   title = '0800 Sac';
 
-  constructor() {
-
+  constructor(http : HttpClient) {
+    console.log("Request")
+    http.get<any>(`http://localhost:8090/custos/get`) 
   }
 
   ngOnInit(): void {

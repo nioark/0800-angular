@@ -7,7 +7,7 @@
 
       </div> -->
       <div class="flex items-center p-2">
-        <h1 class="border-b-2 border-blue-600">Técnicos</h1>
+        <span class="border-b-2  border-blue-600">Técnicos</span>
         <span class="material-symbols-outlined ml-auto"> more_horiz </span>
         </div>
 
@@ -62,7 +62,7 @@
 
         </div> -->
       <div class="flex items-center p-2">
-        <h1 class="border-b-2 border-yellow-300">Chamados</h1>
+        <span class="border-b-2 border-yellow-300">Chamados</span>
         <span class="material-symbols-outlined ml-auto"> more_horiz </span>
       </div>
 
@@ -90,9 +90,9 @@
         }
       </div>
 
-      <div class="flex h-8 items-center p-1 hover:cursor-pointer transition-all hover:text-slate-200">
+      <div (click)="addService()" class="flex h-8 items-center p-1 hover:cursor-pointer transition-all hover:text-slate-200">
         <span class="material-symbols-outlined"> add </span>
-        <h1>Add Serviço</h1>
+        <span>Add Serviço</span>
       </div>
     </div>
 
@@ -104,7 +104,7 @@
       class="ml-4 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col rounded-xl bg-slate-900 p-2 text-gray-300"
     >
       <div class="flex items-center p-2">
-        <h1 class="border-b-2 border-purple-600">{{tecnico.username}}</h1>
+        <span class="border-b-2 border-purple-600">{{tecnico.username}}</span>
         <span class="material-symbols-outlined ml-auto"> more_horiz </span>
       </div>
 

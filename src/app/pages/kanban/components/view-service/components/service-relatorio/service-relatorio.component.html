@@ -3,8 +3,10 @@
 		<img class="w-8 h-8 rounded-full" src="https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg" alt="Rounded avatar">
 		<h1 class="ml-2 text-sm">{{name}}</h1>
 	</div>
-	<div class="bg-slate-200 ml-10 rounded-md w-[700px] p-2 -mt-2">
-		{{message}}
+	<div class="bg-slate-200 ml-10 rounded-md w-[700px] -mt-2">
+		<article class="prose ml-10  p-1">
+			<div [innerHTML]=html></div>
+		</article>
 		@if (image_url){
 	        <div class="flex items-center justify-center mt-2 h-48 w-full bg-gray-300 rounded dark:bg-gray-700">
 		        <svg class="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 20">
@@ -15,5 +17,5 @@
     	}
 	</div>
 
-	<div class="text-xs ml-10 mt-1 text-gray-500">1:32:02 PM</div>
+	<div class="text-xs ml-10 mt-1 text-gray-500">{{timeStamp}}</div>
 </div>

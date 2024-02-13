@@ -3,49 +3,19 @@ import { FrameNavComponent } from '../../../components/frame-nav/frame-nav.compo
 import PocketBase from 'pocketbase';
 import Client from 'pocketbase';
 import { AuthService } from '../../../services/auth.service';
+import { AddChamadoComponent } from './component/add-chamado/add-chamado.component';
 
 @Component({
   selector: 'app-adicionar',
   standalone: true,
-  imports: [FrameNavComponent],
+  imports: [FrameNavComponent, AddChamadoComponent],
   templateUrl: './adicionar.component.html',
   styleUrl: './adicionar.component.scss'
 })
 export class AdicionarComponent {
-  @ViewChild('cliente') cliente :ElementRef | undefined;
-  @ViewChild('descricao') descricao :ElementRef | undefined;
-  @ViewChild('inputBox') deixar_aberto :HTMLInputElement | undefined;
+
 
   constructor(public authSrv : AuthService){
     
-  }
-
-  async createChamado(event : Event) {
-    event.preventDefault()
-    const cliente = this.cliente?.nativeElement.value
-    const descricao = this.descricao?.nativeElement.value
-    const vl = this.deixar_aberto as any
-    const deixar_aberto = vl.nativeElement.checked
-
-    const pb = this.authSrv.GetPocketBase()
-
-    if (!pb.authStore.isValid && !pb.authStore.model) 
-      return
-    
-    console.log(pb.authStore.model)
-    // example create data
-    const data = {
-        "users": deixar_aberto ? [] : [pb.authStore.model?.["id"]],
-        "messages": [],
-        "description": "", 
-        "title": descricao,
-        "cliente": cliente,
-    };
-
-    console.log(deixar_aberto)
-    console.log("Data model: ", data)
-
-    const record = await pb.collection('chamados').create(data);
-    console.log(record)
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, forkJoin, from, map, switchMap } from 'rxjs';
 import { RecordSubscription, RecordModel } from 'pocketbase'; // Assuming these imports are correct
 import PocketBase from 'pocketbase';
+import edjsHTML from 'editorjs-html';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class PocketCollectionsService {
   pb = new PocketBase('http://localhost:8090');
 
   private chamadosEvent: Subject<RecordSubscription<RecordModel>>;
+  private relatoriosEvent: Subject<RecordSubscription<RecordModel>>;
 
   chamados_em_espera: Number = 0;
   chamados_em_andamento: Number = 0;
@@ -18,9 +20,14 @@ export class PocketCollectionsService {
   public em_espera_event = new Subject<Number>;
   public em_andamento_event = new Subject<Number>;
 
-  constructor() { 
+  constructor() {
     console.log("Subscribed")
     this.chamadosEvent = new Subject<RecordSubscription<RecordModel>>();
+    this.relatoriosEvent = new Subject<RecordSubscription<RecordModel>>();
+
+    this.pb.collection('relatorios').subscribe('*', (e) => {
+      this.relatoriosEvent.next(e);
+    })
     
     this.pb.collection('chamados').subscribe('*', (e) => {
       this.chamadosEvent.next(e);
@@ -222,55 +229,6 @@ export class PocketCollectionsService {
 
     })
 
-
-    //Realtime server updates
-    // this.chamadosEvent.subscribe((e) => {
-    //   const { action, record } = e;
-    //   console.log("Ação:", action, "Record:", record);   
-
-    //   if (action === "update") {
-    //     let usersFound: any[] = []
-    //     // console.log("Users no update:", record['users'])
-
-    //     usersWithChamadosR.forEach((user : RecordModel, userIndex: number) => {
-    //       // console.log("chamados do user: ", user['chamados'], "id pesquisa: ", record.id)
-
-    //       user['chamados'].forEach((chamado : RecordModel, chamadosIndex: number) => {
-    //         if (chamado.id === record.id) {
-    //           // console.log("chamados ID: ", chamado, "chamados update:", record)
-    //           // usersFound.push(user);
-
-    //           //Get full user infos "expands"
-    //           let usersExpands : any = []
-    //           record['users'].forEach((userID: any) => {
-    //             let userFound = usersWithChamadosR.find((user : RecordModel) => user.id === userID);
-    //             if (userFound) {
-    //               usersExpands.push(userFound)
-    //             }
-    //           })
-
-    //           record['expand'] = []
-    //           record['expand']['users'] = usersExpands
-
-    //           usersWithChamadosR[userIndex]['chamados'][chamadosIndex] = record
-    //           // console.log("after update: ", usersWithChamadosR[userIndex]['chamados'][chamadosIndex])
-    //         }
-    //       })
-    //     })
-
-    //    // chamadoSubject.next(JSON.parse(JSON.stringify(usersWithChamadosR)));
-    //   chamadoSubject.next(usersWithChamadosR);
-    //     // record['users'].forEach((userID: any) => {
-    //     //   let userFound = usersWithChamadosR.find((user : RecordModel) => userID === record.id);
-    //     //   if (userFound) {
-    //     //     userFound['chamados'].push(record); 
-    //     //   }
-    //     // })
-
-    //     console.log("usersFound:", usersFound);
-    //   }
-    // })
-  
     return chamadoSubject.asObservable();
   }
 
@@ -281,5 +239,47 @@ export class PocketCollectionsService {
     this.pb.collection('chamados').update(chamado.id, {
       "users+": id_tecnico
     })
+  }
+
+  _parse(relatorio : any, edjsPrser : edjsHTML) : {relatorio: string, date: Date} {
+
+     const parse = edjsPrser.parseStrict(relatorio['relatorio'])
+
+     if (parse instanceof Error) {
+        console.log(parse)
+      }else {
+        return {relatorio: parse.join(''), date: new Date(relatorio['created'])}
+      }
+
+      return {relatorio: "", date: new Date()}
+  }
+
+  getRelatoriosParsed(chamado_id : string): Observable<any[]>{
+    const edjsParser = edjsHTML();
+    let relatorios : any[] = []
+
+    const chamadoSubject = new Subject<any[]>;
+
+    this.pb.collection('relatorios').getFullList({
+      filter: `chamado = '${chamado_id}'`, sort: '-created', expand: 'user'
+    }).then((item) => {
+      console.log(item)
+      item.forEach(relatorio => {
+        relatorios.push(this._parse(relatorio, edjsParser))
+      })
+      console.log(relatorios)
+
+      chamadoSubject.next(relatorios);
+    }) 
+
+    this.relatoriosEvent.subscribe((e) => {
+      const { action, record } = e;
+      if (action === "create") {
+        relatorios.unshift(this._parse(record, edjsParser)); 
+        chamadoSubject.next(relatorios);
+      }
+    })
+
+    return chamadoSubject.asObservable();
   }
 }

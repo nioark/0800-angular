@@ -23,13 +23,15 @@ import {
 
 import {MatTooltipModule} from '@angular/material/tooltip';
 
-
 import PocketBase from 'pocketbase';
 
 import { BehaviorSubject, Observable, from, interval, map, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { ViewServiceComponent } from './components/view-service/view-service.component';
 import { PocketCollectionsService } from '../../services/pocket-collections.service';
+import { AdicionarComponent } from '../chamados/adicionar/adicionar.component';
+import { AddChamadoComponent } from '../chamados/adicionar/component/add-chamado/add-chamado.component';
+import { AddFormComponent } from './components/add-form/add-form.component';
 
 
 interface TecnicoServicos {
@@ -168,6 +170,10 @@ export class KanbanComponent implements OnInit  {
 
   openService(element : any ){
     const dialogRef = this.dialog.open(ViewServiceComponent, {data: element});
+  }
+
+  addService(){
+    const dialogRef = this.dialog.open(AddFormComponent);
   }
 
   getUserNames(tecnicos : any){
