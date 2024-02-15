@@ -21,6 +21,8 @@ import {
   MatDialogClose,
 } from '@angular/material/dialog';
 
+import { NgOptimizedImage } from '@angular/common'
+
 import {MatTooltipModule} from '@angular/material/tooltip';
 
 import PocketBase from 'pocketbase';
@@ -32,6 +34,7 @@ import { PocketCollectionsService } from '../../services/pocket-collections.serv
 import { AdicionarComponent } from '../chamados/adicionar/adicionar.component';
 import { AddChamadoComponent } from '../chamados/adicionar/component/add-chamado/add-chamado.component';
 import { AddFormComponent } from './components/add-form/add-form.component';
+import { ImgAuthPipe } from '../../img-auth.pipe';
 
 
 interface TecnicoServicos {
@@ -43,7 +46,7 @@ interface TecnicoServicos {
 @Component({
   selector: 'app-kanban',
   standalone: true,
-  imports: [FrameNavComponent, CdkDropListGroup, CdkDropList, CdkDrag, AsyncPipe, MatTooltipModule],
+  imports: [FrameNavComponent, CdkDropListGroup, CdkDropList, CdkDrag, AsyncPipe, MatTooltipModule, ImgAuthPipe,NgOptimizedImage],
   templateUrl: './kanban.component.html',
   styleUrl: './kanban.component.scss'
 })
@@ -169,7 +172,7 @@ export class KanbanComponent implements OnInit  {
   }
 
   openService(element : any ){
-    const dialogRef = this.dialog.open(ViewServiceComponent, {data: element});
+    const dialogRef = this.dialog.open(ViewServiceComponent, {data: element, disableClose: true});
   }
 
   addService(){

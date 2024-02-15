@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, SecurityContext } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, forkJoin, from, map, switchMap } from 'rxjs';
 import { RecordSubscription, RecordModel } from 'pocketbase'; // Assuming these imports are correct
 import PocketBase from 'pocketbase';
 import edjsHTML from 'editorjs-html';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class PocketCollectionsService {
   public em_espera_event = new Subject<Number>;
   public em_andamento_event = new Subject<Number>;
 
-  constructor() {
+  constructor( public domSanitizerSrv: DomSanitizer) {
     console.log("Subscribed")
     this.chamadosEvent = new Subject<RecordSubscription<RecordModel>>();
     this.relatoriosEvent = new Subject<RecordSubscription<RecordModel>>();
@@ -48,12 +49,12 @@ export class PocketCollectionsService {
     )
   }
 
-  getChamadosWithStatus(status : string): Observable<RecordModel[]>{
+  getChamadosWithStatus(status : string, filterExtra = ""): Observable<RecordModel[]>{
     const chamadoSubject = new Subject<RecordModel[]>;
 
     let chamados: RecordModel[] = [];
 
-    this.pb.collection('chamados').getList(1, 50, { filter: `status = '${status}'`, requestKey: "chamadosstatus" }).then((res) => {;
+    this.pb.collection('chamados').getList(1, 50, { filter: `status = '${status}' ` + filterExtra , requestKey: "chamadosstatus", expand:"users" }).then((res) => {;
       chamados = res.items;
       // console.log("Buscado items:", chamados);
       chamadoSubject.next(chamados);
@@ -241,21 +242,23 @@ export class PocketCollectionsService {
     })
   }
 
-  _parse(relatorio : any, edjsPrser : edjsHTML) : {relatorio: string, date: Date} {
+  customParser(block: { data: any}){
+    const component = `<img [src]='${block.data.file.url} | useHttpImgSrc | async'>`
+    console.log("component: ", component)
+    // console.log("sanitizer: ", this.domSanitizerSrv.sanitize)
+    // const sanitized = this.domSanitizerSrv.sanitize(SecurityContext.HTML, component)
+    // console.log(sanitized)
 
-     const parse = edjsPrser.parseStrict(relatorio['relatorio'])
+    return component;
+  }
 
-     if (parse instanceof Error) {
-        console.log(parse)
-      }else {
-        return {relatorio: parse.join(''), date: new Date(relatorio['created'])}
-      }
 
-      return {relatorio: "", date: new Date()}
+  _parse(relatorio : any) : {relatorio: string, date: Date} {
+      return {relatorio: relatorio['relatorio'], date: new Date(relatorio['created'])}
   }
 
   getRelatoriosParsed(chamado_id : string): Observable<any[]>{
-    const edjsParser = edjsHTML();
+    const edjsParser = edjsHTML({image: this.customParser});
     let relatorios : any[] = []
 
     const chamadoSubject = new Subject<any[]>;
@@ -265,7 +268,7 @@ export class PocketCollectionsService {
     }).then((item) => {
       console.log(item)
       item.forEach(relatorio => {
-        relatorios.push(this._parse(relatorio, edjsParser))
+        relatorios.push(this._parse(relatorio))
       })
       console.log(relatorios)
 
@@ -275,11 +278,17 @@ export class PocketCollectionsService {
     this.relatoriosEvent.subscribe((e) => {
       const { action, record } = e;
       if (action === "create") {
-        relatorios.unshift(this._parse(record, edjsParser)); 
+        relatorios.unshift(this._parse(record)); 
         chamadoSubject.next(relatorios);
       }
     })
 
     return chamadoSubject.asObservable();
+  }
+
+  addTecnicoToChamado(id_chamado : string, id_tecnico : string){
+    this.pb.collection('chamados').update(id_chamado, {
+      "users+": id_tecnico
+    })
   }
 }

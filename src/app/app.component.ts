@@ -16,8 +16,12 @@ export class AppComponent {
   title = '0800 Sac';
 
   constructor(http : HttpClient) {
-    console.log("Request")
-    http.get<any>(`http://localhost:8090/custos/get`) 
+    // console.log("Request")
+    // http.get<any>(`http://localhost:8090/images/test.png`) .subscribe(
+    //   (data) => {
+    //     console.log(data) 
+    //   }
+    // )
   }
 
   ngOnInit(): void {

@@ -14,10 +14,15 @@
 					</span>
 				</div>
 			</div>
-
+			<!-- <img [src]="'http://localhost:8090/images/test.png' | useHttpImgSrc | async" alt="imagem caption"> -->
 			<div class="flex mt-4 text-white">
 				<div class="flex flex-col ml-8">
-					<h1 class="text-sm font-bold mb-1">Técnicos</h1>
+					<div class="flex items-center">
+						<h1 class="text-sm font-bold mb-1">Técnicos</h1> 
+						<span (click)="openAddView()" class="ml-4 material-symbols-outlined hover:cursor-pointer hover:text-blue-400 transition-all">
+							add_box
+						</span>
+					</div>
 					@for (tecnico of data.expand.users; track tecnico) {
 						<div class="flex items-center h-6">
 							<span class="material-symbols-outlined mr-2 text-xl">
@@ -77,22 +82,92 @@
 
 				<h1 class="text-xl">Relátorios</h1>
 			</div>
-
+<!-- 
 			<div class="p-0">
-		<!-- 		<textarea class="peer bg-slate-800 w-[500px] ml-10 p-2 text-gray-300 rounded-md mt-2" placeholder="Escrever mensagem..."></textarea>
+				<editor
+				  class="mt-4"
+				  #editor 
+				  [init]="{ 
+					  plugins: 'lists link image table code help wordcount',
+					  base_url: '/tinymce',
+					  suffix: '.min',
+					  selector: 'textarea',
 
-				<div class="peer-focus:visible invisible">Teste</div>
-		 -->	
+					  toolbar: [
+					    { name: 'history', items: [ 'undo', 'redo' ] },
+					    { name: 'styles', items: [ 'styles' ] },
+					    { name: 'formatting', items: [ 'bold', 'italic' ] },
+					    { name: 'alignment', items: [ 'alignleft', 'aligncenter', 'alignright', 'alignjustify' ] },
+					    { name: 'indentation', items: [ 'outdent', 'indent' ] },
+					    { name: 'dev', items: [ 'code', 'help' ] }
+					  ]}
+				  "
+				></editor> -->
 
-				<div id="editorjs"  class="rounded-md content bg-slate-200 w-[700px] ml-10 mt-2 p-2 pl-14">
-				</div>
+				<div class="p-0 flex-col">
+				@if (mostrarEditor) {					
+					<editor
+					  class="mt-4"
+					  #editor 
+					  [init]="{ 
+						  plugins: '  autolink wordcount lists link image searchreplace fullscreen media table code  directionality codesample',
+						  base_url: '/tinymce',
+						  suffix: '.min',
+						  selector: 'textarea',
 
-				<button (click)="sendRelatorio()" type="button" class="mt-2 ml-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-					<span class="material-symbols-outlined">
-					send
-					</span>
-					Enviar relatório
-				</button>
+						  codesample_languages: [
+				                { text: 'HTML/XML', value: 'markup' },
+				                { text: 'CSS', value: 'css' },
+				                { text: 'SQL', value: 'sql' },
+				                { text: 'Bash', value: 'sh' },
+				                { text: 'JavaScript', value: 'javascript' },
+				                { text: 'Go', value: 'go' },
+				                { text: 'Dart', value: 'dart' },
+				                { text: 'Zig', value: 'zig' },
+				                { text: 'Rust', value: 'rust' },
+				                { text: 'Lua', value: 'lua' },
+				                { text: 'PHP', value: 'php' },
+				                { text: 'Ruby', value: 'ruby' },
+				                { text: 'Python', value: 'python' },
+				                { text: 'Java', value: 'java' },
+				                { text: 'C', value: 'c' },
+				                { text: 'C#', value: 'csharp' },
+				                { text: 'C++', value: 'cpp' },
+				                { text: 'Markdown', value: 'markdown' },
+				                { text: 'Swift', value: 'swift' },
+				                { text: 'Kotlin', value: 'kotlin' },
+				                { text: 'Elixir', value: 'elixir' },
+				                { text: 'Scala', value: 'scala' },
+				                { text: 'Julia', value: 'julia' },
+				                { text: 'Haskell', value: 'haskell' },
+				          ],
+						  toolbar: 'styles | alignleft aligncenter alignright | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'}
+					  "
+					></editor>
+
+					<div class="w-full flex justify-center">
+						<button (click)="sendRelatorio()" type="button" class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+							<span class="material-symbols-outlined">
+							send
+							</span>
+							Enviar relatório
+						</button>
+					</div>
+
+					<!-- <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"> -->
+				}
+				@else {
+					<div class="w-full flex justify-center">
+						<button (click)="setEditor(true)" type="button" class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+							<span class="material-symbols-outlined">
+							Edit
+							</span>
+							Escrever relatório
+						</button>
+					</div>
+				}
+
+
 
 				@for (item of relatorios; track item) {
 					<app-service-relatorio
@@ -100,8 +175,9 @@
 						name="Jeferson"
 					    [date]= item.date
 					    [html]= item.relatorio/>
+					<!-- <hr class="w-48 h-1 mx-auto my-4 bg-gray-100 border-0 rounded md:my-10 dark:bg-gray-700"> -->
 
-			   }
+			    }
 
 				<!-- <app-service-relatorio
 					avatar_url="url"

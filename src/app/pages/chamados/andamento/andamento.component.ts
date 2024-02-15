@@ -25,7 +25,7 @@ export class AndamentoComponent {
   }
 
   ngOnInit() {
-    this.subscription = this.pocketCollectionsSrv.getChamadosWithStatus("em_andamento").subscribe(
+    this.subscription = this.pocketCollectionsSrv.getChamadosWithStatus("em_andamento", "").subscribe(
       (chamados) => {
         this.chamados = chamados
       }

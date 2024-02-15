@@ -1,7 +1,6 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit, Pipe, ViewChild } from '@angular/core';
 import { Observable, interval, map } from 'rxjs';
 import { ServiceRelatorioComponent } from './components/service-relatorio/service-relatorio.component';
-import EditorJS, { ToolSettings } from '@editorjs/editorjs';
 import Header from '@editorjs/header'; 
 import List from '@editorjs/list';
 import ImageTool from '@editorjs/image'; 
@@ -9,6 +8,8 @@ import Paragraph from '@editorjs/paragraph';
 import Checklist from '@editorjs/checklist'
 import SimpleImage from "@editorjs/simple-image";
 import LinkTool from '@editorjs/link';
+import { NgOptimizedImage } from '@angular/common'
+
 
 import {
   MatDialog,
@@ -22,34 +23,41 @@ import {
 import Client from 'pocketbase';
 import { AuthService } from '../../../../services/auth.service';
 import { PocketCollectionsService } from '../../../../services/pocket-collections.service';
+import { CommonModule } from '@angular/common';
+import { ImgAuthPipe } from '../../../../img-auth.pipe'
+import { EditorComponent, EditorModule } from '@tinymce/tinymce-angular';
+import { Editor } from 'tinymce';
+import { AddTecnicoComponent } from './components/add-tecnico/add-tecnico.component';
 
 @Component({
-  selector: 'app-view-service',
-  standalone: true,
-  imports: [ServiceRelatorioComponent, MatDialogClose],
-  templateUrl: './view-service.component.html',
-  styleUrls: ['./view-service.component.scss']
+    selector: 'app-view-service',
+    standalone: true,
+    templateUrl: './view-service.component.html',
+    styleUrls: ['./view-service.component.scss'],
+    imports: [ServiceRelatorioComponent, MatDialogClose, CommonModule, NgOptimizedImage, ImgAuthPipe, EditorModule]
 })
 export class ViewServiceComponent implements OnInit {
   // Define observer variable
   clockObserver$: Observable<String>;
   time: String = "";
-  editor : EditorJS | undefined;
 
   pb : Client
 
   relatorios : any = []
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public AuthSrv : AuthService, public pocketSrv: PocketCollectionsService) {
+  mostrarEditor : boolean = false;
+
+  @ViewChild('editor') editorNew : EditorComponent | undefined
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialog: MatDialog,  public AuthSrv : AuthService, public pocketSrv: PocketCollectionsService) {
     this.clockObserver$ = interval(1000).pipe(
       map(() => (new Date()).toLocaleTimeString().toString())
     );
 
-
     this.pocketSrv.getRelatoriosParsed(this.data.id).subscribe(data => {
       this.relatorios = data
+      console.log(data)
     })
-
 
     this.pb = AuthSrv.GetPocketBase()
   }
@@ -61,57 +69,34 @@ export class ViewServiceComponent implements OnInit {
     }
 
     console.log(this.data)
-
-    this.editor = new EditorJS({
-      /**
-       * Id of Element that should contain Editor instance
-       */
-
-      minHeight: 50,
-      holder: 'editorjs',
-      tools: { 
-        header: {
-        inlineToolbar: true,
-          class: Header, 
-          config: {
-            levels: [2, 3, 4],
-            defaultLevel: 3
-          }
-        }, 
-
-        list: List,
-        // checklist: Checklist,
-        image: {
-          class: ImageTool,
-          config: {
-            endpoints: endpointsUrl,
-            additionalRequestHeaders: {
-              'authorization': "this.pb.authStore.token"
-            }
-          }
-        }
-      }, 
-    });
-    // Subscribe to observable
     this.clockObserver$.subscribe(currentTime => {
       this.time = currentTime;
     });
   }
 
   sendRelatorio() {
-    if (this.editor){
-      this.editor.save().then((outputData) => {
-        this.pb.collection('relatorios').create({
+    if (this.editorNew){
+      console.log(this.editorNew)
+
+      const html = this.editorNew.editor.getContent()
+
+      // this.editorNew.editor.uploadImages(endpointsUrl)
+
+      this.pb.collection('relatorios').create({
           "user": this.pb.authStore.model!["id"],
-          "relatorio": JSON.stringify(outputData),
+          "relatorio": html,
           "chamado": this.data.id
 
-        })
-        console.log('Article data: ', outputData)
-      }).catch((error) => {
-        console.log('Saving failed: ', error)
-      });
+      })
     }
+  }
+
+  openAddView(){
+    const dialogRef = this.dialog.open(AddTecnicoComponent, {data: this.data });
+  }
+
+  setEditor(val : boolean){
+    this.mostrarEditor = val
   }
 
 }

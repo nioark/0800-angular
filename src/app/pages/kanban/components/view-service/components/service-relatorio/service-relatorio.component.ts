@@ -1,11 +1,12 @@
 import { Component, Input } from '@angular/core';
+import { SanitizeHtmlPipe } from "../../../../../../sanitize-html.pipe";
 
 @Component({
-  selector: 'app-service-relatorio',
-  standalone: true,
-  imports: [],
-  templateUrl: './service-relatorio.component.html',
-  styleUrl: './service-relatorio.component.scss'
+    selector: 'app-service-relatorio',
+    standalone: true,
+    templateUrl: './service-relatorio.component.html',
+    styleUrl: './service-relatorio.component.scss',
+    imports: [SanitizeHtmlPipe]
 })
 export class ServiceRelatorioComponent {
   @Input({ required: true }) name!: string;

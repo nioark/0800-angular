@@ -1,11 +1,19 @@
 <div class="mt-4">
-	<div class="flex items-start text-gray-200">
-		<img class="w-8 h-8 rounded-full" src="https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg" alt="Rounded avatar">
-		<h1 class="ml-2 text-sm">{{name}}</h1>
+	<div class="inline-flex items-center justify-center w-full">
+	    <hr class="w-80 h-1 my-8 bg-gray-200 border-0 rounded dark:bg-gray-700">
+	    <div class="absolute px-4 -translate-x-1/2 bg-slate-900 left-1/2 ">
+    		<div class="flex items-center text-gray-200">
+				<img class="w-8 h-8 rounded-full" src="https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg" alt="Rounded avatar">
+				<h1 class="ml-2 text-md">{{name}}</h1>
+				<div class="text-xs ml-2 text-gray-500">{{timeStamp}}</div>
+			</div>
+	    </div>
 	</div>
-	<div class="bg-slate-200 ml-10 rounded-md w-[700px] -mt-2">
-		<article class="prose ml-10  p-1">
-			<div [innerHTML]=html></div>
+
+
+	<div class="bg-slate-200 rounded-md w-full flex mt-3 max-h-[600px] overflow-auto">
+		<article class="prose max-w-full p-8 flex">
+			<div class="w-full" [innerHTML]="html | sanitizeHtml"></div>
 		</article>
 		@if (image_url){
 	        <div class="flex items-center justify-center mt-2 h-48 w-full bg-gray-300 rounded dark:bg-gray-700">
@@ -15,7 +23,5 @@
 		        </svg>
 	    	</div>
     	}
-	</div>
-
-	<div class="text-xs ml-10 mt-1 text-gray-500">{{timeStamp}}</div>
+	</div>	
 </div>

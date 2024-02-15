@@ -1,0 +1,27 @@
+<div class="w-[400px] h-[200px] flex flex-col items-center p-2 bg-slate-900 rounded-md">
+	<h1 class="text-lg text-white font-semibold mb-2">Adicionar Técnico</h1>
+	<form class="example-form w-[300px] flex">
+	  <mat-form-field class="example-full-width w-full flex">
+	    <mat-label>Number</mat-label>
+	    <input type="text"
+	           placeholder="Pick one"
+	           aria-label="Number"
+	           matInput
+	           class="w-full" 
+	           [formControl]="myControl"
+	           [matAutocomplete]="auto"
+	          >
+	    <mat-autocomplete  [displayWith]="getName" #auto="matAutocomplete">
+	      @for (user of filteredUsers | async; track user) {
+	        <mat-option [value]="user" >{{user['username']}}</mat-option>
+	      }
+	    </mat-autocomplete>
+	  </mat-form-field>
+	</form>
+	<button (click)="selected()" type="button" class="px-2 py-1 h-[40px] w-[150px] mt-2 text-sm font-medium text-center inline-flex items-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+		<span class="ml-4 material-symbols-outlined hover:cursor-pointer hover:text-blue-400 transition-all">
+			add_box
+		</span>
+		Adicionar
+	</button>
+</div>
