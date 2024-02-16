@@ -14,6 +14,7 @@ export class PocketCollectionsService {
 
   private chamadosEvent: Subject<RecordSubscription<RecordModel>>;
   private relatoriosEvent: Subject<RecordSubscription<RecordModel>>;
+  private horasEvent: Subject<RecordSubscription<RecordModel>>;
 
   chamados_em_espera: Number = 0;
   chamados_em_andamento: Number = 0;
@@ -25,6 +26,7 @@ export class PocketCollectionsService {
     console.log("Subscribed")
     this.chamadosEvent = new Subject<RecordSubscription<RecordModel>>();
     this.relatoriosEvent = new Subject<RecordSubscription<RecordModel>>();
+    this.horasEvent = new Subject<RecordSubscription<RecordModel>>();
 
     this.pb.collection('relatorios').subscribe('*', (e) => {
       this.relatoriosEvent.next(e);
@@ -32,6 +34,10 @@ export class PocketCollectionsService {
     
     this.pb.collection('chamados').subscribe('*', (e) => {
       this.chamadosEvent.next(e);
+    })
+
+    this.pb.collection('horas').subscribe('*', (e) => {
+      this.horasEvent.next(e);
     })
 
     this.countChamadosWithStatus("em_espera").subscribe(
@@ -266,11 +272,9 @@ export class PocketCollectionsService {
     this.pb.collection('relatorios').getFullList({
       filter: `chamado = '${chamado_id}'`, sort: '-created', expand: 'user'
     }).then((item) => {
-      console.log(item)
       item.forEach(relatorio => {
         relatorios.push(this._parse(relatorio))
       })
-      console.log(relatorios)
 
       chamadoSubject.next(relatorios);
     }) 
@@ -290,5 +294,45 @@ export class PocketCollectionsService {
     this.pb.collection('chamados').update(id_chamado, {
       "users+": id_tecnico
     })
+  }
+
+  startChamado(chamado_id : string){
+    if (!this.pb.authStore.isValid)
+      return;
+    const data = {
+        "start_time": new Date(),
+        "user": this.pb.authStore.model!['id'],
+        "chamado": chamado_id
+    };
+
+    this.pb.collection('horas').create(data);
+  }
+
+  pauseChamado(chamado_id : string){
+    if (!this.pb.authStore.isValid)
+      return;
+
+    this.pb.collection('horas').getFirstListItem(`chamado.id = '${chamado_id}' && user.id = '${this.pb.authStore.model!["id"]}' && end_time = ''`).then((hora) => {;
+      console.log(hora)
+      this.pb.collection('horas').update(hora.id, {
+        end_time : new Date()
+      })
+    })
+  }
+
+  getChamadoTimers(chamado_id : string) : Observable<any>{
+    const timersSubject = new Subject<any[]>;
+    
+    this.pb.collection('duracao_chamados').getFullList({ filter: `chamado.id = '${chamado_id}'`, expand:"user" }).then((item) => {
+      timersSubject.next(item);
+    })
+
+    this.horasEvent.subscribe((e) => {
+      this.pb.collection('duracao_chamados').getFullList({ filter: `chamado.id = '${chamado_id}'`, expand:"user" }).then((item) => {
+        timersSubject.next(item);
+      })
+    })
+
+    return timersSubject.asObservable();
   }
 }

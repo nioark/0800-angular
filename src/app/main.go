@@ -1,20 +1,21 @@
-ackage main
+package main
 
 import (
-	"io"
-	"log"
-	"os"
-	"regexp"
-	"strings"
+    "fmt"
+    "io"
+    "log"
+    "os"
+    "regexp"
+    "strings"
 
-	"github.com/labstack/echo/v5"
-	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/apis"
-	"github.com/pocketbase/pocketbase/core"
+    "github.com/labstack/echo/v5"
+    "github.com/pocketbase/pocketbase"
+    "github.com/pocketbase/pocketbase/apis"
+    "github.com/pocketbase/pocketbase/core"
 
-	"time"
+    "time"
 
-	"github.com/google/uuid"
+    "github.com/google/uuid"
 )
 
 func main() {
@@ -29,6 +30,50 @@ func main() {
 
         // e.Router.POST("/fetchUrl", fetchUrl)
 
+
+        return nil
+    })
+
+    app.OnRecordBeforeUpdateRequest("chamados").Add(func(e *core.RecordUpdateEvent) error {
+        users := e.Record.GetStringSlice("users")
+
+        if (len(users) == 0) {
+            e.Record.Set("status", "em_espera")
+        } else if (len(users) > 0) {
+            e.Record.Set("status", "em_andamento")
+        }
+
+        return nil
+    })
+
+
+    app.OnRecordBeforeCreateRequest("chamados").Add(func(e *core.RecordCreateEvent) error {
+        users := e.Record.GetStringSlice("users")
+
+        if (len(users) == 0) {
+            e.Record.Set("status", "em_espera")
+        } else if (len(users) > 0) {
+            e.Record.Set("status", "em_andamento")
+        }
+
+        return nil
+    })
+
+    app.OnRecordBeforeCreateRequest("horas").Add(func(e *core.RecordCreateEvent) error {
+        user := e.Record.Get("user")
+        chamado := e.Record.Get("chamado")
+
+        filter := fmt.Sprintf( "user.id = '%v' && end_time = '' && chamado.id = '%v'", user, chamado)
+
+        log.Println(filter)
+
+        records, err := app.Dao().FindRecordsByFilter("horas", filter, "created",-1, 0)
+        if (err != nil || len(records) > 0) {
+            log.Println("Já existe uma hora registrada para este usuário")
+            return fmt.Errorf("Já existe uma hora registrada para este usuário") 
+        }
+
+        log.Println(user)
 
         return nil
     })
@@ -105,7 +150,7 @@ func uploadFile(c echo.Context) error {
 
     file, err := c.FormFile("image")
     if err != nil {
-        return c.JSON(400, err)
+        return c.JSON(400, err) 
     }
     log.Println(file.Filename)
 
@@ -144,3 +189,4 @@ func uploadFile(c echo.Context) error {
     }
 
     return c.JSON(200, response)
+}

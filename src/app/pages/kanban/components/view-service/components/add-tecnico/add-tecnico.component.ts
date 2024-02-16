@@ -31,6 +31,12 @@ export class AddTecnicoComponent {
   constructor(@Inject(MAT_DIALOG_DATA) public chamadoData: any, private pocketSrv : PocketCollectionsService) {
     pocketSrv.getTecnicosJoinChamados().subscribe(data => {
       this.users = data
+      this.users = this.users.filter(user => {
+        if (chamadoData.users.includes(user.id)) {
+          return false
+        }
+        return true
+      })
     })
   }
 
