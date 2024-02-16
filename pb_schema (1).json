@@ -43,51 +43,6 @@
     "options": {}
   },
   {
-    "id": "ha1yrl5upi8etbq",
-    "name": "chamadoMessage",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "system": false,
-        "id": "sdq18iuj",
-        "name": "Message",
-        "type": "text",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "system": false,
-        "id": "91zortdz",
-        "name": "User",
-        "type": "relation",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "collectionId": "_pb_users_auth_",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": null
-        }
-      }
-    ],
-    "indexes": [],
-    "listRule": null,
-    "viewRule": null,
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "options": {}
-  },
-  {
     "id": "_pb_users_auth_",
     "name": "users",
     "type": "auth",
@@ -163,6 +118,65 @@
       "onlyVerified": false,
       "requireEmail": false
     }
+  },
+  {
+    "id": "ha1yrl5upi8etbq",
+    "name": "relatorios",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "system": false,
+        "id": "91zortdz",
+        "name": "user",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "collectionId": "_pb_users_auth_",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": null
+        }
+      },
+      {
+        "system": false,
+        "id": "bp4lvaj0",
+        "name": "chamado",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "collectionId": "89kljbthcrjlduf",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": null
+        }
+      },
+      {
+        "system": false,
+        "id": "y6v1mv5y",
+        "name": "relatorio",
+        "type": "editor",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "convertUrls": false
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": "@request.auth.cargo.permission_level > -1 &&\nchamado.users.id ?= @request.auth.id",
+    "viewRule": "@request.auth.cargo.permission_level > -1 &&\nchamado.users.id ?= @request.auth.id",
+    "createRule": "@request.auth.cargo.permission_level > -1 &&\nchamado.users.id ?= @request.auth.id",
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
   },
   {
     "id": "89kljbthcrjlduf",
@@ -249,7 +263,7 @@
         "id": "uymcmwvz",
         "name": "status",
         "type": "select",
-        "required": true,
+        "required": false,
         "presentable": false,
         "unique": false,
         "options": {
@@ -265,10 +279,10 @@
       }
     ],
     "indexes": [],
-    "listRule": "@request.auth.cargo.permission_level > -1 ",
+    "listRule": "@request.auth.cargo.permission_level > -1",
     "viewRule": "@request.auth.cargo.permission_level > -1 ",
-    "createRule": "@request.auth.cargo.permission_level > -1 ",
-    "updateRule": "",
+    "createRule": "@request.auth.cargo.permission_level > -1 &&\n@request.data.status:isset = false",
+    "updateRule": "@request.auth.cargo.permission_level > -1 &&\n@request.data.status:isset = false",
     "deleteRule": null,
     "options": {}
   },
@@ -280,23 +294,10 @@
     "schema": [
       {
         "system": false,
-        "id": "zsbyqsmn",
-        "name": "date",
-        "type": "date",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "min": "",
-          "max": ""
-        }
-      },
-      {
-        "system": false,
         "id": "svx0her0",
         "name": "user",
         "type": "relation",
-        "required": false,
+        "required": true,
         "presentable": false,
         "unique": false,
         "options": {
@@ -309,26 +310,10 @@
       },
       {
         "system": false,
-        "id": "1i5ckylq",
-        "name": "action",
-        "type": "select",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "maxSelect": 1,
-          "values": [
-            "iniciado",
-            "pausado"
-          ]
-        }
-      },
-      {
-        "system": false,
         "id": "im1jzgxg",
         "name": "chamado",
         "type": "relation",
-        "required": false,
+        "required": true,
         "presentable": false,
         "unique": false,
         "options": {
@@ -338,14 +323,124 @@
           "maxSelect": 1,
           "displayFields": null
         }
+      },
+      {
+        "system": false,
+        "id": "y1ev4zu7",
+        "name": "end_time",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "min": "",
+          "max": ""
+        }
       }
     ],
     "indexes": [],
-    "listRule": null,
+    "listRule": "@request.auth.cargo.permission_level > -1",
     "viewRule": null,
-    "createRule": "@request.auth.cargo.permission_level > -1 &&\n@request.auth.id = user.id &&\nchamado.users.id ?= @collection.chamados:user.id",
-    "updateRule": null,
+    "createRule": "@request.auth.cargo.permission_level > -1 &&\n@request.auth.id = user.id &&\nchamado.users.id ?= user.id",
+    "updateRule": "@request.auth.cargo.permission_level > -1 &&\n@request.auth.id = user.id &&\nchamado.users.id ?= user.id",
     "deleteRule": null,
     "options": {}
+  },
+  {
+    "id": "pf427hcsg2y0li6",
+    "name": "duracao_chamados",
+    "type": "view",
+    "system": false,
+    "schema": [
+      {
+        "system": false,
+        "id": "mkveb8ti",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "collectionId": "_pb_users_auth_",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": null
+        }
+      },
+      {
+        "system": false,
+        "id": "geczqndk",
+        "name": "chamado",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "collectionId": "89kljbthcrjlduf",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": null
+        }
+      },
+      {
+        "system": false,
+        "id": "yrgedl7n",
+        "name": "total_elapsed_time_seconds",
+        "type": "json",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "maxSize": 1
+        }
+      },
+      {
+        "system": false,
+        "id": "dfubhfse",
+        "name": "status",
+        "type": "json",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "maxSize": 1
+        }
+      },
+      {
+        "system": false,
+        "id": "v65tyonf",
+        "name": "last_start",
+        "type": "json",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "maxSize": 1
+        }
+      },
+      {
+        "system": false,
+        "id": "qfuhaiqg",
+        "name": "last_end",
+        "type": "json",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "maxSize": 1
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": "@request.auth.cargo.permission_level > -1",
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {
+      "query": "SELECT horas.user, horas.id, horas.chamado, SUM((strftime('%s', end_time) - strftime('%s', created))) AS total_elapsed_time_seconds,\n(case when min(end_time) == '' then 'em_andamento' else 'em_pausa' end)  as status,\nmax(created) as last_start,\nmax(end_time) as last_end\nFROM horas\nGROUP BY horas.user, horas.chamado;"
+    }
   }
 ]
