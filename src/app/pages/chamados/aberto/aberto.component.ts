@@ -5,6 +5,8 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { FrameNavComponent } from '../../../components/frame-nav/frame-nav.component';
 import { PocketCollectionsService } from '../../../services/pocket-collections.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ViewServiceComponent } from '../../kanban/components/view-service/view-service.component';
 
 @Component({
   selector: 'app-aberto',
@@ -24,7 +26,7 @@ export class AbertoComponent {
   subscription : Subscription | undefined
 
 
-  constructor(public authSrv: AuthService, public pocketCollectionsSrv: PocketCollectionsService) {
+  constructor(public authSrv: AuthService,public dialog: MatDialog, public pocketCollectionsSrv: PocketCollectionsService) {
 
   }
 
@@ -50,6 +52,10 @@ export class AbertoComponent {
     } catch (error) {
       console.error("Error fetching chamados:", error);
     }
+  }
+
+  openService(element : any ){
+    const dialogRef = this.dialog.open(ViewServiceComponent, {data: element, disableClose: true});
   }
 
 }

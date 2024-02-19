@@ -4,6 +4,8 @@ import { AuthService } from '../../../services/auth.service';
 import { RecordModel, RecordSubscription } from 'pocketbase';
 import { PocketCollectionsService } from '../../../services/pocket-collections.service';
 import { Observable, Subscription } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { ViewServiceComponent } from '../../kanban/components/view-service/view-service.component';
 
 @Component({
   selector: 'app-andamento',
@@ -20,7 +22,7 @@ export class AndamentoComponent {
 
   subscription : Subscription | undefined
 
-  constructor (public authSrv : AuthService, public pocketCollectionsSrv : PocketCollectionsService) {
+  constructor (public authSrv : AuthService, public dialog: MatDialog, public pocketCollectionsSrv : PocketCollectionsService) {
 
   }
 
@@ -36,6 +38,10 @@ export class AndamentoComponent {
     if (this.subscription)
       this.subscription.unsubscribe()
   } 
+
+  openService(element : any ){
+    const dialogRef = this.dialog.open(ViewServiceComponent, {data: element, disableClose: true});
+  }
 
 
 }

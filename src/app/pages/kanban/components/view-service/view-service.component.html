@@ -1,6 +1,6 @@
-<div class="flex flex-col h-screen w-screen items-center bg-transparent p-8">
+<div  class=" flex flex-col h-screen w-screen items-center bg-transparent p-8">
 	<div>
-		<div class="w-[800px] bg-slate-900  rounded-lg p-4">
+		<div class="w-[800px] z-10 bg-slate-900  rounded-lg p-4">
 			<div class="flex items-center h-8 w-full text-white">
 				<span class="material-symbols-outlined mr-2 text-3xl">
 				home_repair_service
@@ -8,30 +8,39 @@
 
 				<h1 class="text-xl w-128">{{data.title}}</h1>
 
+				@if (!em_espera){
 
-				@if (pausado){
-					<button (click)="resumeTimer()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-green-600 hover:text-white border border-green-600 hover:bg-green-700">
+					@if (pausado){
+						<button (click)="resumeTimer()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-green-600 hover:text-white border border-green-600 hover:bg-green-700">
+							<span class="material-symbols-outlined">
+							resume
+							</span>
+							Iniciar
+						</button>
+					} @else {
+						<button (click)="pauseTimer()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500">
+							<span class="material-symbols-outlined">
+							pause
+							</span>
+							Pausar
+						</button>
+					}
+
+
+					<button (click)="finalizarChamado()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-purple-700 hover:text-white border border-purple-700 hover:bg-purple-800">
 						<span class="material-symbols-outlined">
-						resume
+						save
 						</span>
-						Iniciar
+						Finalizar
 					</button>
-				} @else {
-					<button (click)="pauseTimer()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500">
+
+					<button (click)="cancelarChamado()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800">
 						<span class="material-symbols-outlined">
-						pause
+						remove
 						</span>
-						Pausar
+						Cancelar
 					</button>
 				}
-
-
-				<button (click)="finalizarChamado()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-purple-700 hover:text-white border border-purple-700 hover:bg-purple-800">
-					<span class="material-symbols-outlined">
-					send
-					</span>
-					Finalizar
-				</button>
 
 				<div  mat-dialog-close class="text-white flex flex-grow justify-end">
 					<span class="material-symbols-outlined text-3xl h-10 hover:cursor-pointer hover:bg-slate-600 rounded-full transition all p-1">
@@ -40,51 +49,53 @@
 				</div>
 			</div>
 			<!-- <img [src]="'http://localhost:8090/images/test.png' | useHttpImgSrc | async" alt="imagem caption"> -->
-			<div class="flex mt-4 text-white">
-				<div class="flex flex-col ml-8">
-					<div class="flex items-center">
-						<h1 class="text-sm font-bold mb-1">Técnicos</h1> 
-						<span (click)="openAddView()" class="ml-4 material-symbols-outlined hover:cursor-pointer hover:text-blue-400 transition-all">
-							add_box
-						</span>
-					</div>
-					@for (tecnico of data.expand.users; track tecnico) {
-						<div class="flex items-center h-6">
-							<span class="material-symbols-outlined mr-2 text-xl">
-								account_circle
+			@if (!em_espera){				
+				<div class="flex mt-4 text-white">
+					<div class="flex flex-col ml-8">
+						<div class="flex items-center">
+							<h1 class="text-sm font-bold mb-1">Técnicos</h1> 
+							<span (click)="openAddView()" class="ml-4 material-symbols-outlined hover:cursor-pointer hover:text-blue-400 transition-all">
+								add_box
 							</span>
-							
-							<h1 class="">{{tecnico.username}}</h1>
 						</div>
-					}
-
-				</div>
-
-				<div class="flex flex-col ml-8">
-					<h1 class="text-sm font-bold mb-1">Tempo Decorrido</h1>
-
-					@for (tecnico of data.expand.users; track tecnico) {
-						<div class="flex items-center h-6">
-							<span class="material-symbols-outlined mr-2 text-xl">
-								timer
-							</span>
-
-							<h1 class="">{{tecnico.duracao_total_str}}</h1>
-							@if (tecnico.duracao_status == "em_pausa" || tecnico.duracao_total_str == "00:00:00") {
-								<span class="ml-2 material-symbols-outlined text-yellow-400 hover:text-yellow-200 transition-all hover:cursor-pointer">
-									pause
-								</span>	
-							} @else {
-								<span class="ml-2 material-symbols-outlined text-green-400 hover:text-green-200 transition-all hover:cursor-pointer">
-									resume
+						@for (tecnico of data.expand.users; track tecnico) {
+							<div class="flex items-center h-6">
+								<span class="material-symbols-outlined mr-2 text-xl">
+									account_circle
 								</span>
-							}
+								
+								<h1 class="">{{tecnico.username}}</h1>
+							</div>
+						}
 
-						</div>
-					}
+					</div>
 
+					<div class="flex flex-col ml-8">
+						<h1 class="text-sm font-bold mb-1">Tempo Decorrido</h1>
+
+						@for (tecnico of data.expand.users; track tecnico) {
+							<div class="flex items-center h-6">
+								<span class="material-symbols-outlined mr-2 text-xl">
+									timer
+								</span>
+
+								<h1 class="">{{tecnico.duracao_total_str}}</h1>
+								@if (tecnico.duracao_status == "em_pausa" || tecnico.duracao_total_str == "00:00:00") {
+									<span class="ml-2 material-symbols-outlined text-yellow-400 hover:text-yellow-200 transition-all hover:cursor-pointer">
+										pause
+									</span>	
+								} @else {
+									<span class="ml-2 material-symbols-outlined text-green-400 hover:text-green-200 transition-all hover:cursor-pointer">
+										resume
+									</span>
+								}
+
+							</div>
+						}
+
+					</div>
 				</div>
-			</div>
+			}
 
 			<div class="flex flex-col ml-8 mt-4 text-white">
 					<h1 class="text-sm font-bold">Empresa</h1>
@@ -112,36 +123,15 @@
 					</div>
 				</div>
 			}
-			
+				
+			@if (!em_espera) {
+				<div class="flex items-center h-8 mt-6 text-white">
+					<span class="material-symbols-outlined mr-2 text-3xl">
+					wysiwyg
+					</span>
 
-			<div class="flex items-center h-8 mt-6 text-white">
-				<span class="material-symbols-outlined mr-2 text-3xl">
-				wysiwyg
-				</span>
-
-				<h1 class="text-xl">Relátorios</h1>
-			</div>
-<!-- 
-			<div class="p-0">
-				<editor
-				  class="mt-4"
-				  #editor 
-				  [init]="{ 
-					  plugins: 'lists link image table code help wordcount',
-					  base_url: '/tinymce',
-					  suffix: '.min',
-					  selector: 'textarea',
-
-					  toolbar: [
-					    { name: 'history', items: [ 'undo', 'redo' ] },
-					    { name: 'styles', items: [ 'styles' ] },
-					    { name: 'formatting', items: [ 'bold', 'italic' ] },
-					    { name: 'alignment', items: [ 'alignleft', 'aligncenter', 'alignright', 'alignjustify' ] },
-					    { name: 'indentation', items: [ 'outdent', 'indent' ] },
-					    { name: 'dev', items: [ 'code', 'help' ] }
-					  ]}
-				  "
-				></editor> -->
+					<h1 class="text-xl">Relátorios</h1>
+				</div>
 
 				<div class="p-0 flex-col">
 				@if (mostrarEditor) {					
@@ -217,32 +207,9 @@
 					<!-- <hr class="w-48 h-1 mx-auto my-4 bg-gray-100 border-0 rounded md:my-10 dark:bg-gray-700"> -->
 
 			    }
-
-				<!-- <app-service-relatorio
-					avatar_url="url"
-					name="Jeferson"
-				    timestamp="1:39:02 PM"
-				    message="Quisque ullamcorper condimentum dui elementum finibus."
-
-				/>
-
-				<app-service-relatorio
-					avatar_url="url"
-					name="Jeferson"
-				    timestamp="1:35:12 PM"
-				    message="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam auctor enim a dictum mattis. Nulla facilisi. Quisque ullamcorper condimentum dui elementum finibus."
-				/>
-
-				<app-service-relatorio
-					avatar_url="url"
-					name="Jeferson"
-				    timestamp="1:27:32 PM"
-				    message="Quisque ullamcorper condimentum dui elementum finibus."
-				    image_url="image_url"
-				/> -->
 				
 			</div>
-		</div>
+		}
 		<div class="h-8"></div>
 	</div>
 </div>

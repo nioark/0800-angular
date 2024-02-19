@@ -50,7 +50,22 @@
     </label>
     <textarea #descricao class="rounded-md w-full"></textarea>
 
-    <div class="mt-4 flex items-center">
+    <label
+      class="text-md mb-2 mt-2 block font-bold text-gray-700 dark:text-white">
+    Prioridade
+    </label>
+    <mat-form-field>
+      <mat-label>Prioridade do serviço</mat-label>
+      <mat-select [(value)]="selected">
+        <mat-option [value]="2" ><h1 class="border-b-2 border-red-500">Prioridade altissíma</h1></mat-option>  
+        <mat-option [value]="1" ><h1 class="border-b-2 border-amber-500">Prioridade alta</h1></mat-option>  
+        <mat-option [value]="0" selected><h1 class="border-b-2 border-blue-500">Prioridade normal</h1></mat-option>
+        <mat-option [value]="-1" ><h1 class="border-b-2 border-green-500">Prioridade baixa</h1></mat-option>
+      </mat-select>
+    </mat-form-field>
+
+
+    <div class="mt-2 flex items-center">
       <input
         #inputBox
         id="checkbox"

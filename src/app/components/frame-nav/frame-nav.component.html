@@ -72,15 +72,15 @@
   </div>
   <div class="flex h-full w-full">
     <!-- <LayerChamado></LayerChamado> -->
-    <ng-container *ngIf="router.url.startsWith('/chamados')">
+    <ng-container *ngIf="router.url.startsWith('/chamados')">        
       <div class="flex h-full w-64 select-none flex-col justify-between border-e bg-slate-100">
-        <div class="px-4 py-4">
+        <div class=" px-4 py-4">
             <ul class="">
                 <h1 class="mb-2 border-b text-2xl font-bold text-gray-800">Chamados</h1>
                 <li>
-                    <a (click)="navigate('/chamados/adicionar')" class="mb-2 flex cursor-pointer items-center rounded-lg bg-gray-200 px-2 py-2 text-sm font-bold text-gray-700">
+                    <a (click)="navigate('/chamados/adicionar')" class="  mb-2 flex cursor-pointer items-center rounded-lg bg-gray-200 px-2 py-2 text-sm font-bold text-gray-700">
                         <span class="material-symbols-outlined mr-2">
-                            add
+                          add
                         </span>
                         Adicionar
                     </a>

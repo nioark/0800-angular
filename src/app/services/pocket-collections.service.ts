@@ -58,9 +58,11 @@ export class PocketCollectionsService {
   getChamadosWithStatus(status : string, filterExtra = ""): Observable<RecordModel[]>{
     const chamadoSubject = new Subject<RecordModel[]>;
 
+    filterExtra = "&& " + filterExtra ? filterExtra : "";
+
     let chamados: RecordModel[] = [];
 
-    this.pb.collection('chamados').getList(1, 50, { filter: `status = '${status}' ` + filterExtra , requestKey: "chamadosstatus", expand:"users" }).then((res) => {;
+    this.pb.collection('chamados').getList(1, 50, { filter: `status = '${status}'` + filterExtra , requestKey: "chamadosstatus", expand:"users" }).then((res) => {;
       chamados = res.items;
       // console.log("Buscado items:", chamados);
       chamadoSubject.next(chamados);
@@ -186,6 +188,20 @@ export class PocketCollectionsService {
     return updatedAndRemoved;
   }
 
+  _removeUserChamados(users: RecordModel[], newChamado: RecordModel): RecordModel[] {
+    let updatedAndRemoved = users.map((user: RecordModel) => { 
+      user['chamados'] = user['chamados'].map((chamado: RecordModel) => {
+        if (chamado.id === newChamado.id) {
+          return null;
+        }
+        return chamado;
+      }).filter((chamado: RecordModel | null) => chamado !== null);
+      return user;
+    });
+
+    return updatedAndRemoved;
+  }
+
 
   getTecnicosJoinChamados(): Observable<RecordModel[]>{
     const chamadoSubject = new Subject<RecordModel[]>;
@@ -196,7 +212,7 @@ export class PocketCollectionsService {
     from(this.pb.collection('users').getFullList()).pipe(
       switchMap(users => {
         const userFilters = users.map(user => `users.id?="${user.id}"`).join('||');
-        return from(this.pb.collection('chamados').getFullList({ filter: userFilters, expand: 'users' })).pipe(
+        return from(this.pb.collection('chamados').getFullList({ filter: "(" + userFilters + ")" + " && status != 'finalizado'", expand: 'users' })).pipe(
           map((chamados : RecordModel[]) => ({ users, chamados }))
         );
       })
@@ -229,8 +245,14 @@ export class PocketCollectionsService {
     this.chamadosEvent.subscribe((e) => {
       const { action, record } = e;
       if (action === "update" || action === "create") {
-        let recordExpanded = this._expandUsers(record, usersWithChamadosR);
-        usersWithChamadosR = this._updateUserChamados(usersWithChamadosR, record);
+        console.log(record)
+        if (record["status"] == "finalizado"){
+          usersWithChamadosR = this._removeUserChamados(usersWithChamadosR, record);
+
+        } else {
+          let recordExpanded = this._expandUsers(record, usersWithChamadosR);
+          usersWithChamadosR = this._updateUserChamados(usersWithChamadosR, record);
+        }
         chamadoSubject.next(usersWithChamadosR);
       }
 
@@ -245,7 +267,7 @@ export class PocketCollectionsService {
 
     this.pb.collection('chamados').update(chamado.id, {
       "users+": id_tecnico
-    })
+    }, {requestKey: "chamadosstatus"})
   }
 
   customParser(block: { data: any}){
@@ -305,18 +327,18 @@ export class PocketCollectionsService {
         "chamado": chamado_id
     };
 
-    this.pb.collection('horas').create(data);
+    this.pb.collection('horas').create(data, { requestKey: "startchamado"});
   }
 
   pauseChamado(chamado_id : string){
     if (!this.pb.authStore.isValid)
       return;
 
-    this.pb.collection('horas').getFirstListItem(`chamado.id = '${chamado_id}' && user.id = '${this.pb.authStore.model!["id"]}' && end_time = ''`).then((hora) => {;
+    this.pb.collection('horas').getFirstListItem(`chamado.id = '${chamado_id}' && user.id = '${this.pb.authStore.model!["id"]}' && end_time = ''`, {requestKey: "pausechamado"}).then((hora) => {;
       console.log(hora)
       this.pb.collection('horas').update(hora.id, {
         end_time : new Date()
-      })
+      }, {requestKey: "udpdatehora"})
     })
   }
 

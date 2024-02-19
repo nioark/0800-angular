@@ -69,6 +69,13 @@ export class KanbanComponent implements OnInit  {
 
     this.pocketCollectionsSrv.getTecnicosJoinChamados().subscribe((tecnicos) => {
       this.tecnicosdata = tecnicos
+
+      let mapped = tecnicos.map((user : any) => {
+        return user.chamados.sort((a : any, b : any) => {
+          return b.priority - a.priority
+        })
+      })
+      console.log("Tecnicos chamados: ", )
       console.log("Técnicos: ",tecnicos)
     })
 

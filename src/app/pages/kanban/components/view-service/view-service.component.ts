@@ -28,6 +28,7 @@ import { ImgAuthPipe } from '../../../../img-auth.pipe'
 import { EditorComponent, EditorModule } from '@tinymce/tinymce-angular';
 import { Editor } from 'tinymce';
 import { AddTecnicoComponent } from './components/add-tecnico/add-tecnico.component';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
     selector: 'app-view-service',
@@ -47,11 +48,23 @@ export class ViewServiceComponent implements OnDestroy {
   mostrarEditor : boolean = false;
   pausado : boolean = false;
 
+  em_espera : boolean = false;
+  em_andamento : boolean = false;
+  admin : boolean = false;
+
   @ViewChild('editor') editorNew : EditorComponent | undefined
 
   clockIntervalSubscription: Subscription | undefined
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialog: MatDialog,  public AuthSrv : AuthService, public pocketSrv: PocketCollectionsService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private http : HttpClient, public dialog: MatDialog,  public AuthSrv : AuthService, public pocketSrv: PocketCollectionsService) {
+    if (this.data.status == "em_espera"){
+      this.em_espera = true
+    }
+
+    if (this.data.status == "em_andamento"){
+      this.em_andamento = true 
+    }
+
     this.clockObserver$ = interval(1000).pipe(
       map(() => (new Date()).toLocaleTimeString().toString())
     );
@@ -67,47 +80,49 @@ export class ViewServiceComponent implements OnDestroy {
       byUrl: 'http://localhost:8090/fetchUrl', // Your endpoint that provides uploading by Url
     }
 
-    this.clockIntervalSubscription = this.clockObserver$.subscribe(currentTime => {
-      this.time = currentTime;
-      this.updateTimers()
-    });
+    if (!this.em_espera){
+      this.clockIntervalSubscription = this.clockObserver$.subscribe(currentTime => {
+        this.time = currentTime;
+        this.updateTimers()
+      });
 
-    this.pocketSrv.getChamadoTimers(this.data.id).subscribe(data => {
-      data.forEach((duracao : any) => {
-        var duracao_total_str : any
-        var duracao_total_seconds : any
+      this.pocketSrv.getChamadoTimers(this.data.id).subscribe(data => {
+        data.forEach((duracao : any) => {
+          var duracao_total_str : any
+          var duracao_total_seconds : any
 
-        //Primeira vez abrindo o chamado
-        if (duracao.last_end == "" && duracao.status == "em_andamento"){
-          let last_start = new Date(duracao.last_start) as any
-          let date_now = new Date() as any
+          //Primeira vez abrindo o chamado
+          if (duracao.last_end == "" && duracao.status == "em_andamento"){
+            let last_start = new Date(duracao.last_start) as any
+            let date_now = new Date() as any
 
-          const dates_difference = (date_now - last_start) / 1_000
-          duracao_total_seconds = dates_difference 
-          duracao_total_str = new Date(duracao_total_seconds * 1000).toISOString().slice(11, 19)
+            const dates_difference = (date_now - last_start) / 1_000
+            duracao_total_seconds = dates_difference 
+            duracao_total_str = new Date(duracao_total_seconds * 1000).toISOString().slice(11, 19)
 
-        } else if (duracao.last_end != "" && duracao.status == "em_andamento") {
-          let last_start = new Date(duracao.last_start) as any
-          let date_now = new Date() as any
+          } else if (duracao.last_end != "" && duracao.status == "em_andamento") {
+            let last_start = new Date(duracao.last_start) as any
+            let date_now = new Date() as any
 
-          duracao_total_seconds = (date_now - last_start) / 1_000
-          duracao_total_seconds += duracao.total_elapsed_time_seconds
-          duracao_total_str = new Date(duracao_total_seconds * 1000).toISOString().slice(11, 19)
-        } else if ( duracao.status == "em_pausa") {
-          duracao_total_seconds = duracao.total_elapsed_time_seconds 
-          duracao_total_str = new Date(duracao_total_seconds * 1000).toISOString().slice(11, 19)
+            duracao_total_seconds = (date_now - last_start) / 1_000
+            duracao_total_seconds += duracao.total_elapsed_time_seconds
+            duracao_total_str = new Date(duracao_total_seconds * 1000).toISOString().slice(11, 19)
+          } else if ( duracao.status == "em_pausa") {
+            duracao_total_seconds = duracao.total_elapsed_time_seconds 
+            duracao_total_str = new Date(duracao_total_seconds * 1000).toISOString().slice(11, 19)
 
-        }
+          }
 
-        const findt = this.data.expand.users.find((user : any) => user.id ==  duracao.user)
-        findt["duracao_total_str"] = duracao_total_str
-        findt["duracao_total_seconds"] = duracao_total_seconds
-        findt["duracao_status"] = duracao.status
+          const findt = this.data.expand.users.find((user : any) => user.id ==  duracao.user)
+          findt["duracao_total_str"] = duracao_total_str
+          findt["duracao_total_seconds"] = duracao_total_seconds
+          findt["duracao_status"] = duracao.status
+        })
+
+        this.updateTimers()
+        // const findt = this.data.expand.users.find((user : any) => user.id ==  data.user)
       })
-
-      this.updateTimers()
-      // const findt = this.data.expand.users.find((user : any) => user.id ==  data.user)
-    })
+    }
   }
 
   updateTimers(){
@@ -130,7 +145,8 @@ export class ViewServiceComponent implements OnDestroy {
   }
 
   ngOnDestroy(){
-     this.clockIntervalSubscription!.unsubscribe()
+    if (this.clockIntervalSubscription)
+      this.clockIntervalSubscription.unsubscribe()
   }
 
   sendRelatorio() {
@@ -169,6 +185,15 @@ export class ViewServiceComponent implements OnDestroy {
 
   finalizarChamado(){
     // this.pocketSrv.finalizarChamado(this.data.id)
+    const formData = new FormData()
+    formData.append('chamado_id', this.data.id)
+    this.http.post<any>(`http://localhost:8090/finalizarChamado`, formData).subscribe(data => {
+      console.log(data)
+    })
+  }
+
+  cancelarChamado(){
+
   }
 
 }

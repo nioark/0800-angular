@@ -1,5 +1,5 @@
 <app-frame-nav class="overflow-hidden">
-  <div class="flex h-full w-full flex-col justify-start rounded-md p-6 overflow-auto">
+  <div class="flex h-full w-full flex-col justify-start rounded-md p-6 overflow-auto appear">
     <div
       class="max-w-screen-xl px-4 py-8 text-black sm:px-6 sm:py-12 lg:px-8 lg:py-16"
     >
@@ -14,6 +14,7 @@
       @for (item of chamados ; track item.id) {
         <div
           class="mt-8 flow-root w-[600px] cursor-pointer rounded-md border-2 border-transparent bg-yellow-100 px-4 py-3 hover:border-2 hover:border-blue-500"
+          (click)="openService(item)"
         >
           <dl class="-my-3 divide-y divide-gray-100 text-sm">
             <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">

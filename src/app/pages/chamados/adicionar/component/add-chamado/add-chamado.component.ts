@@ -1,10 +1,14 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AuthService } from '../../../../../services/auth.service';
+import {FormsModule} from '@angular/forms';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 @Component({
   selector: 'app-add-chamado',
   standalone: true,
-  imports: [],
+  imports: [MatFormFieldModule, MatSelectModule, MatInputModule, FormsModule],
   templateUrl: './add-chamado.component.html',
   styleUrl: './add-chamado.component.scss'
 })
@@ -14,9 +18,9 @@ export class AddChamadoComponent {
   @ViewChild('descricao') descricao :ElementRef | undefined;
   @ViewChild('inputBox') deixar_aberto :HTMLInputElement | undefined;
 
-  constructor(public authSrv : AuthService){
-    
-  }
+  selected = 0;
+
+  constructor(public authSrv : AuthService){}
   
   async createChamado(event : Event) {
     event.preventDefault()
@@ -39,6 +43,7 @@ export class AddChamadoComponent {
         "description": descricao, 
         "title": sobre,
         "cliente": cliente,
+        "priority": this.selected
     };
 
     console.log(deixar_aberto)

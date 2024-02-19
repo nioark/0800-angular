@@ -2,3 +2,22 @@
   display: flex;
   width: 100vw;
 }
+
+.slide {
+  -webkit-animation: slide 0.2s forwards;
+  animation: slide 0.2s forwards;
+  margin-left: 0px;
+  z-index: -1;
+}
+
+.cdk-drag-placeholder {
+
+  display: block;
+}
+
+@-webkit-keyframes slide {
+    100% { margin-left: (0px); }
+    0% { margin-left: (-212px); }
+}
+
+

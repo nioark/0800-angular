@@ -5,6 +5,7 @@ import { AddChamadoComponent } from './add-chamado.component';
 describe('AddChamadoComponent', () => {
   let component: AddChamadoComponent;
   let fixture: ComponentFixture<AddChamadoComponent>;
+  const selected = 1;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

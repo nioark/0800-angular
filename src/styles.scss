@@ -50,3 +50,16 @@ h5.ce-header{
 h6.ce-header{
   @apply text-base font-semibold
 }
+
+
+.appear {
+  -webkit-animation: slide 0.4s forwards;
+  animation: slide 0.4s forwards;
+  opacity: 0;
+}
+
+@-webkit-keyframes slide {
+    100% { opacity: 1; }
+}
+
+
