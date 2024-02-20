@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 import { PocketCollectionsService } from '../../services/pocket-collections.service';
 import { Subscription } from 'rxjs';
 import Client, { AuthModel, RecordModel } from 'pocketbase';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-frame-nav',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatTooltipModule],
   templateUrl: './frame-nav.component.html',
   styleUrl: './frame-nav.component.scss'
 })
@@ -16,6 +17,7 @@ export class FrameNavComponent {
 
   chamados_em_espera: Number = 0;
   chamados_em_andamento: Number = 0;
+  chamados_aguardando: Number = 0;
 
   sub1 : Subscription | undefined
   sub2 : Subscription | undefined
@@ -43,6 +45,13 @@ export class FrameNavComponent {
     this.sub2 = pocketCollectionsSrv.em_andamento_event.subscribe(
       (count) => {
         this.chamados_em_andamento = count
+      }
+    )
+
+    this.chamados_aguardando = pocketCollectionsSrv.chamados_aguardando
+    this.sub2 = pocketCollectionsSrv.aguardando_event.subscribe(
+      (count) => {
+        this.chamados_aguardando = count
       }
     )
   }

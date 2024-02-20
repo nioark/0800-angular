@@ -1,13 +1,12 @@
-<app-frame-nav class="overflow-hidden">
-  <div class="flex h-full w-full flex-col justify-start rounded-md p-6 overflow-auto appear">
+  <div class="flex h-full w-full flex-col justify-start rounded-md px-6 overflow-auto appear">
     <div
       class="max-w-screen-xl px-4 py-8 text-black sm:px-6 sm:py-12 lg:px-8 lg:py-16"
     >
-      <div class="max-w-xl">
-        <h2 class="text-3xl font-bold sm:text-4xl">Chamados em espera</h2>
+      <div class="max-w-2xl">
+        <h2 class="text-3xl font-bold sm:text-4xl">Seus chamados em espera</h2>
 
         <p class="mt-4 text-gray-900">
-          Segue a lista de chamados esperando por um técnico
+          Segue a lista de chamados esperando por atendimento atribuidos a você
         </p>
       </div>
 
@@ -16,7 +15,7 @@
           class="mt-8 flow-root w-[600px] cursor-pointer rounded-md border-2 border-transparent bg-yellow-100 px-4 py-3 hover:border-2 hover:border-blue-500"
           (click)="openService(item)"
         >
-          <dl class="-my-3 divide-y divide-gray-100 text-sm">
+          <dl class="-my-3 text-sm">
             <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
               <dt class="font-medium text-gray-900">Cliente</dt>
               <dd class="text-gray-700 sm:col-span-2">{{item.cliente}}</dd>
@@ -29,11 +28,10 @@
 
             <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
               <dt class="font-medium text-gray-900">Aberto por</dt>
-              <dd class="text-red-700 sm:col-span-2">Jeferson</dd>
+              <dd class="text-red-700 sm:col-span-2">{{item.expand.created_by.username}}</dd>
             </div>
           </dl>
         </div>
       }
     </div>
   </div>
-</app-frame-nav>

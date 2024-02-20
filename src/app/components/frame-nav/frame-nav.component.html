@@ -1,6 +1,6 @@
 
 <div class="flex">
-  <div class="flex h-full w-16 flex-col justify-between bg-slate-900">
+  <div class="flex h-full w-16 flex-col justify-between z-10 bg-slate-900">
     <div>
       <div class="inline-flex h-16 w-16 items-center justify-center">
         <span class="grid h-10 w-10 place-content-center rounded-lg bg-gray-100 text-sm text-gray-600">
@@ -61,50 +61,20 @@
 
 <div class="flex w-full max-w-[calc(100vw-4rem)] flex-col">
   <div class="flex min-h-12 justify-end bg-slate-900 pr-4 text-white">
-    <div class="flex h-full items-center justify-center">
+    <div class="flex h-full items-center justify-center cursor-default" matTooltip="São os chamados que estão em espera, esperando para serem atríbuidos a um técnico">
       <span class="me-3 flex h-3 w-3 rounded-full bg-yellow-300"></span>
-      {{chamados_em_espera}} Chamados Em Espera
+      <div class="font-bold mr-2">{{chamados_em_espera}}</div> Em Espera
     </div>
-    <div class="flex h-full items-center justify-center pl-4">
+    <div class="flex h-full items-center justify-center pl-4 cursor-default" matTooltip="São os chamados que estão atribuido a um técnico, mas ainda não foram iniciados">
+      <span class="me-2 flex h-3 w-3 rounded-full bg-blue-400"></span>
+      <div class="font-bold mr-2">{{chamados_aguardando}}</div> Aguardando
+    </div>
+    <div class="flex h-full items-center justify-center pl-4 cursor-default" matTooltip="São os chamados que estão em execução contando as horas trabalhadas do técnico">
       <span class="me-3 flex h-3 w-3 rounded-full bg-green-500"></span>
-      {{chamados_em_andamento}} Chamados Em Andamento
+      <div class="font-bold mr-2">{{chamados_em_andamento}}</div> Em Andamento
     </div>
   </div>
-  <div class="flex h-full w-full">
-    <!-- <LayerChamado></LayerChamado> -->
-    <ng-container *ngIf="router.url.startsWith('/chamados')">        
-      <div class="flex h-full w-64 select-none flex-col justify-between border-e bg-slate-100">
-        <div class=" px-4 py-4">
-            <ul class="">
-                <h1 class="mb-2 border-b text-2xl font-bold text-gray-800">Chamados</h1>
-                <li>
-                    <a (click)="navigate('/chamados/adicionar')" class="  mb-2 flex cursor-pointer items-center rounded-lg bg-gray-200 px-2 py-2 text-sm font-bold text-gray-700">
-                        <span class="material-symbols-outlined mr-2">
-                          add
-                        </span>
-                        Adicionar
-                    </a>
-                </li>
-                <li>
-                    <a (click)="navigate('/chamados/aberto')" class="mb-2 flex cursor-pointer items-center rounded-lg bg-gray-200 px-2 py-2 text-sm font-bold text-gray-700">
-                        <span class="material-symbols-outlined mr-2">
-                            arrow_outward
-                        </span>
-                        Em Espera
-                    </a>
-                </li>
-                <li>
-                    <a (click)="navigate('/chamados/andamento')" class="flex cursor-pointer items-center rounded-lg bg-gray-200 px-2 py-2 text-sm font-bold text-gray-700">
-                        <span class="material-symbols-outlined mr-2">
-                            chronic
-                        </span>
-                        Em Andamento
-                    </a>
-                </li>
-            </ul>
-        </div>
-      </div>
-    </ng-container>
+  <div class="flex h-full  w-full">
 
 
     <ng-content></ng-content>

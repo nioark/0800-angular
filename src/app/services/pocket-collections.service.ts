@@ -18,9 +18,11 @@ export class PocketCollectionsService {
 
   chamados_em_espera: Number = 0;
   chamados_em_andamento: Number = 0;
+  chamados_aguardando: Number = 0;
 
   public em_espera_event = new Subject<Number>;
   public em_andamento_event = new Subject<Number>;
+  public aguardando_event = new Subject<Number>;
 
   constructor( public domSanitizerSrv: DomSanitizer) {
     console.log("Subscribed")
@@ -53,6 +55,14 @@ export class PocketCollectionsService {
         this.em_andamento_event.next(count)
       }
     )
+
+
+    this.countChamadosWithStatus("aguardando").subscribe(
+      (count) => {
+        this.chamados_aguardando = count
+        this.aguardando_event.next(count)
+      }
+    )
   }
 
   getChamadosWithStatus(status : string, filterExtra = ""): Observable<RecordModel[]>{
@@ -62,7 +72,7 @@ export class PocketCollectionsService {
 
     let chamados: RecordModel[] = [];
 
-    this.pb.collection('chamados').getList(1, 50, { filter: `status = '${status}'` + filterExtra , requestKey: "chamadosstatus", expand:"users" }).then((res) => {;
+    this.pb.collection('chamados').getList(1, 50, { filter: `status = '${status}'` + filterExtra , requestKey: "chamadosstatus", expand:"users, created_by" }).then((res) => {;
       chamados = res.items;
       // console.log("Buscado items:", chamados);
       chamadoSubject.next(chamados);
@@ -159,7 +169,10 @@ export class PocketCollectionsService {
       }
     });
 
-    record.expand = { users: usersExpands };
+    let created_by = this._findUser(users, record['created_by']);
+    console.log(created_by, record['created_by'], "CREATED_BY")
+
+    record.expand = { users: usersExpands, created_by: created_by };
     return record;
   }
 
@@ -212,7 +225,7 @@ export class PocketCollectionsService {
     from(this.pb.collection('users').getFullList()).pipe(
       switchMap(users => {
         const userFilters = users.map(user => `users.id?="${user.id}"`).join('||');
-        return from(this.pb.collection('chamados').getFullList({ filter: "(" + userFilters + ")" + " && status != 'finalizado'", expand: 'users' })).pipe(
+        return from(this.pb.collection('chamados').getFullList({ filter: "(" + userFilters + ")" + " && status != 'finalizado'", expand: 'users,created_by' })).pipe(
           map((chamados : RecordModel[]) => ({ users, chamados }))
         );
       })

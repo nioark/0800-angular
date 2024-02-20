@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AddChamadoComponent } from '../../../chamados/adicionar/component/add-chamado/add-chamado.component';
+import { AddChamadoComponent } from '../../../chamados/components/adicionar/component/add-chamado/add-chamado.component';
 
 @Component({
   selector: 'app-add-form',

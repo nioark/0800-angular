@@ -21,7 +21,7 @@ import {
   MatDialogClose,
 } from '@angular/material/dialog';
 
-import { NgOptimizedImage } from '@angular/common'
+import { CommonModule, NgOptimizedImage } from '@angular/common'
 
 import {MatTooltipModule} from '@angular/material/tooltip';
 
@@ -31,10 +31,9 @@ import { BehaviorSubject, Observable, from, interval, map, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { ViewServiceComponent } from './components/view-service/view-service.component';
 import { PocketCollectionsService } from '../../services/pocket-collections.service';
-import { AdicionarComponent } from '../chamados/adicionar/adicionar.component';
-import { AddChamadoComponent } from '../chamados/adicionar/component/add-chamado/add-chamado.component';
 import { AddFormComponent } from './components/add-form/add-form.component';
 import { ImgAuthPipe } from '../../img-auth.pipe';
+import { ViewEsperandoServiceComponent } from './components/view-esperando-service/view-esperando-service.component';
 
 
 interface TecnicoServicos {
@@ -46,7 +45,7 @@ interface TecnicoServicos {
 @Component({
   selector: 'app-kanban',
   standalone: true,
-  imports: [FrameNavComponent, CdkDropListGroup, CdkDropList, CdkDrag, AsyncPipe, MatTooltipModule, ImgAuthPipe,NgOptimizedImage],
+  imports: [FrameNavComponent, CdkDropListGroup, CdkDropList, CdkDrag, AsyncPipe, MatTooltipModule, ImgAuthPipe,NgOptimizedImage, CommonModule],
   templateUrl: './kanban.component.html',
   styleUrl: './kanban.component.scss'
 })
@@ -179,7 +178,12 @@ export class KanbanComponent implements OnInit  {
   }
 
   openService(element : any ){
-    const dialogRef = this.dialog.open(ViewServiceComponent, {data: element, disableClose: true});
+    if (element.description != "null")
+      this.dialog.open(ViewServiceComponent, {data: element, disableClose: true});
+  }
+
+  openServiceEsperando(element : any ){
+    const dialogRef = this.dialog.open(ViewEsperandoServiceComponent, {data: element, disableClose: true}); 
   }
 
   addService(){

@@ -11,14 +11,14 @@
 				@if (!em_espera){
 
 					@if (pausado){
-						<button (click)="resumeTimer()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-green-600 hover:text-white border border-green-600 hover:bg-green-700">
+						<button (click)="resumeTimer()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-green-600 hover:text-white border border-green-600 hover:bg-green-700 outline-none ">
 							<span class="material-symbols-outlined">
 							resume
 							</span>
 							Iniciar
 						</button>
 					} @else {
-						<button (click)="pauseTimer()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500">
+						<button (click)="pauseTimer()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 outline-none">
 							<span class="material-symbols-outlined">
 							pause
 							</span>
@@ -58,8 +58,19 @@
 								add_box
 							</span>
 						</div>
+
+						@if (!criadorParticipa) {
+							<div class="flex items-center h-6 cursor-default" >
+								<span class="material-symbols-outlined mr-2 text-xl" matTooltip="Quem criou pode visualizar">
+									visibility
+								</span>
+								
+								<h1 class="">{{data.expand.created_by.username}}</h1>
+							</div>
+						}
+
 						@for (tecnico of data.expand.users; track tecnico) {
-							<div class="flex items-center h-6">
+							<div class="flex items-center h-6 cursor-default">
 								<span class="material-symbols-outlined mr-2 text-xl">
 									account_circle
 								</span>

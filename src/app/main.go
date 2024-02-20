@@ -1,26 +1,28 @@
 package main
 
 import (
-    "fmt"
-    "io"
-    "log"
-    "net/http"
-    "os"
-    "regexp"
-    "slices"
-    "strings"
+	"encoding/json"
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"os"
+	"regexp"
+	"slices"
+	"strings"
 
-    "github.com/labstack/echo/v5"
-    "github.com/pocketbase/dbx"
-    "github.com/pocketbase/pocketbase"
-    "github.com/pocketbase/pocketbase/apis"
-    "github.com/pocketbase/pocketbase/core"
-    "github.com/pocketbase/pocketbase/daos"
-    "github.com/pocketbase/pocketbase/models"
+	"github.com/labstack/echo/v5"
+	"github.com/pocketbase/dbx"
+	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/apis"
+	"github.com/pocketbase/pocketbase/core"
+	"github.com/pocketbase/pocketbase/daos"
+	"github.com/pocketbase/pocketbase/models"
+	"github.com/pocketbase/pocketbase/tools/hook"
 
-    "time"
+	"time"
 
-    "github.com/google/uuid"
+	"github.com/google/uuid"
 )
 
 func statusPausaLogic(i interface{}, app *daos.Dao) error {
@@ -73,7 +75,7 @@ func statusPausaLogic(i interface{}, app *daos.Dao) error {
         err := app.SaveRecord(record)
         log.Println("Record save error: ", err)
         if (err != nil) {
-            log.Println(err)   
+            log.Println(err)
         }
     } else {
         log.Println("Erro ao encontrar chamado para atualizar status de em_andamento e em_pausa")
@@ -116,13 +118,13 @@ func finalizarChamado(c echo.Context) error {
         }
     }
 
-    return c.JSON(http.StatusOK, "success")   
+    return c.JSON(http.StatusOK, "success")
 }
 
 var app = pocketbase.New()
 
 func main() {
-    
+
 
     // serves static files from the provided public dir (if exists)
     app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
@@ -136,6 +138,117 @@ func main() {
 
         return nil
     })
+
+    app.OnRecordsListRequest("chamados").Add(func(e *core.RecordsListEvent) error {
+        // log.Println(e.HttpContext)
+        log.Println(e.Result.Items)
+
+        admin, ok := e.HttpContext.Get(apis.ContextAdminKey).(*models.Admin)
+        if (admin != nil && ok) {
+            return nil
+        }
+
+        vl := e.Result.Items.(*[]*models.Record)
+        authRecord := e.HttpContext.Get(apis.ContextAuthRecordKey).(*models.Record)
+
+        if authRecord != nil {
+            for i := 0; i < len(*vl); i++ {
+                record := (*vl)[i]
+
+                users := record.GetStringSlice("users")
+                created_by := record.GetString("created_by")
+                public := record.GetBool("public")
+                status := record.GetString("status")
+                log.Println(created_by, authRecord.Id, created_by != authRecord.Id)
+
+                isOwner := created_by == authRecord.Id
+                isInChamado := slices.Contains(users, authRecord.Id)
+                isParticipant := isOwner || isInChamado
+
+                if ((!isParticipant && status != "em_espera") ||
+                    (!isParticipant && status == "em_espera" && !public)) {
+                    log.Println("Removendo fields para ", authRecord.Username())
+                    // record.Set("title", record.GetString("title") + "*" )
+                    record.Set("description", "null")
+                    record.Set("cliente", "null")
+                    record.Set("created_by", "null")
+                }
+            }
+        }
+
+        return nil
+    })
+
+    //"Censura" de dados relevantes
+    app.OnRealtimeBeforeMessageSend().Add(func(e *core.RealtimeMessageEvent) error {
+        log.Println("OnRealtimeBeforeMessageSend")
+
+        // Retrieve authentication record from the client
+        authRecord, _ := e.Client.Get(apis.ContextAuthRecordKey).(*models.Record)
+
+        // Só executar se o usuário estiver autenticado e na tabela chamados
+        if authRecord != nil && e.Message.Name == "chamados/*" {
+            log.Println("Auth ID:", authRecord.Id)
+            log.Println("Auth Username:", authRecord.Username())
+
+            // Unmarshal message data
+            var messageData map[string]interface{}
+            if err := json.Unmarshal(e.Message.Data, &messageData); err != nil {
+                log.Println("Error unmarshaling message data:", err)
+                return hook.StopPropagation
+            }
+
+            // Remove informações ou cancela o envio da mensagem
+            if record, ok := messageData["record"].(map[string]interface{}); ok {
+                // Cancela o envio se o chamado está em espera e não é publico
+                if ((record["status"] == "em_espera" && record["public"] == false && record["created_by"] != authRecord.Id) ) {
+                    log.Println("Cancelando envio do chamado para ", authRecord.Username())
+                    return hook.StopPropagation
+                }
+
+                usersI := record["users"].([]interface {})
+                users := make([]string, len(usersI))
+                for i, v := range usersI {
+                    users[i] = fmt.Sprint(v)
+                }
+                log.Println(users)
+
+                isOwner := record["created_by"] == authRecord.Id
+                isInChamado := slices.Contains(users, authRecord.Id)
+                isParticipant := isOwner || isInChamado
+                public := record["public"].(bool)
+                status := record["status"].(string)
+
+                if ((!isParticipant && status != "em_espera") ||
+                    (!isParticipant && status == "em_espera" && !public)) {
+                    log.Println("Removendo informações do chamado para ", authRecord.Username())
+                    // record["title"] = record["title"].(string) + "*"
+                    record["description"] = "null"
+                    record["cliente"] = "null"
+                    record["created_by"] = "null"
+                }
+
+            }
+
+            log.Println("Modified message data:", messageData)
+
+            jsonData, err := json.Marshal(messageData)
+            if err != nil {
+                log.Println("Error marshaling message data:", err)
+                return err
+            }
+
+            // Substitui a mensagem
+            e.Message.Data = jsonData
+        }
+
+        // Log message details
+        log.Println("Message name:", e.Message.Name)
+        log.Println("Message data:", string(e.Message.Data))
+
+        return nil
+    })
+
 
     app.OnRecordBeforeUpdateRequest("chamados").Add(func(e *core.RecordUpdateEvent) error {
         users := e.Record.GetStringSlice("users")
@@ -178,7 +291,7 @@ func main() {
         } else if (len(users) > 0) {
             log.Println("Status: ", status)
             if (status != "em_pausa") {
-                e.Record.Set("status", "em_andamento")
+                e.Record.Set("status", "aguardando")
             }
         }
 
@@ -192,7 +305,7 @@ func main() {
     })
 
     app.OnRecordAfterCreateRequest("horas").Add(func(e *core.RecordCreateEvent) error {
-        statusPausaLogic(e, app.Dao())  
+        statusPausaLogic(e, app.Dao())
 
         return nil
     })
@@ -208,7 +321,7 @@ func main() {
         records, err := app.Dao().FindRecordsByFilter("horas", filter, "created",-1, 0)
         if (err != nil || len(records) > 0) {
             log.Println("Já existe uma hora registrada para este usuário")
-            return fmt.Errorf("Já existe uma hora registrada para este usuário") 
+            return fmt.Errorf("Já existe uma hora registrada para este usuário")
         }
 
         log.Println(user)
@@ -288,7 +401,7 @@ func uploadFile(c echo.Context) error {
 
     file, err := c.FormFile("image")
     if err != nil {
-        return c.JSON(400, err) 
+        return c.JSON(400, err)
     }
     log.Println(file.Filename)
 

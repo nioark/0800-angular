@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AuthService } from '../../../services/auth.service';
 import { RecordSubscription, RecordModel } from 'pocketbase'; // Assuming these imports are correct
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
-import { FrameNavComponent } from '../../../components/frame-nav/frame-nav.component';
-import { PocketCollectionsService } from '../../../services/pocket-collections.service';
 import { MatDialog } from '@angular/material/dialog';
-import { ViewServiceComponent } from '../../kanban/components/view-service/view-service.component';
+import { FrameNavComponent } from '../../../../components/frame-nav/frame-nav.component';
+import { AuthService } from '../../../../services/auth.service';
+import { PocketCollectionsService } from '../../../../services/pocket-collections.service';
+import { ViewServiceComponent } from '../../../kanban/components/view-service/view-service.component';
+import { ViewEsperandoServiceComponent } from '../../../kanban/components/view-esperando-service/view-esperando-service.component';
 
 @Component({
   selector: 'app-aberto',
@@ -33,6 +34,7 @@ export class AbertoComponent {
   ngOnInit(): void {
     this.subscription = this.pocketCollectionsSrv.getChamadosWithStatus("em_espera").subscribe(
       (chamados) => {
+        console.log(chamados)
         this.chamados = chamados
       }
     )
@@ -43,19 +45,8 @@ export class AbertoComponent {
       this.subscription.unsubscribe()
   } 
 
-
-  async fetchChamados() {
-    try {
-      const res = await this.pb.collection('chamados').getList(1, 50, { filter: "status = 'em_espera'" });
-      console.log(res);
-      this.chamados = res.items;
-    } catch (error) {
-      console.error("Error fetching chamados:", error);
-    }
-  }
-
   openService(element : any ){
-    const dialogRef = this.dialog.open(ViewServiceComponent, {data: element, disableClose: true});
+    const dialogRef = this.dialog.open(ViewEsperandoServiceComponent, {data: element, disableClose: true});
   }
 
 }

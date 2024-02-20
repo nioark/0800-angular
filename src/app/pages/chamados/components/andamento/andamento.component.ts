@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { FrameNavComponent } from '../../../components/frame-nav/frame-nav.component';
-import { AuthService } from '../../../services/auth.service';
+import { FrameNavComponent } from '../../../../components/frame-nav/frame-nav.component';
+import { AuthService } from '../../../../services/auth.service';
 import { RecordModel, RecordSubscription } from 'pocketbase';
-import { PocketCollectionsService } from '../../../services/pocket-collections.service';
+import { PocketCollectionsService } from '../../../../services/pocket-collections.service';
 import { Observable, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { ViewServiceComponent } from '../../kanban/components/view-service/view-service.component';
+import { ViewServiceComponent } from '../../../kanban/components/view-service/view-service.component';
 
 @Component({
   selector: 'app-andamento',
@@ -27,8 +27,9 @@ export class AndamentoComponent {
   }
 
   ngOnInit() {
-    this.subscription = this.pocketCollectionsSrv.getChamadosWithStatus("em_andamento", "").subscribe(
+    this.subscription = this.pocketCollectionsSrv.getChamadosWithStatus("em_andamento", " && users.id ?= '" + this.pb.authStore.model!["id"] + "'").subscribe(
       (chamados) => {
+        console.log(chamados)
         this.chamados = chamados
       }
     ) 

@@ -29,13 +29,14 @@ import { EditorComponent, EditorModule } from '@tinymce/tinymce-angular';
 import { Editor } from 'tinymce';
 import { AddTecnicoComponent } from './components/add-tecnico/add-tecnico.component';
 import { HttpClient } from '@angular/common/http';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-view-service',
     standalone: true,
     templateUrl: './view-service.component.html',
     styleUrls: ['./view-service.component.scss'],
-    imports: [ServiceRelatorioComponent, MatDialogClose, CommonModule, NgOptimizedImage, ImgAuthPipe, EditorModule]
+    imports: [ServiceRelatorioComponent, MatDialogClose, CommonModule, NgOptimizedImage, ImgAuthPipe, EditorModule, MatTooltipModule]
 })
 export class ViewServiceComponent implements OnDestroy {
   // Define observer variable
@@ -52,6 +53,8 @@ export class ViewServiceComponent implements OnDestroy {
   em_andamento : boolean = false;
   admin : boolean = false;
 
+  criadorParticipa : boolean = false;
+
   @ViewChild('editor') editorNew : EditorComponent | undefined
 
   clockIntervalSubscription: Subscription | undefined
@@ -60,6 +63,14 @@ export class ViewServiceComponent implements OnDestroy {
     if (this.data.status == "em_espera"){
       this.em_espera = true
     }
+
+    data.expand.users.forEach((user : any) => {
+      if (user.id == data.expand.created_by.id){
+        this.criadorParticipa = true
+      }
+    })
+
+    console.log(data)
 
     if (this.data.status == "em_andamento"){
       this.em_andamento = true 
@@ -159,7 +170,6 @@ export class ViewServiceComponent implements OnDestroy {
           "user": this.pb.authStore.model!["id"],
           "relatorio": html,
           "chamado": this.data.id
-
       })
     }
   }
