@@ -142,35 +142,35 @@
               }"
             >
 
-            <div class="flex w-full items-center">
+            <div class="flex w-[160px] items-center">
               <span class="material-symbols-outlined text-base"> call </span>
-              @if (item.title.length > 20) {
+              @if (item.title.length > 16) {
                 <div class="ml-2 truncate text-sm" matTooltip="{{item.title}}">{{ item.title }}</div>
               } @else {
                 <div class="ml-2 truncate text-sm">{{ item.title }}</div>
               }
             </div>
 
-            <div class="flex justify-end item-center">
+            <div class="flex justify-end item-center w-full">
+                @if (item.expand.users.length > 1) {
+                  <span class="material-symbols-outlined"  [matTooltip]="getUserNames(item.expand.users)">
+                    group
+                  </span>
+                }
                 @if (item.status == "em_pausa"){
-                  <span class="material-symbols-outlined text-yellow-400" matTooltip="Chamado pausado">
+                  <span class="material-symbols-outlined text-yellow-400 hover:animate-pulse" matTooltip="Chamado pausado">
                   pause
                   </span>
                 }
                 @if (item.status == "aguardando"){
-                  <span class="material-symbols-outlined text-blue-400 hover:motion-safe:animate-pulse" matTooltip="Chamado aguardando inicio">
+                  <span class="material-symbols-outlined text-blue-400 hover:animate-pulse" matTooltip="Chamado aguardando inicio">
                   hourglass_top
                   </span>
                 }
                 @if (item.status == "em_andamento"){
-                  <span class="material-symbols-outlined text-green-400 hover:motion-safe:animate-pulse" matTooltip="Chamado em andamento">
+                  <span class="material-symbols-outlined text-green-400 hover:animate-pulse" matTooltip="Chamado em andamento">
                   keyboard_double_arrow_up
                   </span>
-                }
-                @if (item.expand.users.length > 1) {
-                <span class="material-symbols-outlined"  [matTooltip]="getUserNames(item.expand.users)">
-                  group
-                </span>
                 }
             </div>
            

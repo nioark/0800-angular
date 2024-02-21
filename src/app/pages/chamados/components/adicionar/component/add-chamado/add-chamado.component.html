@@ -70,7 +70,7 @@
         #inputBox
         id="espera"
         type="checkbox"
-        [(ngModel)]="checkbox1Checked"
+        [(ngModel)]="deixar_aberto"
         [ngModelOptions]="{standalone: true}"
         class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
       />
@@ -78,23 +78,25 @@
         Deixar em espera
       </label>
     </div>
+    @if (deixar_aberto){
+      <div class="ml-4 mt-2 flex items-center select-none" matTooltip="Permitira que outros técnico possam se atribuir a esse chamado">
+        <input
+          checked
+          #inputBox2
+          id="publico"
+          type="checkbox"
+          [(ngModel)]="deixar_publico"
+          [ngModelOptions]="{standalone: true}"
 
-    @if (checkbox1Checked){
-    <div class="ml-4 mt-2 flex items-center select-none" matTooltip="Permitira que outros técnico possam se atribuir a esse chamado">
-      <input
-        checked
-        #inputBox2
-        id="publico"
-        type="checkbox"
-        class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
-      />
-      <label for="checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-        Deixar publico
-      </label>
-    </div>
+          class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+        />
+        <label for="publico" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+          Deixar publico
+        </label>
+      </div>
     }
 
-    @if (!checkbox1Checked){
+    @if (!deixar_aberto){
       <div class=" mt-2 flex items-center select-none" matTooltip="Iniciara a contagem de horas do chamado">
         <input
           checked
@@ -104,7 +106,7 @@
           class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
         />
         <label for="tempo" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-          Iniciar temporizador
+          Iniciar com temporizador
         </label>
       </div>
     }

@@ -8,10 +8,11 @@ import { AuthService } from '../../../../services/auth.service';
 import { PocketCollectionsService } from '../../../../services/pocket-collections.service';
 import { ViewServiceComponent } from '../../../kanban/components/view-service/view-service.component';
 import { ViewEsperandoServiceComponent } from '../../../kanban/components/view-esperando-service/view-esperando-service.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-aberto',
-  imports: [FrameNavComponent],
+  imports: [FrameNavComponent, CommonModule],
   standalone: true,
   templateUrl: './aberto.component.html',
   styleUrls: ['./aberto.component.scss']

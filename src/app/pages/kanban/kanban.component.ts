@@ -25,15 +25,16 @@ import { CommonModule, NgOptimizedImage } from '@angular/common'
 
 import {MatTooltipModule} from '@angular/material/tooltip';
 
-import PocketBase from 'pocketbase';
+import PocketBase, { RecordModel } from 'pocketbase';
 
-import { BehaviorSubject, Observable, from, interval, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, from, interval, map, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { ViewServiceComponent } from './components/view-service/view-service.component';
 import { PocketCollectionsService } from '../../services/pocket-collections.service';
 import { AddFormComponent } from './components/add-form/add-form.component';
 import { ImgAuthPipe } from '../../img-auth.pipe';
 import { ViewEsperandoServiceComponent } from './components/view-esperando-service/view-esperando-service.component';
+import { ViewSelectUserComponent } from './components/view-select-user/view-select-user.component';
 
 
 interface TecnicoServicos {
@@ -49,7 +50,7 @@ interface TecnicoServicos {
   templateUrl: './kanban.component.html',
   styleUrl: './kanban.component.scss'
 })
-export class KanbanComponent implements OnInit  {
+export class KanbanComponent  {
   currentTime$: Observable<Date> | undefined;
 
   mouseDown = false;
@@ -62,11 +63,10 @@ export class KanbanComponent implements OnInit  {
   @ViewChild('parent') slider: ElementRef;
   constructor(private change:ChangeDetectorRef, public dialog: MatDialog, public pocketCollectionsSrv: PocketCollectionsService) {
     this.slider = new ElementRef(null);
-  }
 
-  ngOnInit() {
+    this.tecnicosChamados = this.pocketCollectionsSrv.getTecnicosJoinChamados()
 
-    this.pocketCollectionsSrv.getTecnicosJoinChamados().subscribe((tecnicos) => {
+    this.tecnicosChamados.subscribe((tecnicos) => {
       this.tecnicosdata = tecnicos
 
       let mapped = tecnicos.map((user : any) => {
@@ -86,6 +86,8 @@ export class KanbanComponent implements OnInit  {
     // Create an observable that emits the current time every second
     this.currentTime$ = interval(1000).pipe(map(() => new Date()));
   }
+
+  tecnicosChamados : Observable<RecordModel[]> 
 
   tecnicoEntered(event: CdkDragEnter<any>) {
     window.document.querySelector<any>('.cdk-drag-placeholder').style.opacity = "0"
@@ -178,8 +180,22 @@ export class KanbanComponent implements OnInit  {
   }
 
   openService(element : any ){
-    if (element.description != "null")
-      this.dialog.open(ViewServiceComponent, {data: element, disableClose: true});
+    if (element.description != "null"){
+      const chamadoSubject = new Subject<RecordModel>;
+
+      this.tecnicosChamados.subscribe((data) => {
+        data.forEach((tecnico : any) => {
+          tecnico.chamados.forEach((chamado : any) => {
+            if (chamado.id == element.id){
+              chamadoSubject.next(chamado)
+            }
+          })
+        })
+      })
+      
+
+      this.dialog.open(ViewServiceComponent, {data: {data: element, dataObservable: chamadoSubject}, disableClose: true});
+    }
   }
 
   openServiceEsperando(element : any ){

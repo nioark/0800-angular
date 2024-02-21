@@ -1,226 +1,252 @@
-<div  class=" flex flex-col h-screen w-screen items-center bg-transparent p-8">
+<div class="flex h-screen w-screen flex-col items-center bg-transparent p-8">
 	<div>
-		<div class="w-[800px] z-10 bg-slate-900  rounded-lg p-4">
-			<div class="flex items-center h-8 w-full text-white">
+		<div class="z-10 w-[800px] rounded-lg bg-slate-900 p-4">
+			<div class="flex h-8 w-full items-center text-white">
 				<span class="material-symbols-outlined mr-2 text-3xl">
-				home_repair_service
+					home_repair_service
 				</span>
 
-				<h1 class="text-xl w-128">{{data.title}}</h1>
+				<h1 class="w-128 text-xl">{{ data.title }}</h1>
 
-				@if (!em_espera){
-
-					@if (pausado){
-						<button (click)="resumeTimer()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-green-600 hover:text-white border border-green-600 hover:bg-green-700 outline-none ">
-							<span class="material-symbols-outlined">
-							resume
-							</span>
+				@if (!em_espera) {
+					@if (pausado) {
+						<button
+							(click)="resumeTimer()"
+							type="button"
+							class="ml-2 inline-flex items-center rounded-lg border border-green-600 px-1 text-center text-sm font-medium text-green-600 outline-none hover:bg-green-700 hover:text-white"
+						>
+							<span class="material-symbols-outlined"> resume </span>
 							Iniciar
 						</button>
 					} @else {
-						<button (click)="pauseTimer()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 outline-none">
-							<span class="material-symbols-outlined">
-							pause
-							</span>
+						<button
+							(click)="pauseTimer()"
+							type="button"
+							class="ml-2 inline-flex items-center rounded-lg border border-yellow-400 px-1 text-center text-sm font-medium text-yellow-400 outline-none hover:bg-yellow-500 hover:text-white"
+						>
+							<span class="material-symbols-outlined"> pause </span>
 							Pausar
 						</button>
 					}
 
-
-					<button (click)="finalizarChamado()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-purple-700 hover:text-white border border-purple-700 hover:bg-purple-800">
-						<span class="material-symbols-outlined">
-						save
-						</span>
+					<button
+						(click)="finalizarChamado()"
+						type="button"
+						class="ml-2 inline-flex items-center rounded-lg border border-purple-700 px-1 text-center text-sm font-medium text-purple-700 hover:bg-purple-800 hover:text-white"
+					>
+						<span class="material-symbols-outlined"> save </span>
 						Finalizar
 					</button>
 
-					<button (click)="cancelarChamado()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800">
+					<!-- 					<button (click)="cancelarChamado()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800">
 						<span class="material-symbols-outlined">
 						remove
 						</span>
 						Cancelar
-					</button>
+					</button> -->
 				}
 
-				<div  mat-dialog-close class="text-white flex flex-grow justify-end">
-					<span class="material-symbols-outlined text-3xl h-10 hover:cursor-pointer hover:bg-slate-600 rounded-full transition all p-1">
+				<div mat-dialog-close class="flex flex-grow justify-end text-white">
+					<span
+						class="material-symbols-outlined all h-10 rounded-full p-1 text-3xl transition hover:cursor-pointer hover:bg-slate-600"
+					>
 						close
 					</span>
 				</div>
 			</div>
 			<!-- <img [src]="'http://localhost:8090/images/test.png' | useHttpImgSrc | async" alt="imagem caption"> -->
-			@if (!em_espera){				
-				<div class="flex mt-4 text-white">
-					<div class="flex flex-col ml-8">
+			@if (!em_espera) {
+				<div class="mt-4 flex text-white">
+					<div class="ml-8 flex flex-col">
 						<div class="flex items-center">
-							<h1 class="text-sm font-bold mb-1">Técnicos</h1> 
-							<span (click)="openAddView()" class="ml-4 material-symbols-outlined hover:cursor-pointer hover:text-blue-400 transition-all">
-								add_box
+							<h1 class="mb-1 text-sm font-bold">Técnicos</h1>
+							<span
+								(click)="openAddView()"
+								class="material-symbols-outlined ml-2 text-green-400 transition-all hover:cursor-pointer hover:text-blue-400"
+							>
+								person_add
 							</span>
 						</div>
 
 						@if (!criadorParticipa) {
-							<div class="flex items-center h-6 cursor-default" >
-								<span class="material-symbols-outlined mr-2 text-xl" matTooltip="Quem criou pode visualizar">
+							<div class="flex h-6 cursor-default items-center">
+								<span
+									class="material-symbols-outlined mr-2 text-xl"
+									matTooltip="Quem criou pode visualizar"
+								>
 									visibility
 								</span>
-								
-								<h1 class="">{{data.expand.created_by.username}}</h1>
+
+								<h1 class="">
+									{{ data.expand.created_by.username }}
+								</h1>
 							</div>
 						}
 
 						@for (tecnico of data.expand.users; track tecnico) {
-							<div class="flex items-center h-6 cursor-default">
+							<div class="flex h-6 cursor-default items-center">
 								<span class="material-symbols-outlined mr-2 text-xl">
 									account_circle
 								</span>
-								
-								<h1 class="">{{tecnico.username}}</h1>
+
+								<h1 class="">{{ tecnico.username }}</h1>
 							</div>
 						}
-
 					</div>
 
-					<div class="flex flex-col ml-8">
-						<h1 class="text-sm font-bold mb-1">Tempo Decorrido</h1>
+					<div class="ml-8 flex flex-col">
+						<h1 class="mb-1 text-sm font-bold">Tempo Decorrido</h1>
 
 						@for (tecnico of data.expand.users; track tecnico) {
-							<div class="flex items-center h-6">
+							<div class="flex h-6 w-32 items-center">
 								<span class="material-symbols-outlined mr-2 text-xl">
 									timer
 								</span>
 
-								<h1 class="">{{tecnico.duracao_total_str}}</h1>
-								@if (tecnico.duracao_status == "em_pausa" || tecnico.duracao_total_str == "00:00:00") {
-									<span class="ml-2 material-symbols-outlined text-yellow-400 hover:text-yellow-200 transition-all hover:cursor-pointer">
-										pause
-									</span>	
+								@if (
+									tecnico.duracao_status == "em_pausa" ||
+									tecnico.duracao_total_str == "00:00:00"
+								) {
+									<h1 class="animate-pulse transition-all">
+										{{ tecnico.duracao_total_str }}
+									</h1>
+									<div class="flex w-full justify-end">
+										<span
+											class="material-symbols-outlined text-yellow-400 transition-all hover:cursor-pointer hover:text-yellow-200"
+										>
+											pause
+										</span>
+									</div>
 								} @else {
-									<span class="ml-2 material-symbols-outlined text-green-400 hover:text-green-200 transition-all hover:cursor-pointer">
-										resume
-									</span>
+									<h1 class="transition-all">
+										{{ tecnico.duracao_total_str }}
+									</h1>
+									<div class="flex w-full justify-end">
+										<span
+											class="material-symbols-outlined text-green-400 transition-all hover:cursor-pointer hover:text-green-200"
+										>
+											resume
+										</span>
+									</div>
 								}
-
 							</div>
 						}
-
 					</div>
 				</div>
 			}
 
-			<div class="flex flex-col ml-8 mt-4 text-white">
-					<h1 class="text-sm font-bold">Empresa</h1>
-					<div class="flex items-center h-8">
-						<span class="material-symbols-outlined mr-2 text-xl">
-							corporate_fare
-						</span>
-
-						<h1 class="">{{data.cliente}}</h1>
-					</div>
-				</div>
-
-			@if (data.description != ""){
-				<div class="flex items-center h-8 mt-6 text-white">
-					<span class="material-symbols-outlined mr-2 text-3xl">
-					subject
+			<div class="ml-8 mt-4 flex flex-col text-white">
+				<h1 class="text-sm font-bold">Empresa</h1>
+				<div class="flex h-8 items-center">
+					<span class="material-symbols-outlined mr-2 text-xl">
+						corporate_fare
 					</span>
+
+					<h1 class="">{{ data.cliente }}</h1>
+				</div>
+			</div>
+
+			@if (data.description != "") {
+				<div class="mt-6 flex h-8 items-center text-white">
+					<span class="material-symbols-outlined mr-2 text-3xl"> subject </span>
 
 					<h1 class="text-xl">Descrição</h1>
 				</div>
 
-				<div class="flex mt-4 text-white">
-					<div class="text-gray-100 w-[500px] ml-10">
-						{{data.description}}
+				<div class="mt-4 flex text-white">
+					<div class="ml-10 w-[500px] text-gray-100">
+						{{ data.description }}
 					</div>
 				</div>
 			}
-				
+
 			@if (!em_espera) {
-				<div class="flex items-center h-8 mt-6 text-white">
-					<span class="material-symbols-outlined mr-2 text-3xl">
-					wysiwyg
-					</span>
+				<div class="mt-6 flex h-8 items-center text-white">
+					<span class="material-symbols-outlined mr-2 text-3xl"> wysiwyg </span>
 
 					<h1 class="text-xl">Relátorios</h1>
 				</div>
 
-				<div class="p-0 flex-col">
-				@if (mostrarEditor) {					
-					<editor
-					  class="mt-4"
-					  #editor 
-					  [init]="{ 
-						  plugins: '  autolink wordcount lists link image searchreplace fullscreen media table code  directionality codesample',
-						  base_url: '/tinymce',
-						  suffix: '.min',
-						  selector: 'textarea',
+				<div class="flex-col p-0">
+					@if (mostrarEditor) {
+						<editor
+							class="mt-4"
+							#editor
+							[init]="{
+								plugins:
+									'  autolink wordcount lists link image searchreplace fullscreen media table code  directionality codesample',
+								base_url: '/tinymce',
+								suffix: '.min',
+								selector: 'textarea',
 
-						  codesample_languages: [
-				                { text: 'HTML/XML', value: 'markup' },
-				                { text: 'CSS', value: 'css' },
-				                { text: 'SQL', value: 'sql' },
-				                { text: 'Bash', value: 'sh' },
-				                { text: 'JavaScript', value: 'javascript' },
-				                { text: 'Go', value: 'go' },
-				                { text: 'Dart', value: 'dart' },
-				                { text: 'Zig', value: 'zig' },
-				                { text: 'Rust', value: 'rust' },
-				                { text: 'Lua', value: 'lua' },
-				                { text: 'PHP', value: 'php' },
-				                { text: 'Ruby', value: 'ruby' },
-				                { text: 'Python', value: 'python' },
-				                { text: 'Java', value: 'java' },
-				                { text: 'C', value: 'c' },
-				                { text: 'C#', value: 'csharp' },
-				                { text: 'C++', value: 'cpp' },
-				                { text: 'Markdown', value: 'markdown' },
-				                { text: 'Swift', value: 'swift' },
-				                { text: 'Kotlin', value: 'kotlin' },
-				                { text: 'Elixir', value: 'elixir' },
-				                { text: 'Scala', value: 'scala' },
-				                { text: 'Julia', value: 'julia' },
-				                { text: 'Haskell', value: 'haskell' },
-				          ],
-						  toolbar: 'styles | alignleft aligncenter alignright | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'}
-					  "
-					></editor>
+								codesample_languages: [
+									{ text: 'HTML/XML', value: 'markup' },
+									{ text: 'CSS', value: 'css' },
+									{ text: 'SQL', value: 'sql' },
+									{ text: 'Bash', value: 'sh' },
+									{ text: 'JavaScript', value: 'javascript' },
+									{ text: 'Go', value: 'go' },
+									{ text: 'Dart', value: 'dart' },
+									{ text: 'Zig', value: 'zig' },
+									{ text: 'Rust', value: 'rust' },
+									{ text: 'Lua', value: 'lua' },
+									{ text: 'PHP', value: 'php' },
+									{ text: 'Ruby', value: 'ruby' },
+									{ text: 'Python', value: 'python' },
+									{ text: 'Java', value: 'java' },
+									{ text: 'C', value: 'c' },
+									{ text: 'C#', value: 'csharp' },
+									{ text: 'C++', value: 'cpp' },
+									{ text: 'Markdown', value: 'markdown' },
+									{ text: 'Swift', value: 'swift' },
+									{ text: 'Kotlin', value: 'kotlin' },
+									{ text: 'Elixir', value: 'elixir' },
+									{ text: 'Scala', value: 'scala' },
+									{ text: 'Julia', value: 'julia' },
+									{ text: 'Haskell', value: 'haskell' }
+								],
+								toolbar:
+									'styles | alignleft aligncenter alignright | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'
+							}"
+						></editor>
 
-					<div class="w-full flex justify-center">
-						<button (click)="sendRelatorio()" type="button" class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-							<span class="material-symbols-outlined">
-							send
-							</span>
-							Enviar relatório
-						</button>
-					</div>
+						<div class="flex w-full justify-center">
+							<button
+								(click)="sendRelatorio()"
+								type="button"
+								class="me-2 mt-2 inline-flex items-center rounded-lg bg-blue-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+							>
+								<span class="material-symbols-outlined"> send </span>
+								Enviar relatório
+							</button>
+						</div>
 
-					<!-- <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"> -->
-				}
-				@else {
-					<div class="w-full flex justify-center">
-						<button (click)="setEditor(true)" type="button" class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-							<span class="material-symbols-outlined">
-							Edit
-							</span>
-							Escrever relatório
-						</button>
-					</div>
-				}
+						<!-- <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"> -->
+					} @else {
+						<div class="flex w-full justify-center">
+							<button
+								(click)="setEditor(true)"
+								type="button"
+								class="me-2 mt-2 inline-flex items-center rounded-lg bg-blue-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+							>
+								<span class="material-symbols-outlined"> Edit </span>
+								Escrever relatório
+							</button>
+						</div>
+					}
 
-
-
-				@for (item of relatorios; track item) {
-					<app-service-relatorio
-						avatar_url="url"
-						name="Jeferson"
-					    [date]= item.date
-					    [html]= item.relatorio/>
-					<!-- <hr class="w-48 h-1 mx-auto my-4 bg-gray-100 border-0 rounded md:my-10 dark:bg-gray-700"> -->
-
-			    }
-				
-			</div>
-		}
+					@for (item of relatorios; track item) {
+						<app-service-relatorio
+							avatar_url="url"
+							name="Jeferson"
+							[date]="item.date"
+							[html]="item.relatorio"
+						/>
+						<!-- <hr class="w-48 h-1 mx-auto my-4 bg-gray-100 border-0 rounded md:my-10 dark:bg-gray-700"> -->
+					}
+				</div>
+			}
+		</div>
 		<div class="h-8"></div>
 	</div>
 </div>

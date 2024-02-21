@@ -31,6 +31,7 @@
     "@editorjs/simple-image": "^1.6.0",
     "@tinymce/tinymce-angular": "^7.0.0",
     "editorjs-html": "^3.4.3",
+    "fast-fuzzy": "^1.12.0",
     "flowbite": "^2.2.1",
     "pocketbase": "^0.21.1",
     "rxjs": "~7.8.0",
@@ -50,6 +51,8 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "~5.2.2"

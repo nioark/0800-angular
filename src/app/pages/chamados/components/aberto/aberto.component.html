@@ -6,14 +6,20 @@
         <h2 class="text-3xl font-bold sm:text-4xl">Seus chamados em espera</h2>
 
         <p class="mt-4 text-gray-900">
-          Segue a lista de chamados esperando por atendimento atribuidos a você
+          Segue a lista de chamados em espera que podem ser atendidos por você.
         </p>
       </div>
 
       @for (item of chamados ; track item.id) {
         <div
-          class="mt-8 flow-root w-[600px] cursor-pointer rounded-md border-2 border-transparent bg-yellow-100 px-4 py-3 hover:border-2 hover:border-blue-500"
+          class="mt-8 flow-root w-[600px] cursor-pointer rounded-md border-b-2 bg-yellow-100 px-4 py-3 hover:border-b-2 hover:scale-105 transition-all"
           (click)="openService(item)"
+           [ngClass]="{
+                'border-green-500': item.priority === -1,
+                'border-blue-500': item.priority === 0,
+                'border-yellow-500': item.priority === 1,
+                'border-red-500': item.priority === 2
+          }"
         >
           <dl class="-my-3 text-sm">
             <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">

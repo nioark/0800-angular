@@ -35,8 +35,6 @@ func statusPausaLogic(i interface{}, app *daos.Dao) error {
             chamadoID = v.Record.GetString("chamado")
 
     }
-
-    log.Println("Chamado update: ", chamadoID)
     // filter := fmt.Sprintf( "chamado.id='%v'", chamadoID)
 
     query := app.RecordQuery("duracao_chamados").AndWhere(dbx.HashExp{"chamado": chamadoID})         // optional filter params
@@ -53,25 +51,14 @@ func statusPausaLogic(i interface{}, app *daos.Dao) error {
             em_andamento = true
         }
     }
-
-    log.Println("Em andamento: ", em_andamento)
-
     record, err := app.FindRecordById("chamados", chamadoID)
-    log.Println("Record before: ", record)
     if (err == nil) {
 
         if (em_andamento) {
-            log.Println("Setado para em_andamento")
             record.Set("status", "em_andamento")
         } else {
-            log.Println("Setado para em_pausa")
             record.Set("status", "em_pausa")
         }
-
-        log.Println("Record after: ", record)
-        log.Println("Record status: ", record.GetString("status"))
-
-
         err := app.SaveRecord(record)
         log.Println("Record save error: ", err)
         if (err != nil) {
@@ -88,10 +75,6 @@ func finalizarChamado(c echo.Context) error {
     // admin, _ := c.Get(apis.ContextAdminKey).(*models.Admin)
     record, _ := c.Get(apis.ContextAuthRecordKey).(*models.Record)
     chamado_id := c.FormValue("chamado_id")
-
-    log.Println("User api id: ", record.Id)
-    log.Println("Chamado id: ", chamado_id)
-
     chamado, err := app.Dao().FindRecordById("chamados", chamado_id)
 
     if (err != nil) {
@@ -109,10 +92,8 @@ func finalizarChamado(c echo.Context) error {
     app.Dao().SaveRecord(chamado)
 
     records, err := app.Dao().FindRecordsByFilter("horas", fmt.Sprintf( "chamado.id='%v'", chamado_id), "created",-1, 0)
-    log.Println("Records: ", records, err)
     if (err == nil) {
         for _, record := range records {
-            log.Println("Setando record: ",record)
             record.Set("end_time", time.Now())
             app.Dao().SaveRecord(record)
         }
@@ -140,9 +121,6 @@ func main() {
     })
 
     app.OnRecordsListRequest("chamados").Add(func(e *core.RecordsListEvent) error {
-        // log.Println(e.HttpContext)
-        log.Println(e.Result.Items)
-
         admin, ok := e.HttpContext.Get(apis.ContextAdminKey).(*models.Admin)
         if (admin != nil && ok) {
             return nil
@@ -159,7 +137,6 @@ func main() {
                 created_by := record.GetString("created_by")
                 public := record.GetBool("public")
                 status := record.GetString("status")
-                log.Println(created_by, authRecord.Id, created_by != authRecord.Id)
 
                 isOwner := created_by == authRecord.Id
                 isInChamado := slices.Contains(users, authRecord.Id)
@@ -167,7 +144,6 @@ func main() {
 
                 if ((!isParticipant && status != "em_espera") ||
                     (!isParticipant && status == "em_espera" && !public)) {
-                    log.Println("Removendo fields para ", authRecord.Username())
                     // record.Set("title", record.GetString("title") + "*" )
                     record.Set("description", "null")
                     record.Set("cliente", "null")
@@ -181,15 +157,12 @@ func main() {
 
     //"Censura" de dados relevantes
     app.OnRealtimeBeforeMessageSend().Add(func(e *core.RealtimeMessageEvent) error {
-        log.Println("OnRealtimeBeforeMessageSend")
-
         // Retrieve authentication record from the client
+        log.Println("RealtimeBeforeMessageSend", e.Message.Name)
         authRecord, _ := e.Client.Get(apis.ContextAuthRecordKey).(*models.Record)
 
         // Só executar se o usuário estiver autenticado e na tabela chamados
         if authRecord != nil && e.Message.Name == "chamados/*" {
-            log.Println("Auth ID:", authRecord.Id)
-            log.Println("Auth Username:", authRecord.Username())
 
             // Unmarshal message data
             var messageData map[string]interface{}
@@ -211,7 +184,6 @@ func main() {
                 for i, v := range usersI {
                     users[i] = fmt.Sprint(v)
                 }
-                log.Println(users)
 
                 isOwner := record["created_by"] == authRecord.Id
                 isInChamado := slices.Contains(users, authRecord.Id)
@@ -230,8 +202,6 @@ func main() {
 
             }
 
-            log.Println("Modified message data:", messageData)
-
             jsonData, err := json.Marshal(messageData)
             if err != nil {
                 log.Println("Error marshaling message data:", err)
@@ -241,10 +211,6 @@ func main() {
             // Substitui a mensagem
             e.Message.Data = jsonData
         }
-
-        // Log message details
-        log.Println("Message name:", e.Message.Name)
-        log.Println("Message data:", string(e.Message.Data))
 
         return nil
     })
@@ -258,23 +224,22 @@ func main() {
         if (status == "em_pausa" || status == "finalizado") {
             return nil
         }
-        log.Println("Status: ", status)
 
         if (len(users) == 0) {
             e.Record.Set("status", "em_espera")
         } else if (len(users) > 0) {
-            log.Println("Status: ", status)
 
             records, err := app.Dao().FindRecordsByFilter("horas", "chamado.id = '"+e.Record.GetString("id")+"'", "created",-1, 0)
 
             if (err == nil) {
+               if (len(records) == 0) {
+                    e.Record.Set("status", "aguardando")
+                }
+            } else {
                 e.Record.Set("status", "em_pausa")
-                return nil
             }
 
-            if (len(records) == 0) {
-                e.Record.Set("status", "em_pausa")
-            }
+
         }
 
         return nil
@@ -289,7 +254,6 @@ func main() {
         if (len(users) == 0) {
             e.Record.Set("status", "em_espera")
         } else if (len(users) > 0) {
-            log.Println("Status: ", status)
             if (status != "em_pausa") {
                 e.Record.Set("status", "aguardando")
             }
@@ -316,15 +280,11 @@ func main() {
 
         filter := fmt.Sprintf( "user.id = '%v' && end_time = '' && chamado.id = '%v'", user, chamado)
 
-        log.Println(filter)
-
         records, err := app.Dao().FindRecordsByFilter("horas", filter, "created",-1, 0)
         if (err != nil || len(records) > 0) {
             log.Println("Já existe uma hora registrada para este usuário")
             return fmt.Errorf("Já existe uma hora registrada para este usuário")
         }
-
-        log.Println(user)
 
         return nil
     })
@@ -397,13 +357,10 @@ func sanitizeFilename(filename string) string {
 }
 
 func uploadFile(c echo.Context) error {
-    log.Println("Received request")
-
     file, err := c.FormFile("image")
     if err != nil {
         return c.JSON(400, err)
     }
-    log.Println(file.Filename)
 
     src, err := file.Open()
     if err != nil {
