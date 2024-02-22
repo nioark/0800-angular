@@ -5,6 +5,7 @@ import { RecordModel } from 'pocketbase';
 import { Searcher } from 'fast-fuzzy';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../../environment';
 
 @Component({
   selector: 'app-view-select-user',
@@ -19,6 +20,7 @@ export class ViewSelectUserComponent {
   users: any[] = [];
 
   data_search : any[] = [];
+  apiUrl = environment.apiUrl
 
   constructor(@Inject(MAT_DIALOG_DATA) public users_data: any, public pocketSrv: PocketCollectionsService) {
     console.log("Chamado data: " , users_data)

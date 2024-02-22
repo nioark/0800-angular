@@ -25,11 +25,10 @@ import { Observable, tap } from 'rxjs';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor() {
-    console.log('AuthInterceptor created');
   }
 
   intercept(request: HttpRequest<any>,next: HttpHandler): Observable<HttpEvent<any>> {
-    console.log('Outgoing HTTP request', request);
+    // console.log('Outgoing HTTP request', request);
 
     const pocketbase_auth = localStorage.getItem('pocketbase_auth');
 
@@ -39,7 +38,7 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     const parsed = JSON.parse(pocketbase_auth);
-    console.log(parsed, "Added token")
+    // console.log(parsed, "Added token")
 
     if (!request.headers.has('Authorization')) {
       const requestAuthed = request.clone({
@@ -47,13 +46,13 @@ export class AuthInterceptor implements HttpInterceptor {
           Authorization: parsed['token'],
         },
       })
-      console.log("Authed request: ", requestAuthed)
+      // console.log("Authed request: ", requestAuthed)
       return next.handle(requestAuthed);
     }
     // Modify the request object
     return next.handle(request).pipe(
       tap((event: HttpEvent<any>) => {
-        console.log('Incoming HTTP response', event);
+        // console.log('Incoming HTTP response', event);
       })
     );
   }

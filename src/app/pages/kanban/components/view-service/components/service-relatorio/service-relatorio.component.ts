@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { SanitizeHtmlPipe } from "../../../../../../sanitize-html.pipe";
+import { RecordModel } from 'pocketbase';
+import { environment } from '../../../../../../environment';
 
 @Component({
     selector: 'app-service-relatorio',
@@ -9,11 +11,11 @@ import { SanitizeHtmlPipe } from "../../../../../../sanitize-html.pipe";
     imports: [SanitizeHtmlPipe]
 })
 export class ServiceRelatorioComponent {
-  @Input({ required: true }) name!: string;
-  @Input({ required: true }) avatar_url!: string;
   @Input({ required: true }) date!: Date;
-  @Input({ required: false }) image_url!: string | null;
+  @Input({ required: true }) user!: RecordModel;
   @Input({ required: true }) html!: string;
+
+  apiUrl = environment.apiUrl
 
   timeStamp : string = "";
 

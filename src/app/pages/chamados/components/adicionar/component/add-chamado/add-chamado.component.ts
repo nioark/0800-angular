@@ -5,27 +5,51 @@ import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import { ApiService } from '../../../../../../services/api.service';
+import { MatDialog } from '@angular/material/dialog';
+import { SelectClientsComponent } from '../select-clients/select-clients.component';
 
 @Component({
   selector: 'app-add-chamado',
   standalone: true,
-  imports: [MatFormFieldModule, MatSelectModule, MatInputModule, FormsModule, MatTooltipModule],
+  imports: [MatFormFieldModule, MatSelectModule, MatInputModule, FormsModule, MatTooltipModule, MatAutocompleteModule],
   templateUrl: './add-chamado.component.html',
   styleUrl: './add-chamado.component.scss'
 })
 export class AddChamadoComponent {
-  @ViewChild('cliente') cliente :ElementRef | undefined;
   @ViewChild('sobre') sobre :ElementRef | undefined;
   @ViewChild('descricao') descricao :ElementRef | undefined;
   deixar_aberto: boolean = false;
   deixar_publico: boolean = true;
   selected = 0;
 
-  constructor(public authSrv : AuthService){}
+  cliente : any | undefined
+
+  pessoas: any[] = [
+    
+  ]
+
+  constructor(public authSrv : AuthService, api : ApiService, private matDialog: MatDialog) {
+    api.FetchPessoas().subscribe((pessoas) => {
+      this.pessoas = pessoas
+    })
+  }
+
+  selectCliente() {
+    this.matDialog.open(SelectClientsComponent).afterClosed().subscribe(cliente => { 
+      cliente!.email = cliente.email.trim()
+      cliente!.celular = cliente.celular.trim()
+      cliente!.telefone = cliente.telefone.trim()
+      console.log("Cliente selecionado: ", cliente)
+
+      this.cliente = cliente
+    })
+  }
   
   async createChamado(event : Event) {
     event.preventDefault()
-    const cliente = this.cliente?.nativeElement.value
+    const cliente = this.cliente.nome
     const descricao = this.descricao?.nativeElement.value
     const sobre = this.sobre?.nativeElement.value
 
@@ -42,6 +66,7 @@ export class AddChamadoComponent {
         "description": descricao, 
         "title": sobre,
         "cliente": cliente,
+        "cliente_data": JSON.stringify(this.cliente),
         "priority": this.selected,
         "public": this.deixar_publico,
         "created_by": pb.authStore.model?.["id"]

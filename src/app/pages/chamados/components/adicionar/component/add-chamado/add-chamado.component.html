@@ -16,12 +16,43 @@
         </svg>
       </span>
       <input
-        #cliente
         type="text"
         id="website-admin"
-        class="block w-full min-w-0 flex-1 rounded-none rounded-e-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-        placeholder="H.BREMER FILHOS E LTDA"
+        class="block w-full min-w-0 flex-1 rounded-none rounded-e-0 border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+        [value]="cliente?.nome"
+        placeholder="H.BREMER FILHOS E LTDA..."
+        disabled
       />
+      <span (click)="selectCliente()" class="inline-flex justify-center items-center border-s-0 rounded-e-lg w-32 border-gray-300 font-bold text-white hover:bg-blue-600 bg-blue-700 px-3 text-md cursor-pointer ">
+        Selecionar
+      </span>
+    </div>
+
+    <div class="text-md ml-2">
+      @if (cliente?.celular){
+        <div class="flex items-center mt-2">
+          <span class="material-symbols-outlined mr-1">
+          phone_iphone
+          </span>
+          {{cliente.celular}}
+        </div>
+      }
+      @if (cliente?.telefone){
+        <div class="flex items-center mt-2">
+          <span class="material-symbols-outlined mr-1">
+          call
+          </span>
+          {{cliente.telefone}}
+        </div>
+      }
+      @if (cliente?.email){
+        <div class="flex items-center mt-2">
+          <span class="material-symbols-outlined mr-1">
+          email
+          </span>
+          {{cliente.email}}
+        </div>
+      }
     </div>
 
     <label

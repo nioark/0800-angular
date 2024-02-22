@@ -36,9 +36,11 @@
 
           <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
             <dt class="font-medium text-gray-900">Técnico</dt>
+            <div class="flex items-center">
             @for (user of item.expand.users ; track user) {
-              <dd class="text-gray-700 sm:col-span-2">{{item.expand.created_by.username}}</dd>
+              <dd class="text-gray-700 sm:col-span-2 mr-2">{{user.username}}</dd>
             }
+            </div>
           </div>
         </dl>
       </div>

@@ -29,10 +29,18 @@
 
               class="mt-2 flex h-8 max-h-8 w-full cursor-pointer items-center rounded-full bg-slate-700 px-1 py-1 hover:bg-slate-600 transition-all"
             >
-              <img
-                class="h-6 w-6 rounded-full"
-                src="https://as2.ftcdn.net/v2/jpg/05/49/98/39/1000_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"
-              />
+              @if (item.avatar != ""){
+                <img
+                  class="h-6 w-6 rounded-full"
+                  [src]="apiUrl + '/api/files/users/' + item.id + '/'  + item.avatar"
+                />
+
+              } @else {
+                <img
+                  class="h-6 w-6 rounded-full"
+                  src="https://as2.ftcdn.net/v2/jpg/05/49/98/39/1000_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"
+                />
+              }
               @if (item.chamados.length == 0) {
                 <span class="ml-1 mr-1 flex h-2 w-2 rounded-full bg-green-500"></span>
               }
@@ -168,7 +176,7 @@
                   </span>
                 }
                 @if (item.status == "em_andamento"){
-                  <span class="material-symbols-outlined text-green-400 hover:animate-pulse" matTooltip="Chamado em andamento">
+                  <span class="material-symbols-outlined text-green-400 animate-pulse" matTooltip="Chamado em andamento">
                   keyboard_double_arrow_up
                   </span>
                 }

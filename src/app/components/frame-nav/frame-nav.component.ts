@@ -5,6 +5,7 @@ import { PocketCollectionsService } from '../../services/pocket-collections.serv
 import { Subscription } from 'rxjs';
 import Client, { AuthModel, RecordModel } from 'pocketbase';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { environment } from '../../environment';
 
 @Component({
   selector: 'app-frame-nav',
@@ -25,6 +26,8 @@ export class FrameNavComponent {
   user : AuthModel
 
   pb : Client
+
+  apiUrl = environment.apiUrl
 
   constructor(public router: Router, pocketCollectionsSrv: PocketCollectionsService) {
     this.pb = pocketCollectionsSrv.pb

@@ -1,16 +1,19 @@
 import { Injectable, SecurityContext } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, forkJoin, from, map, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, forkJoin, from, map, of, switchMap } from 'rxjs';
 import { RecordSubscription, RecordModel } from 'pocketbase'; // Assuming these imports are correct
 import PocketBase from 'pocketbase';
 import edjsHTML from 'editorjs-html';
 import { DomSanitizer } from '@angular/platform-browser';
+import { environment } from '../environment';
+import { ApiService } from './api.service';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PocketCollectionsService {
 
-  pb = new PocketBase('http://localhost:8090');
+  pb = new PocketBase(environment.apiUrl);
 
   private chamadosEvent: Subject<RecordSubscription<RecordModel>>;
   private relatoriosEvent: Subject<RecordSubscription<RecordModel>>;
@@ -24,8 +27,7 @@ export class PocketCollectionsService {
   public em_andamento_event = new Subject<Number>;
   public aguardando_event = new Subject<Number>;
 
-  constructor( public domSanitizerSrv: DomSanitizer) {
-    console.log("Subscribed")
+  constructor( public domSanitizerSrv: DomSanitizer, private apiSrv : ApiService, private http: HttpClient) {
     this.chamadosEvent = new Subject<RecordSubscription<RecordModel>>();
     this.relatoriosEvent = new Subject<RecordSubscription<RecordModel>>();
     this.horasEvent = new Subject<RecordSubscription<RecordModel>>();
@@ -133,7 +135,7 @@ export class PocketCollectionsService {
   countChamadosWithStatus(status : string): Observable<Number>{
     const chamadoSubject = new Subject<Number>;
 
-    const pb = new PocketBase('http://localhost:8090');
+    const pb = new PocketBase(environment.apiUrl);
 
     pb.collection('chamados').getList(1, 50, { filter: `status = '${status}'` }).then((res) => {;
       chamadoSubject.next(res.totalItems);
@@ -293,11 +295,6 @@ export class PocketCollectionsService {
     return component;
   }
 
-
-  _parse(relatorio : any) : {relatorio: string, date: Date} {
-      return {relatorio: relatorio['relatorio'], date: new Date(relatorio['created'])}
-  }
-
   getRelatoriosParsed(chamado_id : string): Observable<any[]>{
     const edjsParser = edjsHTML({image: this.customParser});
     let relatorios : any[] = []
@@ -308,7 +305,7 @@ export class PocketCollectionsService {
       filter: `chamado = '${chamado_id}'`, sort: '-created', expand: 'user'
     }).then((item) => {
       item.forEach(relatorio => {
-        relatorios.push(this._parse(relatorio))
+        relatorios.push(relatorio)
       })
 
       chamadoSubject.next(relatorios);
@@ -317,7 +314,7 @@ export class PocketCollectionsService {
     this.relatoriosEvent.subscribe((e) => {
       const { action, record } = e;
       if (action === "create") {
-        relatorios.unshift(this._parse(record)); 
+        relatorios.unshift(record); 
         chamadoSubject.next(relatorios);
       }
     })
@@ -331,27 +328,67 @@ export class PocketCollectionsService {
     })
   }
 
-  startChamado(chamado_id : string){
+  startChamado(chamado_id : string) : Observable<boolean>{
     if (!this.pb.authStore.isValid)
-      return;
-    const data = {
-        "start_time": new Date(),
-        "user": this.pb.authStore.model!['id'],
-        "chamado": chamado_id
-    };
+      return of(false);
 
-    this.pb.collection('horas').create(data, { requestKey: "startchamado"});
+    let startedSubject = new Subject<boolean>();
+
+    this.apiSrv.GetTime().subscribe((time) => {
+      const data = {
+          "start_time": time,
+          "user": this.pb.authStore.model!['id'],
+          "chamado": chamado_id
+      };
+
+      let promise = this.pb.collection('horas').create(data, { requestKey: "startchamado"});
+      promise.then((hora) => {
+        startedSubject.next(true);
+      })
+
+      promise.catch((error) => {
+        startedSubject.next(false);
+      })
+    })
+
+    return startedSubject.asObservable();
   }
 
-  pauseChamado(chamado_id : string){
+  pauseChamado(chamado_id : string) : Observable<boolean>{
     if (!this.pb.authStore.isValid)
-      return;
+      return of(false);
 
-    this.pb.collection('horas').getFirstListItem(`chamado.id = '${chamado_id}' && user.id = '${this.pb.authStore.model!["id"]}' && end_time = ''`, {requestKey: "pausechamado"}).then((hora) => {;
-      console.log(hora)
-      this.pb.collection('horas').update(hora.id, {
-        end_time : new Date()
-      }, {requestKey: "udpdatehora"})
+    let pauseSubject = new Subject<boolean>();
+
+
+    this.apiSrv.GetTime().subscribe((time) => {
+      this.pb.collection('horas').getFirstListItem(`chamado.id = '${chamado_id}' && user.id = '${this.pb.authStore.model!["id"]}' && end_time = ''`, {requestKey: "pausechamado"}).then((hora) => {;
+        let promise = this.pb.collection('horas').update(hora.id, {
+          end_time : time
+        }, {requestKey: "udpdatehora"})
+
+        promise.then((hora) => {
+          pauseSubject.next(true);
+        })
+
+        promise.catch((error) => {
+          pauseSubject.next(false);
+        })
+      })
+    })
+
+    return pauseSubject.asObservable();
+  }
+
+  updateChamadoUsers(chamadoID : string, userIds : string[]){
+    //http post to /updateUsersChamado
+    const postData = {
+      chamadoId: chamadoID,
+      userIds: userIds
+    };
+
+    this.http.post(environment.apiUrl + '/updateUsersChamado', postData).subscribe((data : any) => {
+      console.log("Update chamados data: ",data)
     })
   }
 

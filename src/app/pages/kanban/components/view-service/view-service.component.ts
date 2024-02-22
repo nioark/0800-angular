@@ -40,6 +40,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ViewSelectUserComponent } from '../view-select-user/view-select-user.component';
 import { ConfirmFinalizarComponent } from './components/confirm-finalizar/confirm-finalizar.component';
+import { ApiService } from '../../../../services/api.service';
 
 @Component({
   selector: 'app-view-service',
@@ -58,8 +59,7 @@ import { ConfirmFinalizarComponent } from './components/confirm-finalizar/confir
 })
 export class ViewServiceComponent implements OnDestroy {
   // Define observer variable
-  clockObserver$: Observable<String>;
-  time: String = '';
+  clockObserver$: Observable<number>;
 
   pb: Client;
 
@@ -70,6 +70,7 @@ export class ViewServiceComponent implements OnDestroy {
   em_espera: boolean = false;
   em_andamento: boolean = false;
   admin: boolean = false;
+  participando: boolean = false;
 
   criadorParticipa: boolean = false;
 
@@ -78,6 +79,8 @@ export class ViewServiceComponent implements OnDestroy {
   clockIntervalSubscription: Subscription | undefined;
 
   data: any;
+  serverTime: Date = new Date();
+  timeDifference: Date = new Date();
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -86,6 +89,7 @@ export class ViewServiceComponent implements OnDestroy {
     public dialog: MatDialog,
     public AuthSrv: AuthService,
     public pocketSrv: PocketCollectionsService,
+    private api: ApiService
   ) {
     this.data = dataInjected.data;
 
@@ -97,7 +101,7 @@ export class ViewServiceComponent implements OnDestroy {
       this.em_espera = true;
     }
 
-    console.log('This.data', this.data);
+    // console.log('This.data', this.data);
 
     this.data.expand.users.forEach((user: any) => {
       if (user.id == this.data.expand.created_by.id) {
@@ -105,29 +109,54 @@ export class ViewServiceComponent implements OnDestroy {
       }
     });
 
+    this.participando = this.data.users.includes(this.pocketSrv.pb.authStore.model!["id"]);
+
     if (this.data.status == 'em_andamento') {
       this.em_andamento = true;
     }
 
-    this.clockObserver$ = interval(1000).pipe(
-      map(() => new Date().toLocaleTimeString().toString()),
-    );
+    api.GetTime().subscribe((time) => {
+        this.serverTime = time
+        let now_date =  new Date() 
+        let time_diff = now_date.getTime() - this.serverTime.getTime()
+        this.timeDifference = new Date(time_diff)
+        // Calculate hours
+        let hours = Math.floor(time_diff / (1000 * 60 * 60));
+        // Calculate remaining milliseconds after subtracting hours
+        let remainingMillisecondsAfterHours = time_diff % (1000 * 60 * 60);
+
+        // Calculate minutes
+        let minutes = Math.floor(remainingMillisecondsAfterHours / (1000 * 60));
+        // Calculate remaining milliseconds after subtracting minutes
+        let remainingMillisecondsAfterMinutes = remainingMillisecondsAfterHours % (1000 * 60);
+
+        // Calculate seconds
+        let seconds = Math.floor(remainingMillisecondsAfterMinutes / 1000);
+
+        // Calculate milliseconds
+        let milliseconds = remainingMillisecondsAfterMinutes % 1000;
+
+        // Format the time difference string
+        let timeDiffStrFormated = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}:${milliseconds.toString().padStart(4, '0')}`;
+        console.log("\n","Sua maquina: ", now_date.toLocaleTimeString(), "\n", "Servidor: ", this.serverTime.toLocaleTimeString(), "\n", "Diferença de tempo entre o servidor: ", timeDiffStrFormated)
+
+    })
+
+    this.clockObserver$ = interval(1000)
 
     this.pocketSrv.getRelatoriosParsed(this.data.id).subscribe((data) => {
       this.relatorios = data;
+      this.relatorios.map((relatorio: any) => {
+        relatorio.created = new Date(relatorio.created);
+      })
+      console.log(this.relatorios);
     });
 
     this.pb = AuthSrv.GetPocketBase();
 
-    var endpointsUrl = {
-      byFile: 'http://localhost:8090/uploadFile', // Your backend file uploader endpoint
-      byUrl: 'http://localhost:8090/fetchUrl', // Your endpoint that provides uploading by Url
-    };
-
     if (!this.em_espera) {
       this.clockIntervalSubscription = this.clockObserver$.subscribe(
         (currentTime) => {
-          this.time = currentTime;
           this.updateTimers();
         },
       );
@@ -140,7 +169,7 @@ export class ViewServiceComponent implements OnDestroy {
           //Primeira vez abrindo o chamado
           if (duracao.last_end == '' && duracao.status == 'em_andamento') {
             let last_start = new Date(duracao.last_start) as any;
-            let date_now = new Date() as any;
+            let date_now = this.getCurrentServerTime() as any;
 
             const dates_difference = (date_now - last_start) / 1_000;
             duracao_total_seconds = dates_difference;
@@ -152,7 +181,7 @@ export class ViewServiceComponent implements OnDestroy {
             duracao.status == 'em_andamento'
           ) {
             let last_start = new Date(duracao.last_start) as any;
-            let date_now = new Date() as any;
+            let date_now = this.getCurrentServerTime() as any;
 
             duracao_total_seconds = (date_now - last_start) / 1_000;
             duracao_total_seconds += duracao.total_elapsed_time_seconds;
@@ -216,6 +245,10 @@ export class ViewServiceComponent implements OnDestroy {
     });
   }
 
+  getCurrentServerTime() : Date {
+    return new Date(new Date().getTime() - this.timeDifference.getTime())
+  }
+
   ngOnDestroy() {
     if (this.clockIntervalSubscription)
       this.clockIntervalSubscription.unsubscribe();
@@ -246,14 +279,15 @@ export class ViewServiceComponent implements OnDestroy {
         });
 
         // console.log("Last ",[...usr, this.pb.authStore.model!["id"]])
+        this.pocketSrv.updateChamadoUsers(this.data.id,[...usr, this.pb.authStore.model!['id']]);
 
-        this.pb.collection('chamados').update(
-          this.data.id,
-          {
-            users: [...usr, this.pb.authStore.model!['id']],
-          },
-          { requestKey: 'chamadoadd' },
-        );
+        // this.pb.collection('chamados').update(
+        //   this.data.id,
+        //   {
+        //     users: [...usr, this.pb.authStore.model!['id']],
+        //   },
+        //   { requestKey: 'chamadoadd' },
+        // );
       });
 
     // const dialogRef = this.dialog.open(AddTecnicoComponent, {data: this.data });
@@ -264,13 +298,19 @@ export class ViewServiceComponent implements OnDestroy {
   }
 
   resumeTimer() {
-    this.pausado = false;
-    this.pocketSrv.startChamado(this.data.id);
+    this.pocketSrv.startChamado(this.data.id).subscribe((started) => {;
+      if (started) {
+        this.pausado = false
+      }
+    })
   }
 
   pauseTimer() {
-    this.pausado = true;
-    this.pocketSrv.pauseChamado(this.data.id);
+    this.pocketSrv.pauseChamado(this.data.id).subscribe((paused) => {;
+      if (paused) {
+        this.pausado = true
+      }
+    })
   }
 
   finalizarChamado() {
@@ -280,13 +320,10 @@ export class ViewServiceComponent implements OnDestroy {
       .subscribe((res) => {
         console.log(res);
         if (res == true) {
-          const formData = new FormData();
-          formData.append('chamado_id', this.data.id);
-          this.http
-            .post<any>(`http://localhost:8090/finalizarChamado`, formData)
-            .subscribe((data) => {
-              console.log(data);
-            });
+          this.api.FinalizarChamado(this.data).subscribe((data) => {
+            console.log(data);
+          })
+          
           this.dialog.closeAll();
         }
       });

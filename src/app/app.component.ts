@@ -15,13 +15,7 @@ import { HttpClient } from '@angular/common/http';
 export class AppComponent {
   title = '0800 Sac';
 
-  constructor(http : HttpClient) {
-    // console.log("Request")
-    // http.get<any>(`http://localhost:8090/images/test.png`) .subscribe(
-    //   (data) => {
-    //     console.log(data) 
-    //   }
-    // )
+  constructor() {
   }
 
   ngOnInit(): void {

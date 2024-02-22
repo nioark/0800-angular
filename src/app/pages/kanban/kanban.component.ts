@@ -35,6 +35,7 @@ import { AddFormComponent } from './components/add-form/add-form.component';
 import { ImgAuthPipe } from '../../img-auth.pipe';
 import { ViewEsperandoServiceComponent } from './components/view-esperando-service/view-esperando-service.component';
 import { ViewSelectUserComponent } from './components/view-select-user/view-select-user.component';
+import { environment } from '../../environment';
 
 
 interface TecnicoServicos {
@@ -60,6 +61,8 @@ export class KanbanComponent  {
   tecnicosdata: any
   chamadosdata: any;
 
+  apiUrl = environment.apiUrl
+
   @ViewChild('parent') slider: ElementRef;
   constructor(private change:ChangeDetectorRef, public dialog: MatDialog, public pocketCollectionsSrv: PocketCollectionsService) {
     this.slider = new ElementRef(null);
@@ -74,13 +77,12 @@ export class KanbanComponent  {
           return b.priority - a.priority
         })
       })
-      console.log("Tecnicos chamados: ", )
-      console.log("Técnicos: ",tecnicos)
+      console.log("Tecnicos join chamados updated: ", tecnicos)
     })
 
     this.pocketCollectionsSrv.getChamadosWithStatus("em_espera").subscribe((chamados) => {
       this.chamadosdata = chamados
-      console.log("Chamados: ", chamados)
+      console.log("Chamados em espera updated: ", chamados)
     })
 
     // Create an observable that emits the current time every second
