@@ -11,6 +11,7 @@ export class SanitizeHtmlPipe implements PipeTransform {
   }
 
   transform(v:string):SafeHtml {
+    console.log("HTml before:", v, "html after :", this._sanitizer.bypassSecurityTrustHtml(v));
     return this._sanitizer.bypassSecurityTrustHtml(v);
   }
 }

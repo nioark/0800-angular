@@ -7,7 +7,7 @@
 
       </div> -->
       <div class="flex items-center p-2">
-        <span class="border-b-2  border-blue-600">Técnicos</span>
+        <span class="border-b-2  border-blue-600">Usuários</span>
         <span class="material-symbols-outlined ml-auto"> more_horiz </span>
         </div>
 
@@ -27,7 +27,12 @@
               (cdkDropListDropped)="dropTecnico($event, item)"
               (cdkDropListEntered)="tecnicoEntered($event)"
 
+
+
               class="mt-2 flex h-8 max-h-8 w-full cursor-pointer items-center rounded-full bg-slate-700 px-1 py-1 hover:bg-slate-600 transition-all"
+              [ngClass]="{
+                'animate-pulse': (dragging && item.canDragTo) || (dragging && isAdmin),
+              }"
             >
               @if (item.avatar != ""){
                 <img
@@ -42,16 +47,24 @@
                 />
               }
               @if (item.chamados.length == 0) {
-                <span class="ml-1 mr-1 flex h-2 w-2 rounded-full bg-green-500"></span>
+                <span class="ml-1 mr-1 flex h-2 w-5 rounded-full bg-green-500"></span>
               }
               @if (item.chamados.length > 0 && item.chamados.length < 3) {
-                <span class="ml-1 mr-1 flex h-2 w-2 rounded-full bg-yellow-400"></span>
+                <span class="ml-1 mr-1 flex h-2 w-5 rounded-full bg-yellow-400"></span>
               }
               @if (item.chamados.length > 2) {
-                <span class="ml-1 mr-1 flex h-2 w-2 rounded-full bg-red-500"></span>
+                <span class="ml-1 mr-1 flex h-2 w-5 rounded-full bg-red-500"></span>
               }
 
-              <span class="truncate text-sm">{{ item.username}}</span>
+              <span class="truncate text-sm w-64">{{ item.username}}</span>
+              <div class="flex w-full justify-end"> 
+              @if (item.isAdmin){
+                <span class="material-symbols-outlined" matTooltip="Este usuário é um administrador">
+                    shield_person
+                  </span>
+              }
+
+              </div>
 
             </div>
           }
@@ -94,6 +107,8 @@
             'border-red-500': item.priority == 2}"
           
             cdkDrag
+            (cdkDragStarted)="dragStarted($event)"
+            (cdkDragEnded)="dragEnded($event)"
           >
 
             <!-- <span class="me-3 flex h-3 w-3 rounded-full bg-green-500"></span> -->
@@ -123,7 +138,10 @@
     <!-- Kanba pra cada técnico -->
     @for (tecnico of tecnicosdata; track tecnico) {
       <div
-      class="ml-4 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col rounded-xl bg-slate-900 bg-opacity-95 p-2 text-gray-300 animate-in duration-600 zoom-in-[0.8]"
+      class="ml-4 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col rounded-xl bg-slate-900 bg-opacity-95 p-2 text-gray-300  "
+      [ngClass]="{ 
+        'animation-pulse': (dragging && tecnico.canDragTo) || (dragging && isAdmin),
+        'animate-in duration-600 zoom-in-[0.8]': (!dragging && tecnico.canDragTo) || (!dragging && isAdmin)}"
     >
       <div class="flex items-center p-2">
         <span class="border-b-2 border-purple-600">{{tecnico.username}}</span>
@@ -135,6 +153,7 @@
           cdkDropList
           [cdkDropListData]="tecnico.expand?.chamados"
           (cdkDropListDropped)="dropTecnico($event, tecnico)"
+
         >
           @for (item of tecnico.chamados; track item) {
           <div

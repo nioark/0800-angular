@@ -2,7 +2,8 @@
 
 -Arrumar bug do horario aleatoriamente desaparacer/desincronizar quando é adicionado ou removido um membro do chamado
 
--Automáticamente pausar o horario do técnico quando ele é removido do chamado
+-✅Automáticamente pausar o horario do técnico quando ele é removido do chamado
+	-Arrumar desincronização adicionando alguns minutos a mais quando é pausado desta forma
 
 -✅ Quando o chamado for finalizado fechar aba e sincronizar a sua remoção da lista 
 
@@ -16,6 +17,9 @@
 
 -✅ Arrumar problema de sincronização de start_time, end_time visual
 	-Agora usa o horário do servidor e calcula as diferenças
+
+
+
 
 __Error Handling__
 --Fazer handling de quando o chamado é finalizado

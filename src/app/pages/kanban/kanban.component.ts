@@ -9,6 +9,8 @@ import {
   transferArrayItem,
   CdkDragEnter,
   CdkDragExit,
+  CdkDragStart,
+  CdkDragEnd,
 } from '@angular/cdk/drag-drop';
 
 import {
@@ -36,6 +38,7 @@ import { ImgAuthPipe } from '../../img-auth.pipe';
 import { ViewEsperandoServiceComponent } from './components/view-esperando-service/view-esperando-service.component';
 import { ViewSelectUserComponent } from './components/view-select-user/view-select-user.component';
 import { environment } from '../../environment';
+import { AuthService } from '../../services/auth.service';
 
 
 interface TecnicoServicos {
@@ -61,22 +64,35 @@ export class KanbanComponent  {
   tecnicosdata: any
   chamadosdata: any;
 
+  dragging = false
+
   apiUrl = environment.apiUrl
+  isAdmin : boolean = false
 
   @ViewChild('parent') slider: ElementRef;
-  constructor(private change:ChangeDetectorRef, public dialog: MatDialog, public pocketCollectionsSrv: PocketCollectionsService) {
+  constructor(private change:ChangeDetectorRef, public dialog: MatDialog, private authSrv: AuthService, public pocketCollectionsSrv: PocketCollectionsService) {
     this.slider = new ElementRef(null);
 
+    this.isAdmin = this.authSrv.IsAdmin()
+
     this.tecnicosChamados = this.pocketCollectionsSrv.getTecnicosJoinChamados()
+
+    const pb = authSrv.GetPocketBase()
+    const this_user = pb.authStore.model as any
 
     this.tecnicosChamados.subscribe((tecnicos) => {
       this.tecnicosdata = tecnicos
 
       let mapped = tecnicos.map((user : any) => {
-        return user.chamados.sort((a : any, b : any) => {
+        user.chamados.sort((a : any, b : any) => {
           return b.priority - a.priority
         })
+
+        user.canDragTo = user.id == this_user.id
       })
+      // this.tecnicosdata = this.tecnicosdata.sort((a : any, b : any) => {
+      //   return a.id == this_user.id ? -1 : 1
+      // })
       console.log("Tecnicos join chamados updated: ", tecnicos)
     })
 
@@ -127,8 +143,15 @@ export class KanbanComponent  {
     // let new_array = JSON.parse(JSON.stringify(this.tecnicos));
     // this.tecnicosSubject$.next(new_array);
 
+  }
 
+  dragStarted(event: CdkDragStart<any>) {
+    console.log("Dragging")
+    this.dragging = true
+  }
 
+  dragEnded(event: CdkDragEnd<any>) {
+    this.dragging = false 
   }
 
   startDragging(e : MouseEvent, flag : boolean) {

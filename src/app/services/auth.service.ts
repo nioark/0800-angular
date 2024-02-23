@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, from, of } from 'rxjs';
+import { Observable, Subject, from, of } from 'rxjs';
 import PocketBase from 'pocketbase';
 import { Router } from '@angular/router';
 import { environment } from '../environment';
@@ -10,15 +10,32 @@ import { environment } from '../environment';
 })
 export class AuthService {
 
-  pb : PocketBase | undefined
+  pb : PocketBase
 
-  constructor(public routerSrv : Router) { }
+  constructor(public routerSrv : Router) { 
+    this.pb = new PocketBase(environment.apiUrl);
+    if (this.pb.authStore.isValid) {
+      this.pb.collection("users").authRefresh({}, {
+        
+      })
+    }
+  }
 
   async _loginAsync (email : string, password : string): Promise<PocketBase> {
-    const pb = new PocketBase(environment.apiUrl); 
-    const userAuth = await pb.collection('users').authWithPassword(email, password);
-    this.pb = pb
-    return pb
+    const userAuth = await this.pb.collection('users').authWithPassword(email, password, {}, {
+      expand : 'cargo',
+    });
+
+    await this.pb.collection("users").authRefresh({}, {
+        expand: "cargo" // replace with your relation field name
+    })
+
+
+    return this.pb
+  }
+
+  IsAdmin() : boolean {
+    return this.pb.authStore.model!['isAdmin'];
   }
 
   GetPocketBase(): PocketBase {

@@ -7,13 +7,15 @@
 				</span>
 
 				<h1 class="text-xl w-128">{{data.title}}</h1>
-				<button type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-green-600 hover:text-white border border-green-600 hover:bg-green-700 outline-none ">
-					<span class="material-symbols-outlined">
-					move_item
-					</span>
-					Transferir
-				</button>
-
+				@if (user_admin == true){
+					<button type="button" (click)="openAddView()" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-green-600 hover:text-white border border-green-600 hover:bg-green-700 outline-none ">
+						<span class="material-symbols-outlined">
+						move_item
+						</span>
+						Transferir
+					</button>
+				}
+				
 				<div  mat-dialog-close class="text-white flex flex-grow justify-end">
 					<span class="material-symbols-outlined text-3xl h-10 hover:cursor-pointer hover:bg-slate-600 rounded-full transition all p-1">
 						close

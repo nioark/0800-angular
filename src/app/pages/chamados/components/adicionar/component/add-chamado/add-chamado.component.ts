@@ -9,6 +9,7 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { ApiService } from '../../../../../../services/api.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SelectClientsComponent } from '../select-clients/select-clients.component';
+import { PocketCollectionsService } from '../../../../../../services/pocket-collections.service';
 
 @Component({
   selector: 'app-add-chamado',
@@ -22,6 +23,8 @@ export class AddChamadoComponent {
   @ViewChild('descricao') descricao :ElementRef | undefined;
   deixar_aberto: boolean = false;
   deixar_publico: boolean = true;
+  iniciar_timer: boolean = false;
+
   selected = 0;
 
   cliente : any | undefined
@@ -30,7 +33,9 @@ export class AddChamadoComponent {
     
   ]
 
-  constructor(public authSrv : AuthService, api : ApiService, private matDialog: MatDialog) {
+  error : string = ""
+
+  constructor(public authSrv : AuthService, api : ApiService, private matDialog: MatDialog, private pocketSrv : PocketCollectionsService) {
     api.FetchPessoas().subscribe((pessoas) => {
       this.pessoas = pessoas
     })
@@ -49,9 +54,19 @@ export class AddChamadoComponent {
   
   async createChamado(event : Event) {
     event.preventDefault()
-    const cliente = this.cliente.nome
+    const cliente = this.cliente?.nome
     const descricao = this.descricao?.nativeElement.value
     const sobre = this.sobre?.nativeElement.value
+
+    if (cliente == undefined){
+      this.error = "É necessário selecionar um cliente"
+      return
+    }
+
+    if (sobre == ""){
+      this.error = "É necessário adicionar um sobre para o chamado"
+      return
+    }
 
     const pb = this.authSrv.GetPocketBase()
 
@@ -75,7 +90,14 @@ export class AddChamadoComponent {
     console.log(this.deixar_aberto)
     console.log("Data model: ", data)
 
-    const record = await pb.collection('chamados').create(data);
+    const record = await pb.collection('chamados').create(data)
+
+    this.matDialog.closeAll()
+
+    if (this.iniciar_timer){
+      console.log("Start timer")
+      this.pocketSrv.startUserTimer(record.id)
+    }
     console.log(record)
   }
 }

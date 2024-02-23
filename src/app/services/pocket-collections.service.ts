@@ -7,6 +7,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from '../environment';
 import { ApiService } from './api.service';
 import { HttpClient } from '@angular/common/http';
+import cloneDeep from 'lodash.clonedeep';
 
 @Injectable({
   providedIn: 'root'
@@ -167,14 +168,19 @@ export class PocketCollectionsService {
     record['users'].forEach((userId: string) => {
       let userFound = this._findUser(users, userId);
       if (userFound) {
-        usersExpands.push(userFound);
+        usersExpands.push(cloneDeep(userFound));
       }
     });
 
     let created_by = this._findUser(users, record['created_by']);
-    console.log(created_by, record['created_by'], "CREATED_BY")
 
     record.expand = { users: usersExpands, created_by: created_by };
+    return record;
+  }
+
+  _expandUser(record: RecordModel, users: RecordModel[]): RecordModel {
+    const user = this._findUser(users, record['user']);
+    record.expand = { user: user };
     return record;
   }
 
@@ -227,7 +233,7 @@ export class PocketCollectionsService {
     from(this.pb.collection('users').getFullList()).pipe(
       switchMap(users => {
         const userFilters = users.map(user => `users.id?="${user.id}"`).join('||');
-        return from(this.pb.collection('chamados').getFullList({ filter: "(" + userFilters + ")" + " && status != 'finalizado'", expand: 'users,created_by' })).pipe(
+        return from(this.pb.collection('chamados').getFullList({ filter: "(" + userFilters + ")" + " && status != 'finalizado' && status != 'cancelado'", expand: 'users,created_by' })).pipe(
           map((chamados : RecordModel[]) => ({ users, chamados }))
         );
       })
@@ -260,8 +266,7 @@ export class PocketCollectionsService {
     this.chamadosEvent.subscribe((e) => {
       const { action, record } = e;
       if (action === "update" || action === "create") {
-        console.log(record)
-        if (record["status"] == "finalizado"){
+        if (record["status"] == "finalizado" || record["status"] == "cancelado") {
           usersWithChamadosR = this._removeUserChamados(usersWithChamadosR, record);
 
         } else {
@@ -305,6 +310,7 @@ export class PocketCollectionsService {
       filter: `chamado = '${chamado_id}'`, sort: '-created', expand: 'user'
     }).then((item) => {
       item.forEach(relatorio => {
+        console.log("relatorio: ", relatorio)
         relatorios.push(relatorio)
       })
 
@@ -314,8 +320,10 @@ export class PocketCollectionsService {
     this.relatoriosEvent.subscribe((e) => {
       const { action, record } = e;
       if (action === "create") {
-        relatorios.unshift(record); 
-        chamadoSubject.next(relatorios);
+        this.pb.collection('users').getFullList().then((users) => {
+          relatorios.unshift(this._expandUser(record, users))
+          chamadoSubject.next(relatorios)
+        })
       }
     })
 
@@ -328,7 +336,7 @@ export class PocketCollectionsService {
     })
   }
 
-  startChamado(chamado_id : string) : Observable<boolean>{
+  startUserTimer(chamado_id : string, userId = this.pb.authStore.model!["id"]) : Observable<boolean>{
     if (!this.pb.authStore.isValid)
       return of(false);
 
@@ -337,7 +345,7 @@ export class PocketCollectionsService {
     this.apiSrv.GetTime().subscribe((time) => {
       const data = {
           "start_time": time,
-          "user": this.pb.authStore.model!['id'],
+          "user": userId,
           "chamado": chamado_id
       };
 
@@ -354,7 +362,7 @@ export class PocketCollectionsService {
     return startedSubject.asObservable();
   }
 
-  pauseChamado(chamado_id : string) : Observable<boolean>{
+  pauseUserTimer(chamado_id : string, userId = this.pb.authStore.model!["id"]) : Observable<boolean>{
     if (!this.pb.authStore.isValid)
       return of(false);
 
@@ -362,7 +370,7 @@ export class PocketCollectionsService {
 
 
     this.apiSrv.GetTime().subscribe((time) => {
-      this.pb.collection('horas').getFirstListItem(`chamado.id = '${chamado_id}' && user.id = '${this.pb.authStore.model!["id"]}' && end_time = ''`, {requestKey: "pausechamado"}).then((hora) => {;
+      this.pb.collection('horas').getFirstListItem(`chamado.id = '${chamado_id}' && user.id = '${userId}' && end_time = ''`, {requestKey: "pausechamado"}).then((hora) => {;
         let promise = this.pb.collection('horas').update(hora.id, {
           end_time : time
         }, {requestKey: "udpdatehora"})

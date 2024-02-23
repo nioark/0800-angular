@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogClose } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogClose } from '@angular/material/dialog';
 import { PocketCollectionsService } from '../../../../services/pocket-collections.service';
 import { RecordModel } from 'pocketbase';
 import { Searcher } from 'fast-fuzzy';
@@ -62,5 +62,6 @@ export class ViewSelectUserComponent {
     const result = searcher.search(this.currentSearch, { returnMatchData: true });
     return result.map((data) => data.item);
   }
+
 
 }

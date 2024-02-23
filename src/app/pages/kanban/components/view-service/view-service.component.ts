@@ -41,6 +41,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ViewSelectUserComponent } from '../view-select-user/view-select-user.component';
 import { ConfirmFinalizarComponent } from './components/confirm-finalizar/confirm-finalizar.component';
 import { ApiService } from '../../../../services/api.service';
+import { ConfirmCancelarComponent } from './components/confirm-cancelar/confirm-cancelar.component';
 
 @Component({
   selector: 'app-view-service',
@@ -70,6 +71,7 @@ export class ViewServiceComponent implements OnDestroy {
   em_espera: boolean = false;
   em_andamento: boolean = false;
   admin: boolean = false;
+  finalizado: boolean = false;
   participando: boolean = false;
 
   criadorParticipa: boolean = false;
@@ -81,6 +83,7 @@ export class ViewServiceComponent implements OnDestroy {
   data: any;
   serverTime: Date = new Date();
   timeDifference: Date = new Date();
+  isAdmin: boolean = false
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -92,6 +95,10 @@ export class ViewServiceComponent implements OnDestroy {
     private api: ApiService
   ) {
     this.data = dataInjected.data;
+    this.isAdmin = AuthSrv.IsAdmin()
+
+    console.log("this.data", this.data)
+
 
     dataInjected.dataObservable.subscribe((data) => {
       this.data = data;
@@ -100,6 +107,9 @@ export class ViewServiceComponent implements OnDestroy {
     if (this.data.status == 'em_espera') {
       this.em_espera = true;
     }
+
+    this.finalizado = this.data.status == 'finalizado' || this.data.status == 'cancelado';
+    console.log("Finalizado ?", this.finalizado)
 
     // console.log('This.data', this.data);
 
@@ -162,6 +172,7 @@ export class ViewServiceComponent implements OnDestroy {
       );
 
       this.pocketSrv.getChamadoTimers(this.data.id).subscribe((data) => {
+        console.log("Timers data ", data)
         data.forEach((duracao: any) => {
           var duracao_total_str: any;
           var duracao_total_seconds: any;
@@ -240,6 +251,8 @@ export class ViewServiceComponent implements OnDestroy {
           user.duracao_total_str == '00:00:00'
         ) {
           this.pausado = true;
+        } else {
+          this.pausado = false;
         }
       }
     });
@@ -298,17 +311,33 @@ export class ViewServiceComponent implements OnDestroy {
   }
 
   resumeTimer() {
-    this.pocketSrv.startChamado(this.data.id).subscribe((started) => {;
-      if (started) {
-        this.pausado = false
+    this.pocketSrv.startUserTimer(this.data.id).subscribe((started) => {;
+      if (!started) {
+        console.log("Não foi possivel continuar o timer: ") 
       }
     })
   }
 
   pauseTimer() {
-    this.pocketSrv.pauseChamado(this.data.id).subscribe((paused) => {;
+    this.pocketSrv.pauseUserTimer(this.data.id).subscribe((paused) => {;
+      if (!paused) {
+        console.log("Não foi possivel parar o timer: ")
+      }
+    })
+  }
+
+  resumeTimerUser(userId : string){
+    this.pocketSrv.startUserTimer(this.data.id, userId).subscribe((started) => {;
+      if (!started) {
+        console.log("Não foi possivel continuar o timer de outro usuario: ")
+      }
+    })
+  }
+
+  pauseTimerUser(userId : string){
+    this.pocketSrv.pauseUserTimer(this.data.id, userId).subscribe((paused) => {; 
       if (paused) {
-        this.pausado = true
+        console.log("Não foi possivel parar o timer de outro usuario: ")
       }
     })
   }
@@ -329,5 +358,19 @@ export class ViewServiceComponent implements OnDestroy {
       });
   }
 
-  cancelarChamado() {}
+  cancelarChamado() {
+    this.dialog
+      .open(ConfirmCancelarComponent)
+      .afterClosed()
+      .subscribe((res) => {
+        console.log(res);
+        if (res == true) {
+          this.api.FinalizarChamado(this.data, "cancelado").subscribe((data) => {
+            console.log(data);
+          })
+          
+          this.dialog.closeAll();
+      }
+    });
+  }
 }

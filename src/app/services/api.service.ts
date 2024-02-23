@@ -19,9 +19,10 @@ export class ApiService {
     return this.http.get<any[]>( environment.apiUrl + '/fetchPessoas')
   }
 
-  FinalizarChamado(chamado : RecordModel) : Observable<any> {
+  FinalizarChamado(chamado : RecordModel, status="finalizado") : Observable<any> {
     const formData = new FormData();
     formData.append('chamado_id', chamado.id);
+    formData.append('status', status);
     return this.http.post<any>(environment.apiUrl + `/finalizarChamado`, formData)
 
   }

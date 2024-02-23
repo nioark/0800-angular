@@ -8,7 +8,7 @@
 
 				<h1 class="w-128 text-xl">{{ data.title }}</h1>
 
-				@if (participando) {
+				@if (participando && !finalizado) {
 					@if (pausado) {
 						<button
 							(click)="resumeTimer()"
@@ -28,7 +28,9 @@
 							Pausar
 						</button>
 					}
+				}
 
+				@if ((isAdmin || participando) && !finalizado) {
 					<button
 						(click)="finalizarChamado()"
 						type="button"
@@ -38,12 +40,14 @@
 						Finalizar
 					</button>
 
-					<!-- 					<button (click)="cancelarChamado()" type="button" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800">
-						<span class="material-symbols-outlined">
-						remove
-						</span>
+					<button
+						(click)="cancelarChamado()"
+						type="button"
+						class="ml-2 inline-flex items-center rounded-lg border border-red-700 px-1 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white"
+					>
+						<span class="material-symbols-outlined"> remove </span>
 						Cancelar
-					</button> -->
+					</button>
 				}
 
 				<div mat-dialog-close class="flex flex-grow justify-end text-white">
@@ -99,7 +103,7 @@
 					<h1 class="mb-1 text-sm font-bold">Tempo Decorrido</h1>
 
 					@for (tecnico of data.expand.users; track tecnico) {
-						<div class="flex h-6 w-32 items-center">
+						<div class="flex h-6 w-32 select-none items-center">
 							<span class="material-symbols-outlined mr-2 text-xl">
 								timer
 							</span>
@@ -108,21 +112,30 @@
 								tecnico.duracao_status == "em_pausa" ||
 								tecnico.duracao_total_str == "00:00:00"
 							) {
-								<h1 class="animate-pulse transition-all">
+								<h1 [ngClass]="{ 'animate-pulse transition-all' : !finalizado}">
 									{{ tecnico.duracao_total_str }}
 								</h1>
-								<div class="flex w-full justify-end">
-									<span
-										class="material-symbols-outlined text-yellow-400 transition-all hover:cursor-pointer hover:text-yellow-200"
+
+								@if (!finalizado){
+									<div
+										class="flex w-full justify-end"
+										(click)="resumeTimerUser(tecnico.id)"
 									>
-										pause
-									</span>
-								</div>
+										<span
+											class="material-symbols-outlined text-yellow-400 transition-all hover:cursor-pointer hover:text-yellow-200"
+										>
+											pause
+										</span>
+									</div>
+								}
 							} @else {
 								<h1 class="transition-all">
 									{{ tecnico.duracao_total_str }}
 								</h1>
-								<div class="flex w-full justify-end">
+								<div
+									class="flex w-full justify-end"
+									(click)="pauseTimerUser(tecnico.id)"
+								>
 									<span
 										class="material-symbols-outlined text-green-400 transition-all hover:cursor-pointer hover:text-green-200"
 									>
@@ -230,7 +243,7 @@
 									{ text: 'Haskell', value: 'haskell' }
 								],
 								toolbar:
-									'styles | alignleft aligncenter alignright | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'
+									'styles | alignleft aligncenter alignright | image | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'
 							}"
 						></editor>
 
@@ -247,16 +260,18 @@
 
 						<!-- <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"> -->
 					} @else {
-						<div class="flex w-full justify-center">
-							<button
-								(click)="setEditor(true)"
-								type="button"
-								class="me-2 mt-2 inline-flex items-center rounded-lg bg-blue-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-							>
-								<span class="material-symbols-outlined"> Edit </span>
-								Escrever relatório
-							</button>
-						</div>
+						@if (!finalizado){
+							<div class="flex w-full justify-center">
+								<button
+									(click)="setEditor(true)"
+									type="button"
+									class="me-2 mt-2 inline-flex items-center rounded-lg bg-blue-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+								>
+									<span class="material-symbols-outlined"> Edit </span>
+									Escrever relatório
+								</button>
+							</div>
+						}
 					}
 
 					@for (item of relatorios; track item) {
