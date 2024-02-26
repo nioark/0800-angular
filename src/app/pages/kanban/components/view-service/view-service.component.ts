@@ -87,8 +87,8 @@ export class ViewServiceComponent implements OnDestroy {
   faturado: boolean = false
   cancelado: boolean = false
 
-  created_at: Date = new Date();
-  end_at: Date = new Date();
+  created_at: String = '';
+  end_at: String = '';
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -115,6 +115,13 @@ export class ViewServiceComponent implements OnDestroy {
 
     if (this.data.status == 'cancelado') {
       this.cancelado = true;
+    }
+    let created_at = new Date(this.data.created)
+    this.created_at = created_at.toLocaleString('pt-br', { day: 'numeric', month: 'short' }) + " " + created_at.toLocaleTimeString('pt-br')
+    if (this.data.end_time != ''){
+      console.log(this.data.end_time)
+      let end_at = new Date(this.data.end_time)
+      this.end_at = end_at.toLocaleString('pt-br', { day: 'numeric', month: 'short' }) + " " + end_at.toLocaleTimeString('pt-br')
     }
 
     this.faturado = this.data.faturado;

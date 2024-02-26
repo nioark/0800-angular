@@ -78,6 +78,7 @@ export class UserSettingsComponent {
       console.log(record)
       this.authServ.Logout()
       this.dialog.closeAll()
+      
 
 
     } catch (error) {

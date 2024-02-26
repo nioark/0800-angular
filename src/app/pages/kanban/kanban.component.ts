@@ -27,7 +27,7 @@ import { CommonModule, NgOptimizedImage } from '@angular/common'
 
 import {MatTooltipModule} from '@angular/material/tooltip';
 
-import PocketBase, { RecordModel } from 'pocketbase';
+import PocketBase, { AuthModel, RecordModel } from 'pocketbase';
 
 import { BehaviorSubject, Observable, Subject, from, interval, map, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
@@ -39,6 +39,7 @@ import { ViewEsperandoServiceComponent } from './components/view-esperando-servi
 import { ViewSelectUserComponent } from './components/view-select-user/view-select-user.component';
 import { environment } from '../../environment';
 import { AuthService } from '../../services/auth.service';
+import { EditBackgroundComponent } from './components/edit-background/edit-background.component';
 
 
 interface TecnicoServicos {
@@ -68,17 +69,27 @@ export class KanbanComponent  {
 
   apiUrl = environment.apiUrl
   isAdmin : boolean = false
+  user : AuthModel
+
+  backgroundUrl = "/assets/cool-background.png"
+
 
   @ViewChild('parent') slider: ElementRef;
   constructor(private change:ChangeDetectorRef, public dialog: MatDialog, private authSrv: AuthService, public pocketCollectionsSrv: PocketCollectionsService) {
     this.slider = new ElementRef(null);
 
     this.isAdmin = this.authSrv.IsAdmin()
+    this.user = this.pocketCollectionsSrv.pb.authStore.model!
 
     this.tecnicosChamados = this.pocketCollectionsSrv.getTecnicosJoinChamados()
 
     const pb = authSrv.GetPocketBase()
     const this_user = pb.authStore.model as any
+
+    if (this.user['backgroundUrl'] != ""){
+      this.backgroundUrl = this.apiUrl + '/api/files/users/' + this.user['id'] + '/'  + this.user['background']
+    }
+
 
     this.tecnicosChamados.subscribe((tecnicos) => {
       this.tecnicosdata = tecnicos
@@ -233,6 +244,10 @@ export class KanbanComponent  {
 
   getUserNames(tecnicos : any){
    return tecnicos.map((user : any) => user.username).join(',\n') 
+  }
+
+  changeWallpaper(){
+    const dialogRef = this.dialog.open(EditBackgroundComponent)
   }
 
 

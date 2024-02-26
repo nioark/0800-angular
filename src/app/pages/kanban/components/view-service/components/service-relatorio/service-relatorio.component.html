@@ -5,7 +5,7 @@
     		<div class="flex items-center text-gray-200">
 				@if (user['avatar'] != ""){
 		            <img
-		              class="h-8 w-8 rounded-full"
+		              class="h-8 w-8 rounded-full min-h-8 min-w-8 object-cover"
 		              [src]="apiUrl + '/api/files/users/' + user.id + '/'  + user['avatar']"
 		            />
 		        } @else {

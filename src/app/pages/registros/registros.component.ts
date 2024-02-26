@@ -66,7 +66,7 @@ export class RegistrosComponent {
     pocketSrv.pb
       .collection('chamados')
       .getFullList({
-        filter: "status = 'finalizado' || status = 'cancelado'",
+        filter: "status = 'finalizado' || status = 'cancelado' && users.id ?= '" + pocketSrv.pb.authStore.model!['id'] + "'",
         expand: 'users, created_by',
       })
       .then((data) => {

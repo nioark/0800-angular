@@ -1,6 +1,6 @@
 <div class="flex h-screen w-screen flex-col items-center bg-transparent p-8">
 	<div>
-		<div class="z-10 w-[800px] rounded-lg bg-slate-900 p-4">
+		<div class="z-10 sm:w-[800px] w-[400px] rounded-lg bg-slate-900 p-4">
 			<div class="flex h-8 w-full items-center text-white">
 				<span class="material-symbols-outlined mr-2 text-3xl">
 					home_repair_service
@@ -16,7 +16,7 @@
 							class="ml-2 inline-flex items-center rounded-lg border border-green-600 px-1 text-center text-sm font-medium text-green-600 outline-none hover:bg-green-700 hover:text-white"
 						>
 							<span class="material-symbols-outlined"> resume </span>
-							Iniciar
+							<div class="sm:flex hidden">Iniciar</div>
 						</button>
 					} @else {
 						<button
@@ -25,7 +25,7 @@
 							class="ml-2 inline-flex items-center rounded-lg border border-yellow-400 px-1 text-center text-sm font-medium text-yellow-400 outline-none hover:bg-yellow-500 hover:text-white"
 						>
 							<span class="material-symbols-outlined"> pause </span>
-							Pausar
+							<div class="sm:flex hidden">Pausar</div>
 						</button>
 					}
 				}
@@ -37,7 +37,7 @@
 						class="ml-2 inline-flex items-center rounded-lg border border-purple-700 px-1 text-center text-sm font-medium text-purple-700 hover:bg-purple-800 hover:text-white"
 					>
 						<span class="material-symbols-outlined"> save </span>
-						Finalizar
+						<div class="sm:flex hidden">Finalizar</div>
 					</button>
 
 					<button
@@ -46,7 +46,7 @@
 						class="ml-2 inline-flex items-center rounded-lg border border-red-700 px-1 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white"
 					>
 						<span class="material-symbols-outlined"> remove </span>
-						Cancelar
+						<div class="sm:flex hidden">Cancelar</div>
 					</button>
 				}
 
@@ -198,7 +198,11 @@
 				<div class="mt-6 flex h-8 items-center text-white">
 					<span class="material-symbols-outlined mr-2 text-3xl"> subject </span>
 
-					<h1 class="text-xl">Descrição</h1>
+					<div class="flex items-center">
+						<h1 class="text-xl">Descrição</h1>
+						
+
+					</div>
 				</div>
 
 				<div class="mt-4 flex text-white">
@@ -295,6 +299,13 @@
 					}
 				</div>
 			}
+
+			<div class="text-white text-sm" >
+				<h1 matTooltip="Chamado criado em">{{created_at}}</h1>
+				@if (end_at != "") {
+				 <h1 matTooltip="Chamado terminado em">- {{end_at}}</h1>
+				}
+			</div>
 		</div>
 		<div class="h-8"></div>
 	</div>
