@@ -84,6 +84,11 @@ export class ViewServiceComponent implements OnDestroy {
   serverTime: Date = new Date();
   timeDifference: Date = new Date();
   isAdmin: boolean = false
+  faturado: boolean = false
+  cancelado: boolean = false
+
+  created_at: Date = new Date();
+  end_at: Date = new Date();
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -107,6 +112,12 @@ export class ViewServiceComponent implements OnDestroy {
     if (this.data.status == 'em_espera') {
       this.em_espera = true;
     }
+
+    if (this.data.status == 'cancelado') {
+      this.cancelado = true;
+    }
+
+    this.faturado = this.data.faturado;
 
     this.finalizado = this.data.status == 'finalizado' || this.data.status == 'cancelado';
     console.log("Finalizado ?", this.finalizado)
@@ -372,5 +383,11 @@ export class ViewServiceComponent implements OnDestroy {
           this.dialog.closeAll();
       }
     });
+  }
+
+  marcarFaturado(){
+    this.pocketSrv.marcarChamadoFaturado(this.data.id)
+    this.data.faturado = true
+    this.dialog.closeAll();
   }
 }

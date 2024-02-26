@@ -415,4 +415,10 @@ export class PocketCollectionsService {
 
     return timersSubject.asObservable();
   }
+
+  marcarChamadoFaturado(chamado_id : string){
+    this.pb.collection('chamados').update(chamado_id, { 
+      "faturado": true
+    })
+  }
 }

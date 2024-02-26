@@ -6,6 +6,8 @@ import { Subscription } from 'rxjs';
 import Client, { AuthModel, RecordModel } from 'pocketbase';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { environment } from '../../environment';
+import { MatDialog } from '@angular/material/dialog';
+import { UserSettingsComponent } from './user-settings/user-settings.component';
 
 @Component({
   selector: 'app-frame-nav',
@@ -29,7 +31,7 @@ export class FrameNavComponent {
 
   apiUrl = environment.apiUrl
 
-  constructor(public router: Router, pocketCollectionsSrv: PocketCollectionsService) {
+  constructor(public router: Router, pocketCollectionsSrv: PocketCollectionsService, private dialog : MatDialog) {
     this.pb = pocketCollectionsSrv.pb
     if (!this.pb.authStore.isValid) {
       this.router.navigate(['/login']) 
@@ -74,5 +76,9 @@ export class FrameNavComponent {
   logout(): void {
     this.pb.authStore.clear();
     this.router.navigate(['/login']) 
+  }
+
+  OpenSettings(): void {
+    this.dialog.open(UserSettingsComponent); 
   }
 }

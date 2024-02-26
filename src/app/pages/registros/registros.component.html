@@ -1,76 +1,149 @@
-<app-frame-nav class="w-full h-full bg-slate-200 bg-cover overflow-hidden">
-
-	<div class="flex flex-col h-full w-full items-center">
-		<div class="w-full mx-8 my-4 h-32 flex items-center justify-center bg-opacity-45 rounded-md">
-			<div class="flex w-1/2 items-center flex-row">
-
+<app-frame-nav class="h-full w-full overflow-hidden bg-slate-200 bg-cover">
+	<div class="flex h-full w-full flex-col items-center">
+		<div
+			class="mx-8 my-4 flex w-full flex-col items-center rounded-md bg-opacity-45"
+		>
+			<div class="flex w-1/2 flex-row items-center">
 				<label for="simple-search" class="sr-only">Search</label>
 				<div class="relative w-full">
-				  <div
-				    class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-				    <svg
-				      aria-hidden="true"
-				      class="h-5 w-5 text-gray-500 dark:text-gray-400"
-				      fill="currentColor"
-				      viewbox="0 0 20 20"
-				      xmlns="http://www.w3.org/2000/svg">
-				      <path
-				        fill-rule="evenodd"
-				        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-				        clip-rule="evenodd" />
-				    </svg>
-				  </div>
-				  <input
-				    #search
-				    (keyup)="searchKeyup($event, search)"
-				    type="text"
-				    id="simple-search"
-				    class="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 pl-10 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
-				    placeholder="Search"
-				    required="" />
+					<div
+						class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+					>
+						<svg
+							aria-hidden="true"
+							class="h-5 w-5 text-gray-500 dark:text-gray-400"
+							fill="currentColor"
+							viewbox="0 0 20 20"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+								clip-rule="evenodd"
+							/>
+						</svg>
+					</div>
+					<input
+						#search
+						(keyup)="searchKeyup($event, search)"
+						type="text"
+						id="simple-search"
+						class="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 pl-10 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+						placeholder="Search"
+						required=""
+					/>
 				</div>
 			</div>
 
-		
+			<div class="flex w-full justify-center">
+				<mat-form-field class="mt-2">
+					<mat-label>Pesquisar entre datas</mat-label>
+					<mat-date-range-input [rangePicker]="picker">
+						<input matStartDate [(ngModel)]="startDate" placeholder="Data inicio"  />
+						<input matEndDate [(ngModel)]="endDate" placeholder="Data final"  (dateChange)="dateChanged()"/>
+					</mat-date-range-input>
+					<mat-datepicker-toggle
+						matIconSuffix
+						[for]="picker"
+					></mat-datepicker-toggle>
+					<mat-date-range-picker #picker></mat-date-range-picker>
+				</mat-form-field>
+				<div class="mt-1 ml-2">
+					<div class="flex h-5 items-center">
+						<input
+							#cancelados
+							id="cancelados"
+							aria-describedby="cancelados"
+							type="checkbox"
+							class="focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 h-4 w-4 rounded border border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800"
+							(change)="checkboxEvent($event)"
+							[(ngModel)]="mostrarCancelados"
+						/>
+						<div class="ml-3 text-sm">
+							<label for="cancelados" class="text-gray-500 dark:text-gray-300"
+								>Mostrar Cancelados</label
+							>
+						</div>
+					</div>
+					<div class="flex h-5 items-center">
+						<input
+							#finalizados
+							id="finalizados"
+							aria-describedby="finalizados"
+							type="checkbox"
+							class="focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 h-4 w-4 rounded border border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800"
+							(change)="checkboxEvent($event)"
+							[(ngModel)]="mostrarFinalizados"
+							checked
+						/>
+						<div class="ml-3 text-sm">
+							<label for="finalizados" class="text-gray-500 dark:text-gray-300"
+								>Mostrar Finalizados</label
+							>
+						</div>
+					</div>
+					<div class="flex h-5 items-center">
+						<input
+							#faturados
+							id="faturados"
+							aria-describedby="faturados"
+							type="checkbox"
+							class="focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 h-4 w-4 rounded border border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800"
+							(change)="checkboxEvent($event)"
+							[(ngModel)]="mostrarFaturados"
 
+						/>
+						<div class="ml-3 text-sm">
+							<label for="faturados" class="text-gray-500 dark:text-gray-300"
+								>Mostrar Faturados</label
+							>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
-		<div class="max-h-full gap-5 p-3 grid grid-flow-row-dense lg:grid-cols-2  md:grid-cols-1 overflow-auto">
-			@for (chamado of data_search ; track chamado){
-		 		<div
-		          class="flow-root w-[450px] cursor-pointer rounded-md border-b-2 bg-green-100 px-4 py-3 hover:border-b-2 hover:scale-105 transition-all"
-		           [ngClass]="{
-		                'border-green-500': chamado.priority === -1,
-		                'border-blue-500': chamado.priority === 0,
-		                'border-yellow-500': chamado.priority === 1,
-		                'border-red-500': chamado.priority === 2,
-		                'bg-blue-200' : chamado.status == 'finalizado',
-		                'bg-red-200' : chamado.status == 'cancelado',
-		          }"
-		          (click)="openChamado(chamado)"
-		        >
-		        <dl class="-my-3 text-sm">
-		          <div class="grid grid-cols-1 gap-1 py-1 sm:grid-cols-3 sm:gap-4">
-		            <dt class="font-medium text-gray-900">Cliente</dt>
-		            <dd class="text-gray-700 sm:col-span-2">
-		              {{chamado.cliente}}
-		            </dd>
-		          </div>
+		<div
+			class="grid max-h-full grid-flow-row-dense gap-5 overflow-auto p-3 md:grid-cols-1 lg:grid-cols-2"
+		>
+			@for (chamado of data_search; track chamado) {
+				<div
+					class="flow-root w-[450px] cursor-pointer rounded-md border-b-2 bg-green-100 px-4 py-3 transition-all hover:scale-105 hover:border-b-2"
+					[ngClass]="{
+						'border-green-500': chamado.priority === -1,
+						'border-blue-500': chamado.priority === 0,
+						'border-yellow-500': chamado.priority === 1,
+						'border-red-500': chamado.priority === 2,
+						'bg-blue-200': chamado.status == 'finalizado',
+						'bg-red-200': chamado.status == 'cancelado',
+						'bg-amber-200': chamado.faturado == true
+					}"
+					(click)="openChamado(chamado)"
+				>
+					<dl class="-my-3 text-sm">
+						<div class="grid grid-cols-1 gap-1 py-1 sm:grid-cols-3 sm:gap-4">
+							<dt class="font-medium text-gray-900">Cliente</dt>
+							<dd class="text-gray-700 sm:col-span-2">
+								{{ chamado.cliente }}
+							</dd>
+						</div>
 
-		          <div class="grid grid-cols-1 gap-1 py-1 sm:grid-cols-3 sm:gap-4">
-		            <dt class="font-medium text-gray-900">Sobre</dt>
-		            <dd class="text-red-700 sm:col-span-2">{{chamado.title}}</dd>
-		          </div>
+						<div class="grid grid-cols-1 gap-1 py-1 sm:grid-cols-3 sm:gap-4">
+							<dt class="font-medium text-gray-900">Sobre</dt>
+							<dd class="text-red-700 sm:col-span-2">{{ chamado.title }}</dd>
+						</div>
 
-		          <div class="grid grid-cols-1 gap-1 py-1 sm:grid-cols-3 sm:gap-4">
-		            <dt class="font-medium text-gray-900">Técnico</dt>
-		            <div class="flex items-center">
-		            @for (user of chamado.expand.users ; track user) {
-		              <dd class="text-gray-700 sm:col-span-2 mr-2">{{user.username}}</dd>
-		            }
-		            </div>
-		          </div>
-		        </dl>
-		      </div>
+						<div class="grid grid-cols-1 gap-1 py-1 sm:grid-cols-3 sm:gap-4">
+							<dt class="font-medium text-gray-900">Técnico</dt>
+							<div class="flex items-center">
+								@for (user of chamado.expand.users; track user) {
+									<dd class="mr-2 text-gray-700 sm:col-span-2">
+										{{ user.username }}
+									</dd>
+								}
+							</div>
+						</div>
+					</dl>
+				</div>
 			}
 		</div>
 	</div>

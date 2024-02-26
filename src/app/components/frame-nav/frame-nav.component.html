@@ -1,7 +1,7 @@
 <div class="flex">
   <div class="z-10 flex h-full w-16 flex-col justify-between bg-slate-900">
     <div>
-      <div class="inline-flex h-16 w-16 items-center justify-center">
+      <div (click)="OpenSettings()" class="group inline-flex h-16 w-16 items-center justify-center hover:opacity-65 cursor-pointer">
         @if (user) {
            @if (user["avatar"] != ""){
             <img
@@ -20,10 +20,9 @@
               </span>
             }
           }
-
-          
-
-          
+          <span class="material-symbols-outlined absolute text-white invisible group-hover:visible">
+          settings
+          </span>
           
       </div>
 
@@ -57,7 +56,7 @@
             <li>
               <a
                 (click)="navigate('/tecnicos')"
-                class="group relative flex justify-center rounded py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
+                class="group relative flex hover:cursor-pointer justify-center rounded py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
               >
                 <span class="material-symbols-outlined">group</span>
                 <span
@@ -78,18 +77,7 @@
                 >
               </a>
             </li>
-            <li>
-              <a
-                (click)="navigate('')"
-                class="group relative flex justify-center rounded px-2 py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
-              >
-                <span class="material-symbols-outlined">account_circle</span>
-                <span
-                  class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
-                  >Conta</span
-                >
-              </a>
-            </li>
+            
           </ul>
         </div>
       </div>

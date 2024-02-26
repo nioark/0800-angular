@@ -16,7 +16,9 @@ import { catchError, of, pipe, tap } from 'rxjs';
 export class LoginComponent {
   @ViewChild('email') email :ElementRef | undefined;
   @ViewChild('password') password :ElementRef | undefined;
-  @ViewChild('remember') remember :HTMLInputElement | undefined;
+  // @ViewChild('remember') remember :HTMLInputElement | undefined;
+
+  error  = ""
 
 
   constructor(private authSrv : AuthService, public router : Router) {
@@ -46,17 +48,19 @@ export class LoginComponent {
   login() {
     const email = this.email?.nativeElement.value;
     const password = this.password?.nativeElement.value;
-    const vl = this.remember as any
-    const remember = vl.nativeElement.checked;
 
-    this.authSrv.Login(email, password).pipe(
-      tap((res) => {;
-        this.router.navigateByUrl('/home')
-      }), catchError(error => {
-        
-        return of(console.log("Erro ao logar", error));
+
+    this.authSrv.Login(email, password).subscribe(
+     (res) => {
+        console.log("Resposta do login", res)
+        if (res) {
+          this.router.navigateByUrl('/home')
+        } else {
+          console.log("Erro ao logar")
+          this.error = "Email ou senha inválidos"
+        }
       })
-    ).subscribe()
+    
   }
 
 }
