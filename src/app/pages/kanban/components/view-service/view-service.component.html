@@ -212,6 +212,24 @@
 				</div>
 			}
 
+			@if (data.imagem != ""){
+				<div class="mt-6 flex h-8 items-center text-white">
+					<span class="material-symbols-outlined mr-2 text-3xl"> image </span>
+
+					<div class="flex items-center">
+						<h1 class="text-xl">Imagem</h1>
+						
+
+					</div>
+				</div>
+
+		        <img
+		          class="h-20 w-20 rounded-full hover:cursor-pointer hover:opacity-50"
+		          [src]="apiUrl + '/api/files/chamados/' + data['id'] + '/'  + data['imagem']"
+
+		        />
+			}
+
 			@if (!em_espera) {
 				<div class="mt-6 flex h-8 items-center text-white">
 					<span class="material-symbols-outlined mr-2 text-3xl"> wysiwyg </span>
@@ -300,10 +318,10 @@
 				</div>
 			}
 
-			<div class="text-white text-sm" >
+			<div class="text-white text-sm flex items-center mt-4" >
 				<h1 matTooltip="Chamado criado em">{{created_at}}</h1>
 				@if (end_at != "") {
-				 <h1 matTooltip="Chamado terminado em">- {{end_at}}</h1>
+				 <h1 matTooltip="Chamado terminado em">&nbsp; - {{end_at}}</h1>
 				}
 			</div>
 		</div>

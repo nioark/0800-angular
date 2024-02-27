@@ -42,6 +42,7 @@ import { ViewSelectUserComponent } from '../view-select-user/view-select-user.co
 import { ConfirmFinalizarComponent } from './components/confirm-finalizar/confirm-finalizar.component';
 import { ApiService } from '../../../../services/api.service';
 import { ConfirmCancelarComponent } from './components/confirm-cancelar/confirm-cancelar.component';
+import { environment } from '../../../../environment';
 
 @Component({
   selector: 'app-view-service',
@@ -75,6 +76,8 @@ export class ViewServiceComponent implements OnDestroy {
   participando: boolean = false;
 
   criadorParticipa: boolean = false;
+
+  apiUrl = environment.apiUrl
 
   @ViewChild('editor') editorNew: EditorComponent | undefined;
 
@@ -304,13 +307,20 @@ export class ViewServiceComponent implements OnDestroy {
       .open(ViewSelectUserComponent, { data: this.data.users })
       .afterClosed()
       .subscribe((res) => {
-        let usr: any[] = [];
+        let usersSelected: any[] = [];
         res.forEach((user: any) => {
-          if (user.selecionado == true) usr.push(user.id);
+          if (user.selecionado == true) usersSelected.push(user.id);
         });
 
-        // console.log("Last ",[...usr, this.pb.authStore.model!["id"]])
-        this.pocketSrv.updateChamadoUsers(this.data.id,[...usr, this.pb.authStore.model!['id']]);
+        // console.log("Last ",[...usersSelected, this.pb.authStore.model!["id"]])
+
+        let users = [...usersSelected]
+
+        if (this.data.users.includes(this.pb.authStore.model!["id"]) ){
+          users.push(this.pb.authStore.model!["id"])
+        }
+
+        this.pocketSrv.updateChamadoUsers(this.data.id,users);
 
         // this.pb.collection('chamados').update(
         //   this.data.id,

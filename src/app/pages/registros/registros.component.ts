@@ -20,6 +20,8 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { ViewSelectUserComponent } from '../kanban/components/view-select-user/view-select-user.component';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-registros',
@@ -59,14 +61,25 @@ export class RegistrosComponent {
   mostrarFinalizados: boolean = true;
   mostrarFaturados: boolean = false;
 
+  usersFilter : RecordModel[] = []
+  usersFilterID : string[] = []
+
   constructor(
     private pocketSrv: PocketCollectionsService,
     private dialog: MatDialog,
+    private authSrv: AuthService
   ) {
+    let query = "(status = 'finalizado' || status = 'cancelado')"
+    if (!authSrv.IsAdmin()){
+       query += " && users.id ?= '" + pocketSrv.pb.authStore.model!['id'] + "'"
+    }
+
+    console.log("User query", query)
+
     pocketSrv.pb
       .collection('chamados')
       .getFullList({
-        filter: "status = 'finalizado' || status = 'cancelado' && users.id ?= '" + pocketSrv.pb.authStore.model!['id'] + "'",
+        filter: query,
         expand: 'users, created_by',
       })
       .then((data) => {
@@ -76,7 +89,6 @@ export class RegistrosComponent {
         console.log(this.chamados);
       });
 
-    pocketSrv.getChamadosWithStatus("finalizado");
   }
 
   dateChanged() {
@@ -127,6 +139,21 @@ export class RegistrosComponent {
 
     fuzzyMatched = [...canceladosFilter, ...finalizadosFilter, ...faturadosFilters]
 
+    if (this.usersFilterID.length > 0) {
+        fuzzyMatched = fuzzyMatched.filter((chamado) => {
+        let includedCount = 0
+
+
+        this.usersFilterID.forEach((id) => {
+          console.log(chamado["users"], id)
+          if (chamado["users"].includes(id)) {
+            includedCount++
+          }
+        })
+        return includedCount == this.usersFilterID.length
+      })
+    }
+
     if (this.currentSearch == '') {
       //Sort date
       fuzzyMatched.sort((a, b) => {
@@ -165,5 +192,33 @@ export class RegistrosComponent {
         disableClose: true,
       });
     }
+  }
+
+  joinNames(users: RecordModel[]) {
+    return users.map((user) => user["username"]).join(', '); 
+  }
+
+  openSelectView(){
+
+    this.dialog.open(ViewSelectUserComponent, { data:  this.usersFilterID}).afterClosed().subscribe((users) => {
+      let usersSelected : RecordModel[] = []
+      let usersSelectedID : string[] = []
+
+      if (users == undefined) {
+        return
+      }
+      users.forEach((user: RecordModel) => {
+        if(user["selecionado"]) {
+          usersSelected.push(user)
+          usersSelectedID.push(user["id"])
+        }
+      })
+
+      this.usersFilter = usersSelected
+      this.usersFilterID = usersSelectedID
+      console.log("Selected user: ", usersSelected)
+      this.search()
+    })
+      
   }
 }

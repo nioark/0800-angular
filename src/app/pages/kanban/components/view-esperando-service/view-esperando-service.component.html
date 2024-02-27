@@ -60,6 +60,31 @@
 					</div>
 				</div>
 			}
+
+			@if (data.imagem != ""){
+				<div class="mt-6 mb-6 flex h-8 items-center text-white">
+					<span class="material-symbols-outlined mr-2 text-3xl"> image </span>
+
+					<div class="flex items-center">
+						<h1 class="text-xl">Imagem</h1>
+						
+
+					</div>
+				</div>
+				<div class="w-full flex justify-center">
+					<div class="grid grid-cols-3 gap-4">
+						@for (image of data.imagem ; track image){
+					        <img
+					         (click)="openImage(apiUrl + '/api/files/chamados/' + data['id'] + '/'  + image)"
+					          class="min-w-56 h-56 w-56 min-h-56 max-h-56 rounded-md hover:cursor-pointer hover:opacity-50 object-cover"
+					          [src]="apiUrl + '/api/files/chamados/' + data['id'] + '/'  + image"
+
+					        />
+					    }
+					</div>
+				</div>
+			}
+
 				
 		<div class="h-8"></div>
 	</div>

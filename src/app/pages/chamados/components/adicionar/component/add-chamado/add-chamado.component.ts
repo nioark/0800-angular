@@ -10,6 +10,7 @@ import { ApiService } from '../../../../../../services/api.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SelectClientsComponent } from '../select-clients/select-clients.component';
 import { PocketCollectionsService } from '../../../../../../services/pocket-collections.service';
+import { ViewImageComponent } from '../../../../../kanban/components/view-image/view-image.component';
 
 @Component({
   selector: 'app-add-chamado',
@@ -33,6 +34,9 @@ export class AddChamadoComponent {
     
   ]
 
+  imageFormData : FormData = new FormData()
+  images : any[] = []
+
   error : string = ""
 
   constructor(public authSrv : AuthService, api : ApiService, private matDialog: MatDialog, private pocketSrv : PocketCollectionsService) {
@@ -50,6 +54,22 @@ export class AddChamadoComponent {
 
       this.cliente = cliente
     })
+  }
+
+  setImage(event : Event) {
+    let target = event.target as HTMLInputElement
+
+    let files = target.files as FileList
+
+    let file = files[0]
+
+    this.images.push(URL.createObjectURL(file))
+
+    this.imageFormData.append('imagem', file)
+  }
+
+  openImage(url : string){
+    this.matDialog.open(ViewImageComponent, {data: url});
   }
   
   async createChamado(event : Event) {
@@ -91,6 +111,10 @@ export class AddChamadoComponent {
     console.log("Data model: ", data)
 
     const record = await pb.collection('chamados').create(data)
+
+    if (this.imageFormData != undefined){
+      await pb.collection('chamados').update(record["id"],this.imageFormData);
+    }
 
     this.matDialog.closeAll()
 

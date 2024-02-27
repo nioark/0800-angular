@@ -34,7 +34,7 @@
       >
         @if (user.avatar != ""){
             <img
-              class="h-10 w-10 rounded-full"
+              class="h-10 min-h-10 w-10 min-w-10 rounded-full object-cover"
               [src]="apiUrl + '/api/files/users/' + user.id + '/'  + user.avatar"
             />
 

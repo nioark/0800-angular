@@ -3,6 +3,8 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogClose } from '@angular/material/di
 import { PocketCollectionsService } from '../../../../services/pocket-collections.service';
 import { ViewSelectUserComponent } from '../view-select-user/view-select-user.component';
 import { AuthService } from '../../../../services/auth.service';
+import { environment } from '../../../../environment';
+import { ViewImageComponent } from '../view-image/view-image.component';
 
 @Component({
   selector: 'app-view-esperando-service',
@@ -13,6 +15,7 @@ import { AuthService } from '../../../../services/auth.service';
 })
 export class ViewEsperandoServiceComponent {
   user_admin: boolean = false;
+  apiUrl = environment.apiUrl;
   constructor (@Inject(MAT_DIALOG_DATA) public data: any, private authSrv : AuthService, public dialog: MatDialog,  public pocketSrv: PocketCollectionsService){
     this.user_admin = authSrv.IsAdmin()
     console.log(this.user_admin)
@@ -43,5 +46,9 @@ export class ViewEsperandoServiceComponent {
     });
 
     // const dialogRef = this.dialog.open(AddTecnicoComponent, {data: this.data });
+  }
+
+  openImage(url : string){
+    this.dialog.open(ViewImageComponent, {data: url});
   }
 }

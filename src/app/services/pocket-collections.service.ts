@@ -421,4 +421,8 @@ export class PocketCollectionsService {
       "faturado": true
     })
   }
+
+  getUsers() : Observable<RecordModel[]>{
+    return from(this.pb.collection('users').getFullList()); 
+  }
 }

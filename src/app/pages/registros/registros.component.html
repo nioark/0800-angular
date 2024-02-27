@@ -36,6 +36,12 @@
 			</div>
 
 			<div class="flex w-full justify-center">
+				<button
+				(click)="openSelectView()"
+				  type="submit"
+			      class="w-48 text-md h-10 mt-4 flex items-center justify-center rounded-lg mr-2 bg-blue-700 px-5 py-3 font-bold text-white hover:bg-blue-600 ">
+			      Filtrar por Usuário
+			    </button>
 				<mat-form-field class="mt-2">
 					<mat-label>Pesquisar entre datas</mat-label>
 					<mat-date-range-input [rangePicker]="picker">
@@ -101,21 +107,28 @@
 					</div>
 				</div>
 			</div>
+
+			<div>
+				@if (usersFilter.length > 0){
+					<h1>Filtrando pelos Usuários {{joinNames(usersFilter)}}</h1>
+				}
+
+			</div>
 		</div>
 		<div
 			class="grid max-h-full grid-flow-row-dense gap-5 overflow-auto p-3 md:grid-cols-1 lg:grid-cols-2"
 		>
 			@for (chamado of data_search; track chamado) {
 				<div
-					class="flow-root w-[450px] cursor-pointer rounded-md border-b-2 bg-green-100 px-4 py-3 transition-all hover:scale-105 hover:border-b-2"
+					class="flow-root w-[450px] cursor-pointer rounded-md border-b-2 px-4 py-3 transition-all hover:scale-105 hover:border-b-2"
 					[ngClass]="{
 						'border-green-500': chamado.priority === -1,
 						'border-blue-500': chamado.priority === 0,
 						'border-yellow-500': chamado.priority === 1,
 						'border-red-500': chamado.priority === 2,
-						'bg-blue-200': chamado.status == 'finalizado',
+						'bg-blue-200': chamado.status == 'finalizado' && chamado.faturado == false,
 						'bg-red-200': chamado.status == 'cancelado',
-						'bg-amber-200': chamado.faturado == true
+						'bg-amber-100': chamado.faturado == true
 					}"
 					(click)="openChamado(chamado)"
 				>

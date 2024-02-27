@@ -1,161 +1,243 @@
-<form style="width: 500px;">
-    <label
-      for="website-admin"
-      class="text-md mb-2 block font-bold text-gray-700 dark:text-white">
-      Cliente
-    </label>
-    <div class="flex">
-      <span class="inline-flex items-center rounded-s-md border border-e-0 border-gray-300 bg-gray-200 px-3 text-[18px] text-gray-900 dark:border-gray-600 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400">
-        <svg
-          class="h-4 w-4 text-gray-500 dark:text-gray-400"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 20 20">
-          <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z" />
-        </svg>
-      </span>
-      <input
-        type="text"
-        id="website-admin"
-        class="block w-full min-w-0 flex-1 rounded-none rounded-e-0 border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-        [value]="cliente?.nome"
-        placeholder="Clique em selecionar -->"
-        disabled
-      />
-      <span (click)="selectCliente()" class="inline-flex justify-center items-center border-s-0 rounded-e-lg w-32 border-gray-300 font-bold text-white hover:bg-blue-600 bg-blue-700 px-3 text-md cursor-pointer ">
-        Selecionar
-      </span>
-    </div>
+<form style="width: 500px" class="overflow-auto max-h-[700px]">
+  <label
+    for="website-admin"
+    class="text-md mb-2 block font-bold text-gray-700 dark:text-white"
+  >
+    Cliente
+  </label>
+  <div class="flex">
+    <span
+      class="inline-flex items-center rounded-s-md border border-e-0 border-gray-300 bg-gray-200 px-3 text-[18px] text-gray-900 dark:border-gray-600 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400"
+    >
+      <svg
+        class="h-4 w-4 text-gray-500 dark:text-gray-400"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"
+        />
+      </svg>
+    </span>
+    <input
+      type="text"
+      id="website-admin"
+      class="rounded-e-0 block w-full min-w-0 flex-1 rounded-none border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+      [value]="cliente?.nome"
+      placeholder="Clique em selecionar -->"
+      disabled
+    />
+    <span
+      (click)="selectCliente()"
+      class="text-md inline-flex w-32 cursor-pointer items-center justify-center rounded-e-lg border-s-0 border-gray-300 bg-blue-700 px-3 font-bold text-white hover:bg-blue-600"
+    >
+      Selecionar
+    </span>
+  </div>
 
-    <div class="text-md ml-2">
-      @if (cliente?.celular){
-        <div class="flex items-center mt-2">
-          <span class="material-symbols-outlined mr-1">
-          phone_iphone
-          </span>
-          {{cliente.celular}}
-        </div>
-      }
-      @if (cliente?.telefone){
-        <div class="flex items-center mt-2">
-          <span class="material-symbols-outlined mr-1">
-          call
-          </span>
-          {{cliente.telefone}}
-        </div>
-      }
-      @if (cliente?.email){
-        <div class="flex items-center mt-2">
-          <span class="material-symbols-outlined mr-1">
-          email
-          </span>
-          {{cliente.email}}
-        </div>
-      }
-    </div>
+  <div class="text-md ml-2">
+    @if (cliente?.celular) {
+      <div class="mt-2 flex items-center">
+        <span class="material-symbols-outlined mr-1"> phone_iphone </span>
+        {{ cliente.celular }}
+      </div>
+    }
+    @if (cliente?.telefone) {
+      <div class="mt-2 flex items-center">
+        <span class="material-symbols-outlined mr-1"> call </span>
+        {{ cliente.telefone }}
+      </div>
+    }
+    @if (cliente?.email) {
+      <div class="mt-2 flex items-center">
+        <span class="material-symbols-outlined mr-1"> email </span>
+        {{ cliente.email }}
+      </div>
+    }
+  </div>
 
-    <label
-      for="website-admin"
-      class="text-md mb-2 mt-2 block font-bold text-gray-700 dark:text-white">
-      Sobre
-    </label>
-    <div class="flex">
-      <span class="border-e-1 inline-flex w-[42px] items-center rounded-s-md border border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400">
-        <span class="material-symbols-outlined text-[18px]">
-          dvr
-        </span>
-      </span>
-      <input
-        #sobre
-        type="text"
-        id="website-admin"
-        class="block w-full min-w-0 flex-1 rounded-none rounded-e-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-        placeholder="Micro"
-      />
-    </div>
+  <label
+    for="website-admin"
+    class="text-md mb-2 mt-2 block font-bold text-gray-700 dark:text-white"
+  >
+    Sobre
+  </label>
+  <div class="flex">
+    <span
+      class="border-e-1 inline-flex w-[42px] items-center rounded-s-md border border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400"
+    >
+      <span class="material-symbols-outlined text-[18px]"> dvr </span>
+    </span>
+    <input
+      #sobre
+      type="text"
+      id="website-admin"
+      class="block w-full min-w-0 flex-1 rounded-none rounded-e-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+      placeholder="Micro"
+    />
+  </div>
 
-    <label
-      class="text-md mb-2 mt-2 block font-bold text-gray-700 dark:text-white">
+  <label
+    class="text-md mb-2 mt-2 block font-bold text-gray-700 dark:text-white"
+  >
     Descrição
-    </label>
-    <textarea #descricao class="rounded-md w-full"></textarea>
+  </label>
+  <textarea #descricao class="w-full rounded-md"></textarea>
 
-    <label
-      class="text-md mb-2 mt-2 block font-bold text-gray-700 dark:text-white">
+  <label class="text-md font-boldtext-gray-700 mb-2 mt-2 block dark:text-white">
+    Imagem (Em desenvolvimento)
+  </label>
+  <!-- <input  type="file" class="ml-2 file-upload w-64  rounded-md " (change)="setImage($event)"> -->
+  <div class="flex w-full">
+    <div class="grid grid-cols-3 gap-4">
+      @for (image of images; track image) {
+        <img
+          (click)="openImage(image)"
+          class="h-32 max-h-32 min-h-32 w-32 min-w-32 rounded-md object-cover hover:cursor-pointer hover:opacity-50"
+          [src]="image"
+        />
+      }
+      <div class="flex h-32 w-32">
+        <label
+          for="dropzone-file"
+          class="dark:hover:bg-bray-800 flex h-32 w-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+        >
+          <div class="flex flex-col items-center justify-center pb-6 pt-5">
+            <span class="material-symbols-outlined h-8 w-8 text-gray-500">
+              add_photo_alternate
+            </span>
+            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+              <span class="text-center"
+                >Clique para<br />
+                adicionar</span
+              >
+            </p>
+            <!-- <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 20MB)</p> -->
+          </div>
+          <input
+            (change)="setImage($event)"
+            id="dropzone-file"
+            type="file"
+            class="hidden"
+          />
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <label
+    class="text-md mb-2 mt-2 block font-bold text-gray-700 dark:text-white"
+  >
     Prioridade
+  </label>
+  <mat-form-field>
+    <mat-label>Prioridade do serviço</mat-label>
+    <mat-select [(value)]="selected">
+      <mat-option [value]="2"
+        ><h1 class="border-b-2 border-red-500">
+          Prioridade altissíma
+        </h1></mat-option
+      >
+      <mat-option [value]="1"
+        ><h1 class="border-b-2 border-amber-500">
+          Prioridade alta
+        </h1></mat-option
+      >
+      <mat-option [value]="0" selected
+        ><h1 class="border-b-2 border-blue-500">
+          Prioridade normal
+        </h1></mat-option
+      >
+      <mat-option [value]="-1"
+        ><h1 class="border-b-2 border-green-500">
+          Prioridade baixa
+        </h1></mat-option
+      >
+    </mat-select>
+  </mat-form-field>
+
+  <div
+    class="mt-2 flex select-none items-center"
+    matTooltip="Atribuira o chamado a lista de espera"
+  >
+    <input
+      #inputBox
+      id="espera"
+      type="checkbox"
+      [(ngModel)]="deixar_aberto"
+      [ngModelOptions]="{ standalone: true }"
+      class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+    />
+    <label
+      for="espera"
+      class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+    >
+      Deixar em espera
     </label>
-    <mat-form-field>
-      <mat-label>Prioridade do serviço</mat-label>
-      <mat-select [(value)]="selected">
-        <mat-option [value]="2" ><h1 class="border-b-2 border-red-500">Prioridade altissíma</h1></mat-option>  
-        <mat-option [value]="1" ><h1 class="border-b-2 border-amber-500">Prioridade alta</h1></mat-option>  
-        <mat-option [value]="0" selected><h1 class="border-b-2 border-blue-500">Prioridade normal</h1></mat-option>
-        <mat-option [value]="-1" ><h1 class="border-b-2 border-green-500">Prioridade baixa</h1></mat-option>
-      </mat-select>
-    </mat-form-field>
-
-
-    <div class="mt-2 flex items-center select-none" matTooltip="Atribuira o chamado a lista de espera">
+  </div>
+  @if (deixar_aberto) {
+    <div
+      class="ml-4 mt-2 flex select-none items-center"
+      matTooltip="Permitira que outros técnico possam se atribuir a esse chamado"
+    >
       <input
-        #inputBox
-        id="espera"
+        checked
+        #inputBox2
+        id="publico"
         type="checkbox"
-        [(ngModel)]="deixar_aberto"
-        [ngModelOptions]="{standalone: true}"
+        [(ngModel)]="deixar_publico"
+        [ngModelOptions]="{ standalone: true }"
         class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
       />
-      <label for="espera" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-        Deixar em espera
+      <label
+        for="publico"
+        class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+      >
+        Deixar publico
       </label>
     </div>
-    @if (deixar_aberto){
-      <div class="ml-4 mt-2 flex items-center select-none" matTooltip="Permitira que outros técnico possam se atribuir a esse chamado">
-        <input
-          checked
-          #inputBox2
-          id="publico"
-          type="checkbox"
-          [(ngModel)]="deixar_publico"
-          [ngModelOptions]="{standalone: true}"
+  }
 
-          class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
-        />
-        <label for="publico" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-          Deixar publico
-        </label>
-      </div>
-    }
+  @if (!deixar_aberto) {
+    <div
+      class="mt-2 flex select-none items-center"
+      matTooltip="Iniciara a contagem de horas do chamado"
+    >
+      <input
+        #inputBox3
+        id="tempo"
+        type="checkbox"
+        class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+        [(ngModel)]="iniciar_timer"
+        [ngModelOptions]="{ standalone: true }"
+      />
 
-    @if (!deixar_aberto){
-      <div class=" mt-2 flex items-center select-none" matTooltip="Iniciara a contagem de horas do chamado">
-        <input
-          #inputBox3
-          id="tempo"
-          type="checkbox"
-          class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
-          [(ngModel)]="iniciar_timer"
-          [ngModelOptions]="{standalone: true}"
-        />
-
-        <label for="tempo" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-          Iniciar com temporizador
-        </label>
-      </div>
-    }
-
-    <div class="flex items-center mt-4">
-      <button
-        (click)="createChamado($event)"
-        type="submit"
-        class="text-md  w-32 rounded-lg bg-blue-700 px-5 py-3 font-bold text-white hover:bg-blue-600 ">
-        Adicionar
-      </button>
-
-      @if (error != ""){
-        <div class="animate-in fade-in zoom-in bg-red-200 text-red-800 px-2 py-1 rounded-md ml-2">
-          {{error}}
-        </div>
-      }
+      <label
+        for="tempo"
+        class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+      >
+        Iniciar com temporizador
+      </label>
     </div>
-  </form>
+  }
+
+  <div class="mt-4 flex items-center">
+    <button
+      (click)="createChamado($event)"
+      type="submit"
+      class="text-md w-32 rounded-lg bg-blue-700 px-5 py-3 font-bold text-white hover:bg-blue-600"
+    >
+      Adicionar
+    </button>
+
+    @if (error != "") {
+      <div
+        class="ml-2 rounded-md bg-red-200 px-2 py-1 text-red-800 animate-in fade-in zoom-in"
+      >
+        {{ error }}
+      </div>
+    }
+  </div>
+</form>
