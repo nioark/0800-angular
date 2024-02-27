@@ -86,7 +86,7 @@ export class KanbanComponent  {
     const pb = authSrv.GetPocketBase()
     const this_user = pb.authStore.model as any
 
-    if (this.user['backgroundUrl'] != ""){
+    if (this.user['background'] != ""){
       this.backgroundUrl = this.apiUrl + '/api/files/users/' + this.user['id'] + '/'  + this.user['background']
     }
 

@@ -1,5 +1,5 @@
 import { Injectable, SecurityContext } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, forkJoin, from, map, of, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, catchError, forkJoin, from, map, of, switchMap, tap } from 'rxjs';
 import { RecordSubscription, RecordModel } from 'pocketbase'; // Assuming these imports are correct
 import PocketBase from 'pocketbase';
 import edjsHTML from 'editorjs-html';
@@ -83,7 +83,7 @@ export class PocketCollectionsService {
 
     this.chamadosEvent.subscribe((e) => {
       const { action, record } = e;
-      // console.log("Ação:", action, "Record:", record);
+      console.log("Ação:", action, "Record:", record);
 
       if (action === "create") {
         if (record["status"] == status)
@@ -106,7 +106,16 @@ export class PocketCollectionsService {
             // console.log(`Element with id ${idToRemove} removed from the array`);
           } 
         } else if (record["status"] == status) {
-          chamados.push(record);
+          let findIndex = chamados.findIndex(chamado => chamado.id === record.id);
+          let chamadoFound = chamados[findIndex];
+          console.log("Chamado achado:", chamadoFound);
+          if (findIndex !== -1) {
+            chamados[findIndex] = record;
+            record["users"] = chamadoFound["users"] //Expand with the old chamado
+            record["created_by"] = chamadoFound["created_by"] //Expand with the old chamado
+          } else {
+            chamados.push(record);
+          }
         }
         else {
           const idToUpdate = record.id;
@@ -147,7 +156,7 @@ export class PocketCollectionsService {
     this.chamadosEvent.subscribe((e) => {
         const { action, record } = e;
       // console.log("Ação:", action, "Record:", record)
-        pb.collection('chamados').getList(1, 1, { filter: `status = '${status}'` }).then((res) => {;
+        pb.collection('chamados').getList(1, 1, { filter: `status = '${status}'` , requestKey: "RequestCount"}).then((res) => {;
 
           chamadoSubject.next(res.totalItems);
         }).catch((err) => {
@@ -424,5 +433,35 @@ export class PocketCollectionsService {
 
   getUsers() : Observable<RecordModel[]>{
     return from(this.pb.collection('users').getFullList()); 
+  }
+
+  getRelatorioSketch(chamado_id : string) : Observable<RecordModel>{
+    return from(this.pb.collection('relatorio_sketchs').getFirstListItem(`chamado.id = '${chamado_id}' && user.id = '${this.pb.authStore.model!["id"]}'`));
+  }
+
+  saveRelatorioSketch(chamado_id : string, html : string){
+    this.getRelatorioSketch(chamado_id).pipe(
+      tap((sketch) => {
+        this.pb.collection('relatorio_sketchs').update(sketch.id, {
+          "sketch": html
+        })
+      }),
+      catchError((error : any) => {
+        this.pb.collection('relatorio_sketchs').create({
+            "chamado": chamado_id,
+            "user": this.pb.authStore.model!["id"],
+            "sketch": html
+        })
+        return of(null)
+      })
+    ).subscribe()
+  }
+
+  apagarSketch(chamado_id : string){
+    this.getRelatorioSketch(chamado_id).pipe( 
+      tap((sketch) => {
+        this.pb.collection('relatorio_sketchs').delete(sketch.id)
+      })
+    ).subscribe()
   }
 }

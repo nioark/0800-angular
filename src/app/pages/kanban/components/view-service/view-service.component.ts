@@ -7,7 +7,7 @@ import {
   Pipe,
   ViewChild,
 } from '@angular/core';
-import { Observable, Subscription, interval, map } from 'rxjs';
+import { Observable, Subscription, from, interval, map } from 'rxjs';
 import { ServiceRelatorioComponent } from './components/service-relatorio/service-relatorio.component';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
@@ -43,6 +43,7 @@ import { ConfirmFinalizarComponent } from './components/confirm-finalizar/confir
 import { ApiService } from '../../../../services/api.service';
 import { ConfirmCancelarComponent } from './components/confirm-cancelar/confirm-cancelar.component';
 import { environment } from '../../../../environment';
+import { ViewImageComponent } from '../view-image/view-image.component';
 
 @Component({
   selector: 'app-view-service',
@@ -93,6 +94,8 @@ export class ViewServiceComponent implements OnDestroy {
   created_at: String = '';
   end_at: String = '';
 
+  sketch : String = ''
+
   constructor(
     @Inject(MAT_DIALOG_DATA)
     dataInjected: { data: any; dataObservable: Observable<RecordModel> },
@@ -107,6 +110,14 @@ export class ViewServiceComponent implements OnDestroy {
 
     console.log("this.data", this.data)
 
+    interval(15000).subscribe(() => {
+      this.saveEditor()
+    })
+
+    this.pocketSrv.getRelatorioSketch(this.data.id).subscribe((sketchData) => {
+      this.mostrarEditor = true
+      this.sketch = sketchData["sketch"]
+    })
 
     dataInjected.dataObservable.subscribe((data) => {
       this.data = data;
@@ -241,6 +252,12 @@ export class ViewServiceComponent implements OnDestroy {
     }
   }
 
+  editorCarregado(){
+    if (this.sketch) {
+      this.editorNew!.editor.setContent(this.sketch as string)
+    }
+  }
+
   updateTimers() {
     this.data.expand.users.map((user: any) => {
       if (
@@ -283,9 +300,31 @@ export class ViewServiceComponent implements OnDestroy {
     return new Date(new Date().getTime() - this.timeDifference.getTime())
   }
 
+  onFecharChamado() {
+    this.saveEditor();
+  }
+
+  saveEditor(){
+    console.log("Saving editor...")
+    if (this.editorNew != undefined) {
+
+      const html = this.editorNew.editor.getContent();
+
+      if (html != '') {
+        this.pocketSrv.saveRelatorioSketch(this.data.id, html);
+      } 
+    }
+  }
+
+  eraseEditor(){
+    if (this.editorNew != undefined)
+      this.editorNew.editor.setContent('')
+  }
+
   ngOnDestroy() {
     if (this.clockIntervalSubscription)
       this.clockIntervalSubscription.unsubscribe();
+
   }
 
   sendRelatorio() {
@@ -294,11 +333,14 @@ export class ViewServiceComponent implements OnDestroy {
 
       // this.editorNew.editor.uploadImages(endpointsUrl)
 
-      this.pb.collection('relatorios').create({
+      from(this.pb.collection('relatorios').create({
         user: this.pb.authStore.model!['id'],
         relatorio: html,
         chamado: this.data.id,
-      });
+      })).subscribe((res) => {;
+        this.eraseEditor();
+        this.pocketSrv.apagarSketch(this.data.id);
+      })
     }
   }
 
@@ -316,7 +358,7 @@ export class ViewServiceComponent implements OnDestroy {
 
         let users = [...usersSelected]
 
-        if (this.data.users.includes(this.pb.authStore.model!["id"]) ){
+        if (this.data.users.includes(this.pb.authStore.model!["id"]) && this.AuthSrv.IsAdmin() == false){
           users.push(this.pb.authStore.model!["id"])
         }
 
@@ -406,5 +448,9 @@ export class ViewServiceComponent implements OnDestroy {
     this.pocketSrv.marcarChamadoFaturado(this.data.id)
     this.data.faturado = true
     this.dialog.closeAll();
+  }
+
+  openImage(url : string){
+    this.dialog.open(ViewImageComponent, {data: url});
   }
 }

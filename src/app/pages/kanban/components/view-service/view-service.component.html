@@ -61,7 +61,7 @@
 					</button>
 				}
 
-				<div mat-dialog-close class="flex flex-grow justify-end text-white">
+				<div mat-dialog-close (click)="onFecharChamado()" class="flex flex-grow justify-end text-white">
 					<span
 						class="material-symbols-outlined all h-10 rounded-full p-1 text-3xl transition hover:cursor-pointer hover:bg-slate-600"
 					>
@@ -74,7 +74,7 @@
 				<div class="ml-8 flex flex-col">
 					<div class="flex items-center">
 						<h1 class="mb-1 text-sm font-bold">Técnicos</h1>
-						@if (participando || isAdmin) {
+						@if ((participando || isAdmin) && !finalizado) {
 							<span
 								(click)="openAddView()"
 								class="material-symbols-outlined ml-2 text-green-400 transition-all hover:cursor-pointer hover:text-blue-400"
@@ -213,7 +213,7 @@
 			}
 
 			@if (data.imagem != ""){
-				<div class="mt-6 flex h-8 items-center text-white">
+				<div class="mt-6 mb-6 flex h-8 items-center text-white">
 					<span class="material-symbols-outlined mr-2 text-3xl"> image </span>
 
 					<div class="flex items-center">
@@ -222,12 +222,18 @@
 
 					</div>
 				</div>
+				<div class="w-full flex justify-center">
+					<div class="grid grid-cols-3 gap-4">
+						@for (image of data.imagem ; track image){
+					        <img
+					         (click)="openImage(apiUrl + '/api/files/chamados/' + data['id'] + '/'  + image)"
+					          class="min-w-56 h-56 w-56 min-h-56 max-h-56 rounded-md hover:cursor-pointer hover:opacity-50 object-cover"
+					          [src]="apiUrl + '/api/files/chamados/' + data['id'] + '/'  + image"
 
-		        <img
-		          class="h-20 w-20 rounded-full hover:cursor-pointer hover:opacity-50"
-		          [src]="apiUrl + '/api/files/chamados/' + data['id'] + '/'  + data['imagem']"
-
-		        />
+					        />
+					    }
+					</div>
+				</div>
 			}
 
 			@if (!em_espera) {
@@ -242,6 +248,7 @@
 						<editor
 							class="mt-4"
 							#editor
+							(onInit)="editorCarregado()"
 							[init]="{
 								plugins:
 									'  autolink wordcount lists link image searchreplace fullscreen media table code  directionality codesample',
@@ -288,6 +295,15 @@
 							>
 								<span class="material-symbols-outlined"> send </span>
 								Enviar relatório
+							</button>
+
+							<button
+								(click)="saveEditor()"
+								type="button"
+								class="me-2 mt-2 inline-flex items-center rounded-lg bg-indigo-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+							>
+								<span class="material-symbols-outlined"> save </span>
+								Salvar
 							</button>
 						</div>
 
