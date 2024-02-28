@@ -4,13 +4,13 @@
 <app-frame-nav cdkDropListGroup [style.background-image]="'url(' + backgroundUrl + ')'" class="w-full bg-cover">
   <div id="parent" #parent class="appear grid grid-flow-col overflow-auto p-4" (wheel)="onWheel($event)" (mousedown) ="startDragging($event, false)" (pointerup) ="stopDragging($event, false)" (mouseleave) ="stopDragging($event, false)" (mousemove)="moveEvent($event)">
     <div
-      class="flex h-fit min-h-64 w-64 min-w-64 select-none flex-col overflow-hidden rounded-xl shadow-md shadow-blue-600 bg-slate-900 bg-opacity-95 p-2 text-gray-300  animate-in duration-600 zoom-in-[0.8] "
+      class="duration-600 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col overflow-hidden rounded-xl bg-slate-900 bg-opacity-95 p-2 text-gray-300 shadow-md shadow-blue-600 animate-in zoom-in-[0.8]"
     >
       <!-- <div class="mb-[-8px] mt-[-9px] h-1 w-full bg-yellow-300">
 
       </div> -->
-      <div class="flex items-center p-2 ">
-        <span class="border-b-2  border-blue-600">Usuários</span>
+      <div class="flex items-center p-2">
+        <span class="border-b-2 border-blue-600">Usuários</span>
         <span class="material-symbols-outlined ml-auto"> more_horiz </span>
         </div>
 
@@ -32,14 +32,14 @@
 
 
 
-              class="mt-2 flex h-8 max-h-8 w-full cursor-pointer items-center rounded-full bg-slate-700 px-1 py-1 hover:bg-slate-600 transition-all "
+              class="mt-2 flex h-8 max-h-8 w-full cursor-pointer items-center rounded-full bg-slate-700 px-1 py-1 transition-all hover:bg-slate-600"
               [ngClass]="{
                 'animate-pulse': (dragging && item.canDragTo) || (dragging && isAdmin),
               }"
             >
               @if (item.avatar != ""){
                 <img
-                  class="h-6 w-6  min-h-6 min-w-6 rounded-full object-cover"
+                  class="h-6 min-h-6 w-6 min-w-6 rounded-full object-cover"
                   [src]="apiUrl + '/api/files/users/' + item.id + '/'  + item.avatar"
                 />
 
@@ -59,8 +59,8 @@
                 <span class="ml-1 mr-1 flex h-2 w-5 rounded-full bg-red-500"></span>
               }
 
-              <span class="truncate text-sm w-64">{{ item.username}}</span>
-              <div class="flex w-full justify-end"> 
+              <span class="w-64 truncate text-sm">{{ item.username}}</span>
+              <div class="flex w-full justify-end">
               @if (item.isAdmin){
                 <span class="material-symbols-outlined" matTooltip="Este usuário é um administrador">
                     shield_person
@@ -80,13 +80,13 @@
 
 
     <div
-      class="ml-4 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col rounded-xl shadow-md shadow-yellow-400  bg-slate-900 bg-opacity-95 p-2 text-gray-300  animate-in duration-600 zoom-in-[0.8]"
+      class="duration-600 ml-4 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col rounded-xl bg-slate-900 bg-opacity-95 p-2 text-gray-300 shadow-md shadow-yellow-400 animate-in zoom-in-[0.8]"
     >
       <!-- <div class="mb-[-8px] mt-[-9px] h-1 w-full bg-yellow-300">
 
         </div> -->
       <div class="flex items-center p-2">
-        <span class="border-b-2 text-md border-yellow-300" matTooltip="Aqui aparece os chamados que estão em espera de um atendimento">Chamados em espera</span>
+        <span class="text-md border-b-2 border-yellow-300" matTooltip="Aqui aparece os chamados que estão em espera de um atendimento">Chamados em espera</span>
         <span class="material-symbols-outlined ml-auto"> more_horiz </span>
       </div>
 
@@ -102,13 +102,13 @@
         @for (item of chamadosdata; track item) {
           <div
             (click)="openServiceEsperando(item)"
-            class="mt-2 flex w-full cursor-grab items-center rounded-full   bg-slate-700 px-2 py-1 hover:bg-slate-600 border-b-2"
-            [class]="{ 
+            class="mt-2 flex w-full cursor-grab items-center rounded-full border-b-2 bg-slate-700 px-2 py-1 hover:bg-slate-600"
+            [class]="{
             'border-green-500': item.priority == -1,
             'border-blue-500': item.priority == 0,
             'border-yellow-500': item.priority == 1,
             'border-red-500': item.priority == 2}"
-          
+
             cdkDrag
             (cdkDragStarted)="dragStarted($event)"
             (cdkDragEnded)="dragEnded($event)"
@@ -117,8 +117,8 @@
             <!-- <span class="me-3 flex h-3 w-3 rounded-full bg-green-500"></span> -->
             <div class="flex w-full items-center">
               <span class="material-symbols-outlined text-base"> call </span>
-              <span class="ml-2 truncate text-sm w-full">{{ item.title }}</span>
-              <div class="flex  justify-end item-center">
+              <span class="ml-2 w-full truncate text-sm">{{ item.title }}</span>
+              <div class="item-center flex justify-end">
                 @if (item.public == false) {
                   <span class="material-symbols-outlined" matTooltip="Só você e gerentes podem ver esse chamado">
                     visibility_off
@@ -130,7 +130,7 @@
         }
       </div>
 
-      <div (click)="addService()" class="flex h-8 items-center p-1 hover:cursor-pointer transition-all hover:text-slate-200">
+      <div (click)="addService()" class="flex h-8 items-center p-1 transition-all hover:cursor-pointer hover:text-slate-200">
         <span class="material-symbols-outlined"> add </span>
         <span>Add Serviço</span>
       </div>
@@ -142,8 +142,8 @@
     @for (tecnico of tecnicosdata; track tecnico) {
       @if (tecnico.chamados.length > 0) {
         <div
-        class="ml-4 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col rounded-xl bg-slate-900 bg-opacity-95 p-2 text-gray-300  shadow-md shadow-purple-600"
-        [ngClass]="{ 
+        class="ml-4 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col rounded-xl bg-slate-900 bg-opacity-95 p-2 text-gray-300 shadow-md shadow-purple-600"
+        [ngClass]="{
           'animation-pulse': (dragging && tecnico.canDragTo) || (dragging && isAdmin),
           'animate-in duration-600 zoom-in-[0.8]': (!dragging && tecnico.canDragTo) || (!dragging && isAdmin)}"
       >
@@ -162,7 +162,7 @@
 
             <div
               (click)="openService(item)"
-              class="mt-2 flex w-full  items-center rounded-full   border-b-2 border-blue-500 px-2 py-1 h-8 transition-all duration-75 bg-slate-700 "
+              class="mt-2 flex h-8 w-full items-center rounded-full border-b-2 border-blue-500 bg-slate-700 px-2 py-1 transition-all duration-75"
               [ngClass]="{
                   'border-green-500': item.priority === -1,
                   'border-blue-500': item.priority === 0,
@@ -182,7 +182,7 @@
                 }
               </div>
 
-              <div class="flex justify-end item-center w-full">
+              <div class="item-center flex w-full justify-end">
                   @if (item.expand.users.length > 1) {
                     <span class="material-symbols-outlined"  [matTooltip]="getUserNames(item.expand.users)">
                       group
@@ -199,25 +199,25 @@
                     </span>
                   }
                   @if (item.status == "em_andamento"){
-                    <span class="material-symbols-outlined text-green-400 animate-pulse" matTooltip="Chamado em andamento">
+                    <span class="material-symbols-outlined animate-pulse text-green-400" matTooltip="Chamado em andamento">
                     keyboard_double_arrow_up
                     </span>
                   }
               </div>
-             
+
             </div>
             }
         </div>
 
         <div class="flex h-8 items-center p-1"></div>
-        
+
       </div>
       }
     }
   </div>
 
-  <div (click)="changeWallpaper()" class="absolute right-0 bottom-0 mr-2 mb-2 p-2 bg-slate-300 rounded-md cursor-pointer hover:bg-slate-500 text-white">
-    <span class="material-symbols-outlined">
+  <div (click)="changeWallpaper()" class="absolute bottom-0 right-0 mb-2 mr-2 cursor-pointer rounded-md bg-slate-600 px-2 pt-2 text-white hover:bg-slate-800">
+    <span class="material-symbols-outlined mb-0">
     wallpaper
     </span>
   </div>

@@ -1,0 +1,162 @@
+<div class="flex h-screen w-screen flex-col items-center bg-transparent p-8">
+	<div>
+		<div class="z-10 sm:w-[800px] w-[400px] rounded-lg bg-gray-900 p-4">
+			<div class="flex h-8 w-full items-center text-white">
+				<span class="material-symbols-outlined mr-2 text-3xl">
+					title
+				</span>
+
+				<input (change)="changeTitle($event)" spellcheck="false" class="w-128 text-xl bg-transparent outline-none" [value]="data.titulo">
+
+				<div mat-dialog-close class="flex flex-grow justify-end text-white">
+					<span
+						class="material-symbols-outlined all h-10 rounded-full p-1 text-3xl transition hover:cursor-pointer hover:bg-slate-600"
+					>
+						close
+					</span>
+				</div>
+			</div>
+
+
+
+			@if (data.descricao != "") {
+				<div class="mt-6 flex h-8 items-center text-white">
+					<span class="material-symbols-outlined mr-2 text-3xl"> subject </span>
+
+					@if (!mostrarEditor){
+						<div class="flex items-center">
+							<h1 class="text-xl">Descrição</h1>
+							<button
+								(click)="showEditor()"
+								type="button"
+								class="ml-4 me-2 inline-flex items-center rounded-lg bg-indigo-700 px-2 py-1 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+								matTooltip="Salva um rascunho do relátorio"
+							>
+								<span class="material-symbols-outlined"> edit </span>
+								Editar
+							</button>
+
+						</div>
+					} @else {
+						<div class="flex items-center">
+							<h1 class="text-xl">Descrição</h1>
+							<button
+								(click)="salvarDescricao()"
+								type="button"
+								class="ml-4 me-2 inline-flex items-center rounded-lg bg-indigo-700 px-2 py-1 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+								matTooltip="Salva um rascunho do relátorio"
+							>
+								<span class="material-symbols-outlined"> save </span>
+								Salvar
+							</button>
+
+						</div>
+					}
+				</div>
+
+
+				@if (!mostrarEditor) {
+					<div class="w-full flex text-white">
+							<article class="pl-10 prose prose-invert min-w-full w-full px-4  rounded-lg">
+								<div class="w-full" [innerHTML]="data.descricao | sanitizeHtml"></div>
+							</article>
+					</div>
+				} @else {
+					<editor
+						class="mt-4"
+						#editor
+						(onInit)="editorCarregado()"
+						[init]="{
+							plugins:
+								'  autolink wordcount lists link image searchreplace fullscreen media table code  directionality codesample',
+							base_url: '/tinymce',
+							suffix: '.min',
+							selector: 'textarea',
+
+							codesample_languages: [
+								{ text: 'HTML/XML', value: 'markup' },
+								{ text: 'CSS', value: 'css' },
+								{ text: 'SQL', value: 'sql' },
+								{ text: 'Bash', value: 'sh' },
+								{ text: 'JavaScript', value: 'javascript' },
+								{ text: 'Go', value: 'go' },
+								{ text: 'Dart', value: 'dart' },
+								{ text: 'Zig', value: 'zig' },
+								{ text: 'Rust', value: 'rust' },
+								{ text: 'Lua', value: 'lua' },
+								{ text: 'PHP', value: 'php' },
+								{ text: 'Ruby', value: 'ruby' },
+								{ text: 'Python', value: 'python' },
+								{ text: 'Java', value: 'java' },
+								{ text: 'C', value: 'c' },
+								{ text: 'C#', value: 'csharp' },
+								{ text: 'C++', value: 'cpp' },
+								{ text: 'Markdown', value: 'markdown' },
+								{ text: 'Swift', value: 'swift' },
+								{ text: 'Kotlin', value: 'kotlin' },
+								{ text: 'Elixir', value: 'elixir' },
+								{ text: 'Scala', value: 'scala' },
+								{ text: 'Julia', value: 'julia' },
+								{ text: 'Haskell', value: 'haskell' }
+							],
+							toolbar:
+								'styles | alignleft aligncenter alignright | image | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'
+						}"
+					></editor>
+				}
+			}
+
+			@if (data.imagens != ""){
+				<div class="mt-6 mb-6 flex h-8 items-center text-white">
+					<span class="material-symbols-outlined mr-2 text-3xl"> image </span>
+
+					<div class="flex items-center">
+						<h1 class="text-xl">Imagem</h1>
+						
+
+					</div>
+				</div>
+				<div class="w-full flex justify-center">
+					<div class="grid grid-cols-3 gap-4">
+						@for (image of data.imagens ; track image){
+					        <img
+					         (click)="openImage(apiUrl + '/api/files/anotacoes/' + data['id'] + '/'  + image)"
+					          class="min-w-56 h-56 w-56 min-h-56 max-h-56 rounded-md hover:cursor-pointer hover:opacity-50 object-cover"
+					          [src]="apiUrl + '/api/files/anotacoes/' + data['id'] + '/'  + image"
+
+					        />
+					    }
+
+
+					    <label for="dropzone-file" class="w-56 h-56 outline-dashed flex flex-col items-center hover:bg-gray-800 cursor-pointer justify-center outline-4 rounded-md outline-gray-800 transition-all">
+					    	
+				            <span class="material-symbols-outlined h-8 w-8 text-gray-500">
+				              add_photo_alternate
+				            </span>
+				            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+				              <span class="text-center"
+				                >Clique para<br />
+				                adicionar</span
+				              >
+				            </p>
+				            <!-- <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 20MB)</p> -->
+
+    				          <input
+				            (change)="addImage($event)"
+				            id="dropzone-file"
+				            type="file"
+				            class="hidden"
+				          />
+				          </label>
+
+					</div>
+				</div>
+			}
+
+<!-- 			<div class="text-white text-sm flex items-center mt-4" >
+				<h1 matTooltip="Anotação criada em">{{data.created}}</h1>
+			</div> -->
+		</div>
+		<div class="h-8"></div>
+	</div>
+</div>

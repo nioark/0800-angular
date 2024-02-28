@@ -12,13 +12,15 @@
 
     @for (item of chamados ; track item.id) {
        <div
-          class="mt-8 flow-root w-[600px] cursor-pointer rounded-md border-b-2 bg-green-100 px-4 py-3 hover:border-b-2 hover:scale-105 transition-all"
+          class="mt-8 flow-root w-[600px] cursor-pointer rounded-md border-b-2  px-4 py-3 hover:border-b-2 hover:scale-105 transition-all"
           (click)="openService(item)"
            [ngClass]="{
                 'border-green-500': item.priority === -1,
                 'border-blue-500': item.priority === 0,
                 'border-yellow-500': item.priority === 1,
-                'border-red-500': item.priority === 2
+                'border-red-500': item.priority === 2,
+                'bg-green-100' : item.status == 'em_andamento',
+                'bg-yellow-100': item.status == 'em_pausa',
           }"
         >
         <dl class="-my-3 text-sm">

@@ -42,6 +42,10 @@ export class AuthService {
     return this.pb.authStore.model!['isAdmin'];
   }
 
+  getID() : string {
+    return this.pb.authStore.model!['id'];
+  }
+
   GetPocketBase(): PocketBase {
     const pb = new PocketBase(environment.apiUrl)
 

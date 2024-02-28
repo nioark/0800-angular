@@ -1,0 +1,21 @@
+
+@if (user){
+
+<app-frame-nav [style.background-image]="'url(' + backgroundUrl + ')'" class="w-full bg-cover h-full">
+
+  <div id="parent" #parent class="appear grid grid-flow-col overflow-auto p-4" (wheel)="onWheel($event)" (mousedown) ="startDragging($event, false)" (pointerup) ="stopDragging($event, false)" (mouseleave) ="stopDragging($event, false)" (mousemove)="moveEvent($event)">
+
+    @for (bloco of blocos ; track bloco){
+      <app-bloco [bloco]="bloco"></app-bloco>
+    }
+
+  </div>
+  <h1 class="m-4 text-black font-bold text-3xl">Em desenvolvimento...</h1>
+
+  <div (click)="changeWallpaper()" class="absolute right-0 bottom-0 mr-2 mb-2 p-2 bg-slate-300 rounded-md cursor-pointer hover:bg-slate-500 text-white">
+    <span class="material-symbols-outlined">
+    wallpaper
+    </span>
+  </div>
+</app-frame-nav>
+}

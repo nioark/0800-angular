@@ -29,7 +29,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 
 import PocketBase, { AuthModel, RecordModel } from 'pocketbase';
 
-import { BehaviorSubject, Observable, Subject, from, interval, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription, from, interval, map, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { ViewServiceComponent } from './components/view-service/view-service.component';
 import { PocketCollectionsService } from '../../services/pocket-collections.service';
@@ -73,6 +73,9 @@ export class KanbanComponent  {
 
   backgroundUrl = "/assets/cool-background.png"
 
+  tecnicosChamadosSubscription : Subscription | undefined
+  chamadosEsperaSubscription : Subscription | undefined
+
 
   @ViewChild('parent') slider: ElementRef;
   constructor(private change:ChangeDetectorRef, public dialog: MatDialog, private authSrv: AuthService, public pocketCollectionsSrv: PocketCollectionsService) {
@@ -91,7 +94,7 @@ export class KanbanComponent  {
     }
 
 
-    this.tecnicosChamados.subscribe((tecnicos) => {
+    this.tecnicosChamadosSubscription = this.tecnicosChamados.subscribe((tecnicos) => {
       this.tecnicosdata = tecnicos
 
       let mapped = tecnicos.map((user : any) => {
@@ -107,7 +110,7 @@ export class KanbanComponent  {
       console.log("Tecnicos join chamados updated: ", tecnicos)
     })
 
-    this.pocketCollectionsSrv.getChamadosWithStatus("em_espera").subscribe((chamados) => {
+    this.chamadosEsperaSubscription = this.pocketCollectionsSrv.getChamadosWithStatus("em_espera").subscribe((chamados) => {
       this.chamadosdata = chamados
       console.log("Chamados em espera updated: ", chamados)
     })
@@ -117,6 +120,11 @@ export class KanbanComponent  {
   }
 
   tecnicosChamados : Observable<RecordModel[]> 
+
+  ngOnDestroy(){
+    this.tecnicosChamadosSubscription?.unsubscribe() 
+    this.chamadosEsperaSubscription?.unsubscribe()
+  }
 
   tecnicoEntered(event: CdkDragEnter<any>) {
     window.document.querySelector<any>('.cdk-drag-placeholder').style.opacity = "0"

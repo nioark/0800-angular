@@ -94,7 +94,7 @@ export class AddChamadoComponent {
       return
     
     console.log(pb.authStore.model)
-    // example create data
+
     const data = {
         "users": this.deixar_aberto ? [] : [pb.authStore.model?.["id"]],
         "messages": [],
@@ -112,7 +112,7 @@ export class AddChamadoComponent {
 
     const record = await pb.collection('chamados').create(data)
 
-    if (this.imageFormData != undefined){
+    if (this.imageFormData != new FormData()){
       await pb.collection('chamados').update(record["id"],this.imageFormData);
     }
 

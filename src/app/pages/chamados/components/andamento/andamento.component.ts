@@ -22,11 +22,13 @@ export class AndamentoComponent {
   pb = this.authSrv.GetPocketBase()
 
   subscription : Subscription | undefined
+  emPausaSubscription : Subscription | undefined
 
   observable : Observable<any>
+  emPausa : Observable<any> | undefined
 
   constructor (public authSrv : AuthService, public dialog: MatDialog, public pocketCollectionsSrv : PocketCollectionsService) {
-    this.observable = this.pocketCollectionsSrv.getChamadosWithStatus("em_andamento", " && users.id ?= '" + this.pb.authStore.model!["id"] + "'")
+    this.observable = this.pocketCollectionsSrv.getChamadosWithMultipleStatus(["em_andamento", "em_pausa"], " && users.id ?= '" + this.pb.authStore.model!["id"] + "'")
   }
 
   ngOnInit() {
@@ -35,7 +37,7 @@ export class AndamentoComponent {
         console.log(chamados)
         this.chamados = chamados
       }
-    ) 
+    )
   }
 
   ngOnDestroy() {

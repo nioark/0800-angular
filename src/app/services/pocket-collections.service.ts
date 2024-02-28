@@ -68,6 +68,71 @@ export class PocketCollectionsService {
     )
   }
 
+  getChamadosWithMultipleStatus(status : string[], filterExtra = ""): Observable<RecordModel[]>{
+    const chamadoSubject = new Subject<RecordModel[]>;
+
+    filterExtra = "&& " + filterExtra ? filterExtra : "";
+
+    let chamados: RecordModel[] = [];
+
+    let statusFilters = []
+
+    for (let i = 0; i < status.length; i++) {
+      statusFilters[i] = `status = '${status[i]}'`;
+    }
+
+    this.pb.collection('chamados').getList(1, 50, { filter: `${statusFilters.join(' || ')}` + filterExtra , requestKey: "chamadosstatus", expand:"users, created_by" }).then((res) => {;
+      chamados = res.items;
+      chamadoSubject.next(chamados);
+    })
+
+    this.chamadosEvent.subscribe((e) => {
+      const { action, record } = e;
+      console.log("Ação:", action, "Record:", record);
+
+      if (action === "create") {
+        if (status.includes(record["status"]))
+          chamados.push(record);
+      } else if (action === "delete") {
+        const idToRemove = record.id;
+        const indexToRemove = chamados.findIndex(chamado => chamado.id === idToRemove);
+
+        if (indexToRemove !== -1) {
+          chamados.splice(indexToRemove, 1);
+          // console.log(`Element with id ${idToRemove} removed from the array`);
+        }
+      } else if (action === "update"){
+
+        if (!status.includes(record["status"])) {
+          const idToRemove = record.id;
+          const indexToRemove = chamados.findIndex(chamado => chamado.id === idToRemove);
+          if (indexToRemove !== -1) {
+            chamados.splice(indexToRemove, 1); 
+            // console.log(`Element with id ${idToRemove} removed from the array`);
+          }
+        } else if (status.includes(record["status"])) {
+          let findIndex = chamados.findIndex(chamado => chamado.id === record.id);
+          let chamadoFound = chamados[findIndex];
+          if (findIndex !== -1) {
+            record["expand"] = chamadoFound["expand"] //Expand with the old chamado
+            chamados[findIndex] = record;
+
+          } else {
+            chamados.push(record);
+          }
+        }
+        else {
+          const idToUpdate = record.id;
+          const indexToUpdate = chamados.findIndex(chamado => chamado.id === idToUpdate);
+          chamados[indexToUpdate] = record;
+        }
+      }
+      chamadoSubject.next(chamados);
+    });
+
+    return chamadoSubject.asObservable();
+  }
+
   getChamadosWithStatus(status : string, filterExtra = ""): Observable<RecordModel[]>{
     const chamadoSubject = new Subject<RecordModel[]>;
 
@@ -83,7 +148,6 @@ export class PocketCollectionsService {
 
     this.chamadosEvent.subscribe((e) => {
       const { action, record } = e;
-      console.log("Ação:", action, "Record:", record);
 
       if (action === "create") {
         if (record["status"] == status)
@@ -110,9 +174,10 @@ export class PocketCollectionsService {
           let chamadoFound = chamados[findIndex];
           console.log("Chamado achado:", chamadoFound);
           if (findIndex !== -1) {
+            record["expand"] = chamadoFound["expand"] //Expand with the old chamado
             chamados[findIndex] = record;
-            record["users"] = chamadoFound["users"] //Expand with the old chamado
-            record["created_by"] = chamadoFound["created_by"] //Expand with the old chamado
+            // record["users"] = chamadoFound["users"] //Expand with the old chamado
+            // record["created_by"] = chamadoFound["created_by"] //Expand with the old chamado
           } else {
             chamados.push(record);
           }
@@ -142,6 +207,7 @@ export class PocketCollectionsService {
     return chamadoSubject.asObservable();
   }
 
+  //Todo stop getList every event
   countChamadosWithStatus(status : string): Observable<Number>{
     const chamadoSubject = new Subject<Number>;
 
@@ -160,7 +226,7 @@ export class PocketCollectionsService {
 
           chamadoSubject.next(res.totalItems);
         }).catch((err) => {
-          console.error(err);
+          console.log("Erro de contagem")
         })
     });
 
@@ -291,9 +357,6 @@ export class PocketCollectionsService {
   }
 
   pushTecnicoChamado(id_tecnico : string, chamado : any){
-
-    console.log("id_tecnico:", id_tecnico, "id_chamado:", chamado.id);''
-
     this.pb.collection('chamados').update(chamado.id, {
       "users+": id_tecnico
     }, {requestKey: "chamadosstatus"})
@@ -319,7 +382,6 @@ export class PocketCollectionsService {
       filter: `chamado = '${chamado_id}'`, sort: '-created', expand: 'user'
     }).then((item) => {
       item.forEach(relatorio => {
-        console.log("relatorio: ", relatorio)
         relatorios.push(relatorio)
       })
 
@@ -329,10 +391,13 @@ export class PocketCollectionsService {
     this.relatoriosEvent.subscribe((e) => {
       const { action, record } = e;
       if (action === "create") {
-        this.pb.collection('users').getFullList().then((users) => {
-          relatorios.unshift(this._expandUser(record, users))
-          chamadoSubject.next(relatorios)
-        })
+        console.log("record: ", record)
+        if (record["chamado"] == chamado_id){
+          this.pb.collection('users').getFullList().then((users) => {
+            relatorios.unshift(this._expandUser(record, users))
+            chamadoSubject.next(relatorios)
+          })
+        }
       }
     })
 
@@ -417,10 +482,18 @@ export class PocketCollectionsService {
     })
 
     this.horasEvent.subscribe((e) => {
-      this.pb.collection('duracao_chamados').getFullList({ filter: `chamado.id = '${chamado_id}'`, expand:"user" }).then((item) => {
+      this.pb.collection('duracao_chamados').getFullList({ filter: `chamado.id = '${chamado_id}'`, expand:"user", requestKey:"GEtchamadostimerskey"}).then((item) => {
         timersSubject.next(item);
       })
     })
+
+    this.pb.collection('chamados').subscribe(chamado_id, (e) => {
+      this.pb.collection('duracao_chamados').getFullList({ filter: `chamado.id = '${chamado_id}'`, expand:"user", requestKey:"GEtchamadostimerskey"}).then((item) => {
+        timersSubject.next(item);
+      })
+    })
+
+    console.log("getChamadoTimers")
 
     return timersSubject.asObservable();
   }
@@ -442,6 +515,7 @@ export class PocketCollectionsService {
   saveRelatorioSketch(chamado_id : string, html : string){
     this.getRelatorioSketch(chamado_id).pipe(
       tap((sketch) => {
+        console.log("Tried to save")
         this.pb.collection('relatorio_sketchs').update(sketch.id, {
           "sketch": html
         })

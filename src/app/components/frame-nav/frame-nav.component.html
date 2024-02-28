@@ -34,7 +34,7 @@
                 (click)="navigate('')"
                 class="group relative flex cursor-pointer justify-center rounded px-2 py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
               >
-                <span class="material-symbols-outlined">home</span>
+                <span class="material-symbols-outlined text-[1.8rem]">home</span>
                 <span
                   class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >Home</span
@@ -46,7 +46,7 @@
                 (click)="navigate('/chamados/aberto')"
                 class="group relative flex cursor-pointer justify-center rounded px-2 py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
               >
-                <span class="material-symbols-outlined">desktop_windows</span>
+                <span class="material-symbols-outlined text-[1.8rem]">desktop_windows</span>
                 <span
                   class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >Chamados</span
@@ -58,7 +58,7 @@
                 (click)="navigate('/tecnicos')"
                 class="group relative flex hover:cursor-pointer justify-center rounded py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
               >
-                <span class="material-symbols-outlined">group</span>
+                <span class="material-symbols-outlined text-[1.8rem]">view_kanban</span>
                 <span
                   class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >Painel de chamados
@@ -67,10 +67,22 @@
             </li>
             <li>
               <a
+                (click)="navigate('/anotacoes')"
+                class="group relative flex hover:cursor-pointer justify-center rounded py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
+              >
+                <span class="material-symbols-outlined text-[1.8rem]">note_stack</span>
+                <span
+                  class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
+                  >Painel de anotações
+                </span>
+              </a>
+            </li>
+            <li>
+              <a
                 (click)="navigate('/registros')"
                 class="group relative flex justify-center rounded px-2 py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
               >
-                <span class="material-symbols-outlined">description</span>
+                <span class="material-symbols-outlined text-[1.8rem]">description</span>
                 <span
                   class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >Registros</span

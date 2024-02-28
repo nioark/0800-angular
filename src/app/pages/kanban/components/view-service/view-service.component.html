@@ -36,14 +36,14 @@
 						type="button"
 						class="ml-2 inline-flex items-center rounded-lg border border-purple-700 px-1 text-center text-sm font-medium text-purple-700 hover:bg-purple-800 hover:text-white"
 					>
-						<span class="material-symbols-outlined"> save </span>
+						<span class="material-symbols-outlined" > save </span>
 						<div class="sm:flex hidden">Finalizar</div>
 					</button>
 
 					<button
 						(click)="cancelarChamado()"
 						type="button"
-						class="ml-2 inline-flex items-center rounded-lg border border-red-700 px-1 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white"
+						class="ml-2 inline-flex items-center rounded-lg border border-red-700 px-1 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white "
 					>
 						<span class="material-symbols-outlined"> remove </span>
 						<div class="sm:flex hidden">Cancelar</div>
@@ -57,7 +57,7 @@
 						class="ml-2 inline-flex items-center rounded-lg border border-amber-400 px-1 text-center text-sm font-medium text-amber-400 hover:bg-amber-500 hover:text-white"
 					>
 						<span class="material-symbols-outlined"> save </span>
-						Marcar como faturado
+						Marcar como registrado
 					</button>
 				}
 
@@ -69,6 +69,10 @@
 					</span>
 				</div>
 			</div>
+
+			@if (end_at != ''){
+				<h1 class="ml-8 text-white font-bold" matTooltip="Duração do chamado da criação até a finalização">{{getTotalTime()}}</h1>
+			}
 
 			<div class="mt-4 flex text-white">
 				<div class="ml-8 flex flex-col">
@@ -244,7 +248,7 @@
 				</div>
 
 				<div class="flex-col p-0">
-					@if (mostrarEditor) {
+					@if (mostrarEditor && !finalizado) {
 						<editor
 							class="mt-4"
 							#editor
@@ -301,6 +305,7 @@
 								(click)="saveEditor()"
 								type="button"
 								class="me-2 mt-2 inline-flex items-center rounded-lg bg-indigo-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+								matTooltip="Salva um rascunho do relátorio"
 							>
 								<span class="material-symbols-outlined"> save </span>
 								Salvar
@@ -328,6 +333,7 @@
 							[user]="item.expand.user"
 							[date]="item.created"
 							[html]="item.relatorio"
+							[relatorio_data]="item"
 						/>
 						<!-- <hr class="w-48 h-1 mx-auto my-4 bg-gray-100 border-0 rounded md:my-10 dark:bg-gray-700"> -->
 					}
@@ -338,6 +344,7 @@
 				<h1 matTooltip="Chamado criado em">{{created_at}}</h1>
 				@if (end_at != "") {
 				 <h1 matTooltip="Chamado terminado em">&nbsp; - {{end_at}}</h1>
+				 <h1 matTooltip="Duração do chamado">&nbsp; - {{getTotalTime()}}</h1>
 				}
 			</div>
 		</div>
