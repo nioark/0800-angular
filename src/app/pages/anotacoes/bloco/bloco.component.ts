@@ -1,10 +1,15 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RecordModel } from 'pocketbase';
 import { ViewAnotacaoComponent } from './view-anotacao/view-anotacao.component';
 import { Observable, Subscription } from 'rxjs';
 import { PocketAnotacoesService } from '../../../services/pocket-anotacoes.service';
+import { initFlowbite } from 'flowbite';
+
+import {
+  initDropdowns,
+} from 'flowbite';
 
 @Component({
   selector: 'app-bloco',
@@ -13,7 +18,9 @@ import { PocketAnotacoesService } from '../../../services/pocket-anotacoes.servi
   templateUrl: './bloco.component.html',
   styleUrl: './bloco.component.scss'
 })
-export class BlocoComponent {
+
+
+export class BlocoComponent implements OnInit {
   @Input({ required: true }) bloco!: any;
   @Input({ required: false }) blocoObservable!: Observable<RecordModel[]>;
 
@@ -24,6 +31,8 @@ export class BlocoComponent {
   }
 
   ngOnInit() {
+    console.log("Iniciado bloco")
+    initFlowbite();
     this.subscription = this.pocket.getBlocoObservable(this.bloco.id).subscribe(
       (bloco) => {
         console.log("Bloco updated", bloco)
