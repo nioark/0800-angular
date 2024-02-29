@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 import { AuthModel, RecordModel } from 'pocketbase';
 import { BlocoComponent } from './bloco/bloco.component';
 import { PocketAnotacoesService } from '../../services/pocket-anotacoes.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-anotacoes',
@@ -35,6 +36,7 @@ export class AnotacoesComponent {
 
   blocos : RecordModel[] | undefined
 
+
   constructor(
     private change: ChangeDetectorRef,
     public dialog: MatDialog,
@@ -50,9 +52,6 @@ export class AnotacoesComponent {
     })
   }
 
-  getObservableFromBloco(bloco : RecordModel){
-    
-  }
 
   startDragging(e: MouseEvent, flag: boolean) {
     const element = e.target as any as HTMLElement;

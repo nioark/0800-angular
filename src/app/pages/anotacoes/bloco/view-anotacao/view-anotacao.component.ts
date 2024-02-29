@@ -5,6 +5,7 @@ import { environment } from '../../../../environment';
 import { SanitizeHtmlPipe } from "../../../../sanitize-html.pipe";
 import { EditorComponent, EditorModule } from '@tinymce/tinymce-angular';
 import { PocketAnotacoesService } from '../../../../services/pocket-anotacoes.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-view-anotacao',
@@ -19,7 +20,17 @@ export class ViewAnotacaoComponent {
   @ViewChild('editor') editorNew: EditorComponent | undefined;
   mostrarEditor: boolean = false
 
+  subscription : Subscription | undefined
+
   constructor (@Inject(MAT_DIALOG_DATA) public data : any, private dialog : MatDialog, private pocket : PocketAnotacoesService) {
+    this.subscription = this.pocket.getAnotacaoObservable(data.id).subscribe((anotacao : any) => {
+      console.log("Anotação updated", anotacao)
+      this.data = anotacao
+    })
+  }
+
+  ngOnDestroy(){
+    this.subscription?.unsubscribe() 
   }
 
   openImage(url: string) {

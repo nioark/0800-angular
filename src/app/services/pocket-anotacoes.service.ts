@@ -14,6 +14,37 @@ export class PocketAnotacoesService {
 
   }
 
+  getAnotacaoObservable(id : string) : Observable<RecordModel>{
+    const subject = new Subject<RecordModel>
+
+    this.pb.collection('anotacoes').subscribe(id, function (e) {
+      subject.next(e.record)
+    })
+
+    //Todo return something to tell what to unsubscribe to
+
+    return subject.asObservable()
+  }
+
+  getBlocoObservable(id : string) : Observable<RecordModel>{
+    const subject = new Subject<RecordModel>
+
+    this.pb.collection('blocos').subscribe(id, function (e) {
+      subject.next(e.record)
+    }, { expand: 'anotacoes' });
+
+
+    this.pb.collection('anotacoes').subscribe("*", function (e) {
+      if (e.record.expand){
+        subject.next(e.record.expand["bloco"])
+      }
+    }, {filter : "bloco = '" + id + "'", expand: "bloco.anotacoes"});
+
+    //Todo return something to tell what to unsubscribe to
+
+    return subject.asObservable()
+  }
+
   getBlocosAnotacoes(): Observable<RecordModel[]>{
     const subject = new Subject<RecordModel[]>
 
