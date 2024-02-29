@@ -44,6 +44,8 @@ import { ApiService } from '../../../../services/api.service';
 import { ConfirmCancelarComponent } from './components/confirm-cancelar/confirm-cancelar.component';
 import { environment } from '../../../../environment';
 import { ViewImageComponent } from '../view-image/view-image.component';
+import { FormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-view-service',
@@ -58,6 +60,7 @@ import { ViewImageComponent } from '../view-image/view-image.component';
     ImgAuthPipe,
     EditorModule,
     MatTooltipModule,
+    MatInputModule, FormsModule
   ],
 })
 export class ViewServiceComponent implements OnDestroy {
@@ -99,6 +102,11 @@ export class ViewServiceComponent implements OnDestroy {
 
   sketch: String = '';
 
+  total_worked_time: number = 0;
+
+  relatorio_hora_inicio: any;
+  relatorio_hora_fim: any;
+
   constructor(
     @Inject(MAT_DIALOG_DATA)
     private dataInjected: {
@@ -137,21 +145,14 @@ export class ViewServiceComponent implements OnDestroy {
     }
   }
 
-  getTotalTime() : string {
-    // Future Date
-      const firstDate: Date = new Date(this.data.end_time);
-       
-      // Current Date
-      const secondDate: Date = new Date(this.data.created);
-       
-      // Time Difference in Milliseconds
-      const milliDiff: number = firstDate.getTime()
-          - secondDate.getTime();
-       
-      // Converting time into hh:mm:ss format
-       
+  getTotalWorkedTime() : string {
+    console.log("this.total_worked_time", this.total_worked_time);
+     return this.getTimeFromMill(this.total_worked_time * 1000);
+  }
+
+  getTimeFromMill(timeMilliseconds : number) : string {
       // Total number of seconds in the difference
-      const totalSeconds = Math.floor(milliDiff / 1000);
+      const totalSeconds = Math.floor(timeMilliseconds / 1000);
        
       // Total number of minutes in the difference
       const totalMinutes = Math.floor(totalSeconds / 60);
@@ -179,6 +180,25 @@ export class ViewServiceComponent implements OnDestroy {
       }
        
       return `${hours}:${minutes}:${seconds}`;
+  }
+
+  getTimeFromDate(date : Date) : string {
+    return this.getTimeFromMill(date.getTime()) 
+  }
+
+  getTotalTime() : string {
+    // Future Date
+      const firstDate: Date = new Date(this.data.end_time);
+       
+      // Current Date
+      const secondDate: Date = new Date(this.data.created);
+       
+      // Time Difference in Milliseconds
+     const milliDiff: number = firstDate.getTime()
+          - secondDate.getTime();
+
+      return this.getTimeFromMill(milliDiff);
+     
   }
 
   relatorioSketchLogic(){
@@ -241,6 +261,7 @@ export class ViewServiceComponent implements OnDestroy {
           );
 
           if (findt) {
+            this.total_worked_time += duracao.total_elapsed_time_seconds;
             findt['duracao_total_str'] = duracao_total_str;
             findt['duracao_total_seconds'] = duracao_total_seconds;
             findt['duracao_status'] = duracao.status;
@@ -422,6 +443,15 @@ export class ViewServiceComponent implements OnDestroy {
 
   sendRelatorio() {
     if (this.editorNew) {
+      const start_time = (<HTMLInputElement> document.getElementById("start-time")).value
+      const end_time = (<HTMLInputElement> document.getElementById("end-time")).value
+
+      var date_now = new Date();
+      var date_start = new Date(date_now.getFullYear(), date_now.getMonth(), date_now.getDate(), parseInt(start_time.split(":")[0]), parseInt(start_time.split(":")[1]));
+      var date_end = new Date(date_now.getFullYear(), date_now.getMonth(), date_now.getDate(), parseInt(end_time.split(":")[0]), parseInt(end_time.split(":")[1]));
+
+      console.log( date_start)
+      console.log( date_end)      
       const html = this.editorNew.editor.getContent();
 
       from(
@@ -429,6 +459,8 @@ export class ViewServiceComponent implements OnDestroy {
           user: this.pb.authStore.model!['id'],
           relatorio: html,
           chamado: this.data.id,
+          interacao_start: date_start,
+          interacao_end: date_end
         }),
       ).subscribe((res) => {
         this.eraseEditor();

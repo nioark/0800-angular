@@ -1,6 +1,6 @@
 <div class="mt-4">
 	<div class="inline-flex w-full items-center justify-center">
-		<hr class="my-8 h-1 w-80 rounded border-0 bg-gray-200 dark:bg-gray-700" />
+		<hr class="my-8 h-1 w-[500px] rounded border-0 bg-gray-200 dark:bg-gray-700" />
 		<div class="absolute left-1/2 -translate-x-1/2 bg-slate-900 px-4">
 			<div class="flex items-center text-gray-200">
 				@if (user["avatar"] != "") {
@@ -18,6 +18,10 @@
 				}
 				<h1 class="text-md ml-2">{{ user["username"] }}</h1>
 				<div class="ml-2 text-xs text-gray-500">{{ timeStamp }}</div>
+				@if (relatorio_data["interacao_start"] && relatorio_data["interacao_end"]){
+					<div matTooltip="Horario de início da interação" class="cursor-pointer ml-2 text-sm text-white font-bold">- {{ getTimeFromDate(relatorio_data["interacao_start"])}}</div>
+					<div matTooltip="Horario de fim da interação" class="cursor-pointer ml-1 text-sm text-white font-bold">- {{ getTimeFromDate(relatorio_data["interacao_end"])}}</div>
+				}
 			</div>
 		</div>
 	</div>
@@ -86,11 +90,20 @@
 		}
 
 		@if (mostrarEditor) {
-			<div class="justify-center flex w-full mt-2">
+			<div class="justify-start flex w-full p-2">
+				<div class="flex flex-col">
+					<label for="start-time" class="text-sm text-black font-bold">Hora de ínicio:</label>
+					<input class="h-8 " id="start-time" type="time" name="start-time" />
+				</div>
+				<div class="flex flex-col ml-2">
+					<label for="end-time" class="text-sm text-black font-bold">Hora de fim:</label>
+					<input class="h-8" id="end-time" type="time" name="end-time" />
+				</div>
+
 				<button
 					(click)="updateRelatorio()"
 					type="submit"
-					class="text-md mb-1 mr-1 flex items-center rounded-lg bg-blue-700 px-1 py-1 text-md font-bold text-white hover:bg-blue-600"
+					class="text-md ml-2 mb-1 mt-5 mr-1 flex items-center rounded-lg bg-blue-700 px-1 py-1 text-md font-bold text-white hover:bg-blue-600"
 				>
 					<span class="material-symbols-outlined"> save </span>
 					Alterar

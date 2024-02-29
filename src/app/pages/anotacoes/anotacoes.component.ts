@@ -48,6 +48,9 @@ export class AnotacoesComponent {
       this.blocos = blocos
       console.log("this.blocos", this.blocos)
     })
+  }
+
+  getObservableFromBloco(bloco : RecordModel){
     
   }
 

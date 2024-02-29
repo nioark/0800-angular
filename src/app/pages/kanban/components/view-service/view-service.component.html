@@ -70,10 +70,10 @@
 				</div>
 			</div>
 
-			@if (end_at != ''){
+<!-- 			@if (end_at != ''){
 				<h1 class="ml-8 text-white font-bold" matTooltip="Duração do chamado da criação até a finalização">{{getTotalTime()}}</h1>
 			}
-
+ -->
 			<div class="mt-4 flex text-white">
 				<div class="ml-8 flex flex-col">
 					<div class="flex items-center">
@@ -291,11 +291,20 @@
 							}"
 						></editor>
 
-						<div class="flex w-full justify-center">
+						<div class="flex w-full justify-start items-center pt-2">
+							<div class="flex flex-col">
+								<label for="start-time" class="text-sm text-white font-bold">Hora de ínicio:</label>
+								<input class="h-8 " id="start-time" type="time" name="start-time" />
+							</div>
+							<div class="flex flex-col ml-2">
+								<label for="end-time" class="text-sm text-white font-bold">Hora de fim:</label>
+								<input class="h-8" id="end-time" type="time" name="end-time" />
+							</div>
+
 							<button
 								(click)="sendRelatorio()"
 								type="button"
-								class="me-2 mt-2 inline-flex items-center rounded-lg bg-blue-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+								class="me-2 ml-2 mt-4 inline-flex items-center rounded-lg bg-blue-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
 							>
 								<span class="material-symbols-outlined"> send </span>
 								Enviar relatório
@@ -304,7 +313,7 @@
 							<button
 								(click)="saveEditor()"
 								type="button"
-								class="me-2 mt-2 inline-flex items-center rounded-lg bg-indigo-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+								class="me-2 mt-4 inline-flex items-center rounded-lg bg-indigo-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
 								matTooltip="Salva um rascunho do relátorio"
 							>
 								<span class="material-symbols-outlined"> save </span>
@@ -344,7 +353,9 @@
 				<h1 matTooltip="Chamado criado em">{{created_at}}</h1>
 				@if (end_at != "") {
 				 <h1 matTooltip="Chamado terminado em">&nbsp; - {{end_at}}</h1>
-				 <h1 matTooltip="Duração do chamado">&nbsp; - {{getTotalTime()}}</h1>
+				 <!-- <h1 matTooltip="Duração do chamado">&nbsp; - {{getTotalTime()}}</h1> -->
+				 <h1 class="text-yellow-300 font-bold" matTooltip="Horas trabalhadas">&nbsp; - {{getTotalWorkedTime()}}</h1>
+
 				}
 			</div>
 		</div>

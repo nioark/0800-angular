@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RecordModel } from 'pocketbase';
 import { ViewAnotacaoComponent } from './view-anotacao/view-anotacao.component';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-bloco',
@@ -13,6 +14,7 @@ import { ViewAnotacaoComponent } from './view-anotacao/view-anotacao.component';
 })
 export class BlocoComponent {
   @Input({ required: true }) bloco!: any;
+  @Input({ required: false }) blocoObservable!: Observable<RecordModel[]>;
 
   constructor(private dialog : MatDialog) { }
 
