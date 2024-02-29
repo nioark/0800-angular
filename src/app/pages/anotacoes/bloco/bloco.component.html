@@ -12,8 +12,20 @@
     <span  mat-button [matMenuTriggerFor]="menu" class="ml-auto hover:text-gray-300 cursor-pointer transition-all material-symbols-outlined text-white "> more_horiz </span>
     <!-- Dropdown menu -->
     <mat-menu #menu="matMenu" class="customize">
-        <button (click)="addAnotacao()" mat-menu-item>Adicionar anotação</button>
-        <button (click)="removerAnotacao()" mat-menu-item>Remover bloco</button>
+        <button (click)="addAnotacao()" mat-menu-item>
+            <div class="flex items-center">
+              <span class="material-symbols-outlined mr-1">
+                note_add
+              </span>Adicionar anotação
+            </div>
+        </button>
+        <button (click)="removerAnotacao()" mat-menu-item>
+            <div class="flex items-center">
+              <span class="material-symbols-outlined mr-1">
+                delete
+              </span>Excluir bloco
+            </div>
+        </button>
 
     </mat-menu>
   </div>
