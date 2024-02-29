@@ -1,47 +1,48 @@
 <div
 	class="ml-4 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col rounded-xl bg-slate-900 bg-opacity-95 p-2 text-gray-300  shadow-md shadow-purple-600 animate-in duration-600 zoom-in-[0.8]"
 >
-	@for (anotacao of bloco.expand['anotacoes'] ; track anotacao){
+  <div class="flex items-center p-2">
+    <!-- <span class="border-b-2 border-blue-600">{{bloco.titulo}}</span> -->
+    <input
+        (change)="updateTitulo($event)"
+        spellcheck="false"
+        class="border-b-2 border-blue-600 w-28 bg-transparent outline-none"
+        [value]="bloco.titulo"
+    />
+    <span  mat-button [matMenuTriggerFor]="menu" class="ml-auto hover:text-gray-300 cursor-pointer transition-all material-symbols-outlined text-white "> more_horiz </span>
+    <!-- Dropdown menu -->
+    <mat-menu #menu="matMenu" class="customize">
+        <button (click)="addAnotacao()" mat-menu-item>Adicionar anotação</button>
+        <button (click)="removerAnotacao()" mat-menu-item>Remover bloco</button>
 
-      <!-- <div class="mb-[-8px] mt-[-9px] h-1 w-full bg-yellow-300">
+    </mat-menu>
+  </div>
 
-      </div> -->
-      <div class="flex items-center p-2">
-        <span class="border-b-2 border-blue-600">{{bloco.titulo}}</span>
-        <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="material-symbols-outlined ml-auto"> more_horiz </button>
-       
-        <!-- Dropdown menu -->
-        <div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
-              <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
-              </li>
-              <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
-              </li>
-              <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Earnings</a>
-              </li>
-              <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</a>
-              </li>
-            </ul>
-        </div>
-      </div>
+  @if (bloco.expand) {
+      
+  	@for (anotacao of bloco.expand['anotacoes'] ; track anotacao){
 
-		<div
-			(click)="openAnotacao(anotacao)"
-          class="mt-2 flex w-full  items-center rounded-full   border-b-2 border-blue-500 px-2 py-1 h-8 transition-all duration-75 bg-slate-700 hover:bg-slate-600 cursor-pointer hover:border-b-0 hover:translate-y-[2px]"
+        <!-- <div class="mb-[-8px] mt-[-9px] h-1 w-full bg-yellow-300">
 
-          >
+        </div> -->
 
-          <div class="flex w-[160px] items-center">
-            @if (anotacao.titulo.length > 16) {
-              <div class="ml-2 truncate text-sm" matTooltip="{{anotacao.titulo}}">{{ anotacao.titulo }}</div>
-            } @else {
-              <div class="ml-2 truncate text-sm">{{ anotacao.titulo }}</div>
-            }
+  		<div
+  			(click)="openAnotacao(anotacao)"
+            class="mt-2 flex w-full  items-center rounded-full   border-b-2 border-blue-500 px-2 py-1 h-8 transition-all duration-75 bg-slate-700 hover:bg-slate-600 cursor-pointer hover:border-b-0 hover:translate-y-[2px]"
+
+            >
+
+            <div class="flex w-[160px] items-center">
+              <span class="material-symbols-outlined">
+              sticky_note_2
+              </span>
+              @if (anotacao.titulo.length > 16) {
+                <div class="ml-2 truncate text-sm" matTooltip="{{anotacao.titulo}}">{{ anotacao.titulo }}</div>
+              } @else {
+                <div class="ml-2 truncate text-sm">{{ anotacao.titulo }}</div>
+              }
+            </div>
           </div>
-        </div>
-	}
+  	}
+  }
 </div>

@@ -6,13 +6,16 @@ import { SanitizeHtmlPipe } from "../../../../sanitize-html.pipe";
 import { EditorComponent, EditorModule } from '@tinymce/tinymce-angular';
 import { PocketAnotacoesService } from '../../../../services/pocket-anotacoes.service';
 import { Subscription } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { SelectBlocoComponent } from '../select-bloco/select-bloco.component';
 
 @Component({
     selector: 'app-view-anotacao',
     standalone: true,
     templateUrl: './view-anotacao.component.html',
     styleUrl: './view-anotacao.component.scss',
-    imports: [MatDialogClose, SanitizeHtmlPipe, EditorModule]
+    imports: [MatDialogClose, SanitizeHtmlPipe, EditorModule, MatButtonModule, MatMenuModule]
 })
 export class ViewAnotacaoComponent {
 
@@ -76,5 +79,17 @@ export class ViewAnotacaoComponent {
 
   changeTitle(event : Event){
     this.pocket.salvarAnotacaoTitulo(this.data.id, (event.target as HTMLInputElement).value) 
+  }
+
+  excluirAnotacao(){
+    this.pocket.excluirAnotacao(this.data.id)
+    this.dialog.closeAll()
+  }
+
+  async transferirAnotacao(){
+    let blocos = await this.pocket.getBlocosOwnNoSync()
+    this.dialog.open(SelectBlocoComponent, {data : {blocos:blocos, bloco : this.data}}).afterClosed().subscribe((bloco : any) => {;
+      this.pocket.transferirAnotacao(this.data.id, bloco.id)
+    })
   }
 }

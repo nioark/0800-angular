@@ -46,7 +46,7 @@ export class AnotacoesComponent {
     this.slider = new ElementRef(null);
     this.user = this.PocketAnotacoesService.pb.authStore.model!
 
-    this.PocketAnotacoesService.getBlocosAnotacoes().subscribe((blocos) => {
+    this.PocketAnotacoesService.getBlocosOwnAnotacoes().subscribe((blocos) => {
       this.blocos = blocos
       console.log("this.blocos", this.blocos)
     })
@@ -103,5 +103,9 @@ export class AnotacoesComponent {
 
   changeWallpaper(){
     const dialogRef = this.dialog.open(EditBackgroundComponent)
+  }
+
+  addBloco(){
+    this.PocketAnotacoesService.addBloco("Novo Bloco")
   }
 }

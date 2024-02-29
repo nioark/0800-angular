@@ -1,21 +1,36 @@
+@if (user) {
+  <app-frame-nav
+    [style.background-image]="'url(' + backgroundUrl + ')'"
+    class="h-full w-full bg-cover"
+  >
+    <div
+      id="parent"
+      #parent
+      class="appear grid grid-flow-col overflow-auto p-4"
+      (wheel)="onWheel($event)"
+      (mousedown)="startDragging($event, false)"
+      (pointerup)="stopDragging($event, false)"
+      (mouseleave)="stopDragging($event, false)"
+      (mousemove)="moveEvent($event)"
+    >
+      @for (bloco of blocos; track bloco) {
+        <app-bloco [bloco]="bloco"></app-bloco>
+      }
+      <div
+        (click)="addBloco()"
+        class="duration-600 ml-4 flex h-fit min-h-20 w-64 min-w-64 cursor-pointer select-none flex-col items-center justify-center rounded-xl border-2 border-slate-800 bg-slate-200 bg-opacity-95 p-2 font-bold text-gray-800 transition-all animate-in zoom-in-[0.8] hover:bg-slate-300"
+      >
+        <span class="material-symbols-outlined text-2xl"> note_stack_add </span>
+        <h1>Adicionar bloco</h1>
+      </div>
+    </div>
+    <!-- <h1 class="m-4 text-3xl font-bold text-black">Em desenvolvimento...</h1> -->
 
-@if (user){
-
-<app-frame-nav [style.background-image]="'url(' + backgroundUrl + ')'" class="w-full bg-cover h-full">
-
-  <div id="parent" #parent class="appear grid grid-flow-col overflow-auto p-4" (wheel)="onWheel($event)" (mousedown) ="startDragging($event, false)" (pointerup) ="stopDragging($event, false)" (mouseleave) ="stopDragging($event, false)" (mousemove)="moveEvent($event)">
-
-    @for (bloco of blocos ; track bloco){
-      <app-bloco [bloco]="bloco" ></app-bloco>
-    }
-
-  </div>
-  <h1 class="m-4 text-black font-bold text-3xl">Em desenvolvimento...</h1>
-
-  <div (click)="changeWallpaper()" class="absolute right-0 bottom-0 mr-2 mb-2 p-2 bg-slate-300 rounded-md cursor-pointer hover:bg-slate-500 text-white">
-    <span class="material-symbols-outlined">
-    wallpaper
-    </span>
-  </div>
-</app-frame-nav>
+    <div
+      (click)="changeWallpaper()"
+      class="absolute bottom-0 right-0 mb-2 mr-2 cursor-pointer rounded-md bg-slate-300 p-2 text-white hover:bg-slate-500"
+    >
+      <span class="material-symbols-outlined"> wallpaper </span>
+    </div>
+  </app-frame-nav>
 }
