@@ -10,7 +10,7 @@ export const environment = {
 };
 
 if (port == "4215"){
-  environment.apiUrl = `http://${ip}:8015`;
+  environment.apiUrl = `http://192.168.100.228:8090`;
 }
 
 console.log(environment.apiUrl);

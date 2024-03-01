@@ -85,6 +85,7 @@ export class ViewServiceComponent implements OnDestroy {
   data: any;
   serverTime: Date = new Date();
   timeDifference: Date = new Date();
+  duracoes = [];
   isAdmin: boolean = false;
 
   faturado: boolean = false;
@@ -268,6 +269,10 @@ export class ViewServiceComponent implements OnDestroy {
           }
         });
 
+
+        this.duracoes = data;
+        console.log("Durações", data)
+
         this.updateTimers();
       });
   }
@@ -373,12 +378,24 @@ export class ViewServiceComponent implements OnDestroy {
         user['duracao_status'] != undefined &&
         user['duracao_status'] == 'em_andamento'
       ) {
-          user['duracao_total_seconds'] += 1;
-          user['duracao_total_str'] = new Date(
-          user['duracao_total_seconds'] * 1000,
-        )
-          .toISOString()
-          .slice(11, 19);
+        console.log('Adding timer', user)
+          this.duracoes.find((duracao: any) => {
+            if (duracao.user == user.id) {
+              let last_start = new Date(duracao.last_start) as any;
+              let date_now = this.getCurrentServerTime() as any;
+
+              const dates_difference = (date_now - last_start) / 1_000;
+
+              user['duracao_total_seconds'] = dates_difference;
+
+              user['duracao_total_str'] = new Date(
+              user['duracao_total_seconds'] * 1000,
+            )
+              .toISOString()
+              .slice(11, 19);
+            }
+          })
+
       } else if (
         user['duracao_status'] != undefined &&
         user['duracao_status'] == 'em_pausa'

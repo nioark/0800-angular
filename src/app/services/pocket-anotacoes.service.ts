@@ -26,19 +26,47 @@ export class PocketAnotacoesService {
     return subject.asObservable()
   }
 
+  fetchUserAnotacoesObservable() : Observable<RecordModel[]>{
+    const subject = new Subject<RecordModel[]>
+
+    let anotacoes : RecordModel[] = []
+
+    this.pb.collection('anotacoes').getFullList({filter: "bloco.isUserBlock = true"}).then((data) => {
+      anotacoes = data
+      subject.next(anotacoes)
+    })
+
+    this.pb.collection('anotacoes').subscribe('*', function (e) {
+        if (e.action == "create"){
+          anotacoes.push(e.record)
+          subject.next(anotacoes)
+        } else if (e.action == "delete"){
+          anotacoes = anotacoes.filter(anotacao => anotacao.id != e.record.id)  
+          subject.next(anotacoes)
+        } else if (e.action == "update"){
+          let findIndex = anotacoes.findIndex(anotacao => anotacao.id == e.record.id)
+          anotacoes[findIndex] = e.record
+          subject.next(anotacoes)
+        }
+    })
+    
+
+    return subject.asObservable()
+  }
+
   getBlocoObservable(id : string) : Observable<RecordModel>{
     const subject = new Subject<RecordModel>
 
     this.pb.collection('blocos').subscribe(id, function (e) {
       subject.next(e.record)
-    }, { expand: 'anotacoes' });
-
+      console.log("EXPANDED VIA, ", e.record)
+    }, { expand: 'anotacoes_via_bloco' });
 
     this.pb.collection('anotacoes').subscribe("*", function (e) {
       if (e.record.expand){
         subject.next(e.record.expand["bloco"])
       }
-    }, {filter : "bloco = '" + id + "'", expand: "bloco.anotacoes"});
+    }, {filter : "bloco = '" + id + "'", expand: "bloco.anotacoes_via_bloco"});
 
     //Todo return something to tell what to unsubscribe to
 
@@ -54,7 +82,7 @@ export class PocketAnotacoesService {
 
     let blocos : RecordModel[]= []
 
-    this.pb.collection('blocos').getFullList({expand: 'anotacoes', filter: "created_by = " +  "'" + this.pb.authStore.model!["id"] + "'"}).then((blocosData) => {
+    this.pb.collection('blocos').getFullList({expand: 'anotacoes_via_bloco', filter: "created_by = " +  "'" + this.pb.authStore.model!["id"] + "'"}).then((blocosData) => {
       blocos = blocosData
       subject.next(blocos)
     })
@@ -69,7 +97,7 @@ export class PocketAnotacoesService {
           blocos = blocos.filter(bloco => bloco.id != e.record.id) 
           subject.next(blocos)
         }
-    }, { expand: 'anotacoes' });
+    }, { expand: 'anotacoes_via_bloco' });
     //Todo user back to back relation to avoid any to many
 
     return subject
@@ -100,6 +128,38 @@ export class PocketAnotacoesService {
     })
   }
 
+  async addUserAnotacao(id_user : string, titulo : string, descricao : string){
+    let bloco = await this.pb.collection('blocos').getFullList({filter: `created_by = '${id_user}' && isUserBlock = true`})
+    let blocoFound = bloco[0]
+
+    console.log("Log bloco get full list: ", bloco)
+
+    if (bloco.length == 0){
+      try{
+        console.log(id_user)
+        blocoFound = await this.pb.collection('blocos').create({
+          titulo: '',
+          created_by: id_user,
+          isUserBlock: true,
+          public: false
+        })
+      }
+      catch (e){
+        console.log("Error: ", e) 
+      }
+    }
+
+    console.log("Log bloco found: ", blocoFound)
+
+    let anotacao = await this.pb.collection('anotacoes').create({
+      titulo: titulo,
+      descricao: descricao,
+      bloco: blocoFound.id
+    })
+
+    return null
+  }
+
   async addAnotacaoAsync(id_bloco : string, titulo : string, descricao : string){
     let anotacao = await this.pb.collection('anotacoes').create({
       titulo: titulo,
@@ -118,22 +178,8 @@ export class PocketAnotacoesService {
   }
 
   async transferirAnotacao(id_anotacao : string, id_bloco : string){
-    let this_anotacao = await this.pb.collection('anotacoes').getOne(id_anotacao)
-
-    console.log(this_anotacao)
-    //Remove reference from old bloco
-    await this.pb.collection('blocos').update(this_anotacao['bloco'], {
-      "anotacoes-": id_anotacao
-    })
-
-    //Add reference to itself
     await this.pb.collection('anotacoes').update(id_anotacao, {
       bloco: id_bloco
-    })
-
-    //Add referencet to new bloco
-    await this.pb.collection('blocos').update(id_bloco, {
-      "anotacoes+": id_anotacao
     })
 
   }

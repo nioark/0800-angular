@@ -26,7 +26,7 @@
           @for (item of tecnicosdata ; track item.id) {
             <div
               cdkDropList
-              [cdkDropListData]="item.expand?.chamados"
+              [cdkDropListData]="item.expand?.chamados_via_users"
               (cdkDropListDropped)="dropTecnico($event, item)"
               (cdkDropListEntered)="tecnicoEntered($event)"
 
@@ -49,13 +49,13 @@
                   src="https://as2.ftcdn.net/v2/jpg/05/49/98/39/1000_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"
                 />
               }
-              @if (item.chamados.length == 0) {
+              @if (item.expand.chamados_via_users.length == 0) {
                 <span class="ml-1 mr-1 flex h-2 w-5 rounded-full bg-green-500"></span>
               }
-              @if (item.chamados.length > 0 && item.chamados.length < 3) {
+              @if (item.expand.chamados_via_users.length > 0 && item.expand.chamados_via_users.length < 3) {
                 <span class="ml-1 mr-1 flex h-2 w-5 rounded-full bg-yellow-400"></span>
               }
-              @if (item.chamados.length > 2) {
+              @if (item.expand.chamados_via_users.length > 2) {
                 <span class="ml-1 mr-1 flex h-2 w-5 rounded-full bg-red-500"></span>
               }
 
@@ -140,7 +140,7 @@
 
     <!-- Kanba pra cada técnico -->
     @for (tecnico of tecnicosdata; track tecnico) {
-      @if (tecnico.chamados.length > 0) {
+      @if (tecnico.expand.chamados_via_users.length > 0) {
         <div
         class="ml-4 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col rounded-xl bg-slate-900 bg-opacity-95 p-2 text-gray-300 shadow-md shadow-purple-600"
         [ngClass]="{
@@ -149,16 +149,27 @@
       >
         <div class="flex items-center p-2">
           <span class="border-b-2 border-purple-600">{{tecnico.username}}</span>
-          <span class="material-symbols-outlined ml-auto"> more_horiz </span>
+          <span  mat-button [matMenuTriggerFor]="menu" class="ml-auto hover:text-gray-300 cursor-pointer transition-all material-symbols-outlined text-white "> more_horiz </span>
+          <!-- Dropdown menu -->
+          <mat-menu #menu="matMenu" class="customize">
+              <button (click)="addAnotacao(tecnico)" mat-menu-item>
+                  <div class="flex items-center">
+                    <span class="material-symbols-outlined mr-1">
+                      note_add
+                    </span>Adicionar anotação
+                  </div>
+              </button>
+
+          </mat-menu>
         </div>
 
         <div
             class="min-h-48 rounded-b-md p-2 pb-6"
             cdkDropList
-            [cdkDropListData]="tecnico.expand?.chamados"
+            [cdkDropListData]="tecnico.expand.chamados_via_users"
             (cdkDropListDropped)="dropTecnico($event, tecnico)"
           >
-            @for (item of tecnico.chamados; track item) {
+            @for (item of tecnico.expand.chamados_via_users; track item) {
 
             <div
               (click)="openService(item)"
@@ -183,8 +194,8 @@
               </div>
 
               <div class="item-center flex w-full justify-end">
-                  @if (item.expand.users.length > 1) {
-                    <span class="material-symbols-outlined"  [matTooltip]="getUserNames(item.expand.users)">
+                  @if (item.users.length > 1) {
+                    <span class="material-symbols-outlined"  [matTooltip]="getUserNames(item.users)">
                       group
                     </span>
                   }

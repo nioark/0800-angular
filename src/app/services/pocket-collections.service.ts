@@ -298,6 +298,53 @@ export class PocketCollectionsService {
     return updatedAndRemoved;
   }
 
+  __addChamadoToUsers(users: RecordModel[], chamado: RecordModel) {
+    users.forEach((user: RecordModel) => {
+      if (chamado['users'].includes(user.id)) {
+        if (user.expand)
+          user.expand['chamados_via_users'].push(chamado);
+      }
+    })
+  }
+
+  getTecnicosWithChamados(): Observable<RecordModel[]>{
+    const chamadoSubject = new Subject<RecordModel[]>;
+    
+    let tecnicos: RecordModel[] = [];
+
+    this.pb.collection('users').getFullList({expand: "chamados_via_users.users, chamados_via_users.created_by"}).then((users) => {
+      tecnicos = users;
+      console.log("Tecnicos received:", tecnicos);
+      chamadoSubject.next(tecnicos);
+    })
+
+    this.pb.collection("chamados").subscribe('*', (e) => {
+      console.log("Event:", e)
+      if (e.action === "create") {
+        const chamado = e.record;
+        this.__addChamadoToUsers(tecnicos, chamado);
+        chamadoSubject.next(tecnicos);
+      } else if (e.action === "update") {
+        let st = e.record["status"];
+        if (st == "em_andamento" || st == "em_espera" || st == "em_pausa" || st == "aguardando") {
+          const chamado = e.record;
+          this.__addChamadoToUsers(tecnicos, chamado);
+          chamadoSubject.next(tecnicos);
+        } else {
+          const chamado = e.record;
+          const updatedAndRemoved = this._removeUserChamados(tecnicos, chamado);
+          chamadoSubject.next(updatedAndRemoved);
+        }
+      } else if (e.action === "delete") {
+        const chamado = e.record; 
+        const updatedAndRemoved = this._removeUserChamados(tecnicos, chamado);
+        chamadoSubject.next(updatedAndRemoved);
+      }
+    }, {expand: "users, users.chamados_via_users.users, users.chamados_via_users.created_by"})
+
+    return chamadoSubject.asObservable();
+  }
+
 
   getTecnicosJoinChamados(): Observable<RecordModel[]>{
     const chamadoSubject = new Subject<RecordModel[]>;

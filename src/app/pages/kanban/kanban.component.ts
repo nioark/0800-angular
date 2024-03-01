@@ -40,6 +40,10 @@ import { ViewSelectUserComponent } from './components/view-select-user/view-sele
 import { environment } from '../../environment';
 import { AuthService } from '../../services/auth.service';
 import { EditBackgroundComponent } from './components/edit-background/edit-background.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { PocketAnotacoesService } from '../../services/pocket-anotacoes.service';
+import { ViewAnotacaoComponent } from '../anotacoes/bloco/view-anotacao/view-anotacao.component';
 
 
 interface TecnicoServicos {
@@ -51,7 +55,7 @@ interface TecnicoServicos {
 @Component({
   selector: 'app-kanban',
   standalone: true,
-  imports: [FrameNavComponent, CdkDropListGroup, CdkDropList, CdkDrag, AsyncPipe, MatTooltipModule, ImgAuthPipe,NgOptimizedImage, CommonModule],
+  imports: [FrameNavComponent, CdkDropListGroup, CdkDropList, CdkDrag, AsyncPipe, MatTooltipModule, ImgAuthPipe,NgOptimizedImage, CommonModule, MatButtonModule, MatMenuModule],
   templateUrl: './kanban.component.html',
   styleUrl: './kanban.component.scss'
 })
@@ -76,15 +80,16 @@ export class KanbanComponent  {
   tecnicosChamadosSubscription : Subscription | undefined
   chamadosEsperaSubscription : Subscription | undefined
 
+  anotacoes : RecordModel[] = []
 
   @ViewChild('parent') slider: ElementRef;
-  constructor(private change:ChangeDetectorRef, public dialog: MatDialog, private authSrv: AuthService, public pocketCollectionsSrv: PocketCollectionsService) {
+  constructor(private change:ChangeDetectorRef, private pocketAnotacao : PocketAnotacoesService, public dialog: MatDialog, private authSrv: AuthService, public pocketCollectionsSrv: PocketCollectionsService) {
     this.slider = new ElementRef(null);
 
     this.isAdmin = this.authSrv.IsAdmin()
     this.user = this.pocketCollectionsSrv.pb.authStore.model!
 
-    this.tecnicosChamados = this.pocketCollectionsSrv.getTecnicosJoinChamados()
+    this.tecnicosChamados = this.pocketCollectionsSrv.getTecnicosWithChamados()
 
     const pb = authSrv.GetPocketBase()
     const this_user = pb.authStore.model as any
@@ -93,17 +98,28 @@ export class KanbanComponent  {
       this.backgroundUrl = this.apiUrl + '/api/files/users/' + this.user['id'] + '/'  + this.user['background']
     }
 
+    this.pocketAnotacao.fetchUserAnotacoesObservable().subscribe((anotacoes) => {
+
+    })
+
 
     this.tecnicosChamadosSubscription = this.tecnicosChamados.subscribe((tecnicos) => {
-      this.tecnicosdata = tecnicos
+      console.log("Tecnicos chamados: ", tecnicos)
 
       let mapped = tecnicos.map((user : any) => {
-        user.chamados.sort((a : any, b : any) => {
+        if (user?.expand?.chamados_via_users == undefined ) {
+          user.expand = {}
+          user.expand.chamados_via_users = []
+        }
+        user?.expand.chamados_via_users.sort((a : any, b : any) => {
           return b.priority - a.priority
         })
 
         user.canDragTo = user.id == this_user.id
       })
+
+      this.tecnicosdata = tecnicos
+
       // this.tecnicosdata = this.tecnicosdata.sort((a : any, b : any) => {
       //   return a.id == this_user.id ? -1 : 1
       // })
@@ -258,5 +274,14 @@ export class KanbanComponent  {
     const dialogRef = this.dialog.open(EditBackgroundComponent)
   }
 
+  async addAnotacao(tecnico : any){
+    console.log(tecnico)
+    const record = await this.pocketAnotacao.addUserAnotacao(tecnico.id, "Nova anotação", "")
+    console.log("Anotação adicionada", record)
+
+    if (record != null) {
+      this.dialog.open(ViewAnotacaoComponent, {data : record}); 
+    }
+  }
 
 }
