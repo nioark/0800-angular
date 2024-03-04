@@ -36,7 +36,11 @@
           class="h-10 w-10 rounded-full"
           src="https://as2.ftcdn.net/v2/jpg/05/49/98/39/1000_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"
         />
-        <span class="truncate text-md ml-2 text-white w-full hover:cursor-pointer" [mat-dialog-close]="user">{{ user.nome}}</span>
+        @if (user.nome.length > 30){
+	        <span class="truncate text-md ml-2 text-white w-full hover:cursor-pointer" [matTooltip]="user.nome" [mat-dialog-close]="user">{{ user.nome}}</span>
+	      }@else{
+		     	<span class="truncate text-md ml-2 text-white w-full hover:cursor-pointer" [mat-dialog-close]="user">{{ user.nome}}</span>
+	      }
       </div>
 		}
 		@if (data_search.length == 0){

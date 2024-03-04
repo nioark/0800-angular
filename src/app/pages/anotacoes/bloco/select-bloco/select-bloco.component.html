@@ -45,10 +45,15 @@
             />
           } -->
       	<span class="material-symbols-outlined text-white ml-4 text-3xl">
-			note_stack
-		</span>
+					note_stack
+				</span>
+
         <span class="truncate text-md ml-2 text-white w-64">{{ bloco.titulo}}</span>
-        <div class="flex w-full justify-end pr-6">
+        <div class="flex w-full justify-end items-center pr-6">
+        	@if (bloco.public == true){
+        		<span class="material-symbols-outlined text-white text-sm">public</span>
+        		<span class="truncate text-md ml-2 text-white w-16">Público</span>
+        	}
         </div>
       </div>
 		}

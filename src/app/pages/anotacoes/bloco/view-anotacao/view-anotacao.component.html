@@ -22,13 +22,24 @@
 								</span>Excluir
 							</div>
 						</button>
-				        <button (click)="transferirAnotacao()" mat-menu-item>
+						@if (data.expand.bloco.public == false) {
+					        <button (click)="transferirAnotacao()" mat-menu-item>
+					        	<div class="flex items-center">
+						        	<span class="material-symbols-outlined mr-1">
+										move_item
+									</span>
+
+							        Transferir
+								</div>
+						    </button>
+						}
+				        <button (click)="copiarAnotacao()" mat-menu-item>
 				        	<div class="flex items-center">
 					        	<span class="material-symbols-outlined mr-1">
-									move_item
+									content_copy
 								</span>
 
-						        Transferir
+						        Copiar
 							</div>
 					    </button>
 				    </mat-menu>
@@ -138,17 +149,31 @@
 			<div class="flex w-full justify-center">
 				<div class="grid grid-cols-3 gap-4">
 					@for (image of data.imagens; track image) {
-						<img
-							(click)="
-								openImage(
-									apiUrl + '/api/files/anotacoes/' + data['id'] + '/' + image
-								)
-							"
-							class="h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover hover:cursor-pointer hover:opacity-50"
-							[src]="
-								apiUrl + '/api/files/anotacoes/' + data['id'] + '/' + image
-							"
-						/>
+						<div>
+						@if (image.isVideo == false){
+							<img
+								(click)="
+									openImage(
+										apiUrl + '/api/files/anotacoes/' + data['id'] + '/' + image.url
+									)
+								"
+								class="peer h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover hover:cursor-pointer hover:opacity-50"
+								[src]="
+									apiUrl + '/api/files/anotacoes/' + data['id'] + '/' + image.url
+								"
+							/>
+						}@else {
+							<video class="peer h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover " controls>
+							  <source 
+							  [src]="apiUrl + '/api/files/anotacoes/' + data['id'] + '/' + image.url
+								" type="video/{{image.type}}">
+							  Your browser does not support the video tag.
+							</video>
+						}
+						<span (click)="removeImage(image.url)" class="-mt-56 pt-2 ml-2 absolute peer-hover:opacity-100 hover:opacity-100 hover:text-red-700 cursor-pointer opacity-0 transition-all text-red-600 text-2xl material-symbols-outlined">
+							delete
+						</span>
+					</div>
 					}
 
 					<label

@@ -44,6 +44,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { PocketAnotacoesService } from '../../services/pocket-anotacoes.service';
 import { ViewAnotacaoComponent } from '../anotacoes/bloco/view-anotacao/view-anotacao.component';
+import { BlocoComponent } from '../anotacoes/bloco/bloco.component';
 
 
 interface TecnicoServicos {
@@ -55,7 +56,7 @@ interface TecnicoServicos {
 @Component({
   selector: 'app-kanban',
   standalone: true,
-  imports: [FrameNavComponent, CdkDropListGroup, CdkDropList, CdkDrag, AsyncPipe, MatTooltipModule, ImgAuthPipe,NgOptimizedImage, CommonModule, MatButtonModule, MatMenuModule],
+  imports: [FrameNavComponent, BlocoComponent, CdkDropListGroup, CdkDropList, CdkDrag, AsyncPipe, MatTooltipModule, ImgAuthPipe,NgOptimizedImage, CommonModule, MatButtonModule, MatMenuModule],
   templateUrl: './kanban.component.html',
   styleUrl: './kanban.component.scss'
 })
@@ -80,6 +81,8 @@ export class KanbanComponent  {
   tecnicosChamadosSubscription : Subscription | undefined
   chamadosEsperaSubscription : Subscription | undefined
 
+  blocos : RecordModel[] = []
+
   anotacoes : RecordModel[] = []
 
   @ViewChild('parent') slider: ElementRef;
@@ -89,7 +92,7 @@ export class KanbanComponent  {
     this.isAdmin = this.authSrv.IsAdmin()
     this.user = this.pocketCollectionsSrv.pb.authStore.model!
 
-    this.tecnicosChamados = this.pocketCollectionsSrv.getTecnicosWithChamados()
+    this.tecnicosChamados = this.pocketCollectionsSrv.getTecnicosJoinChamados()
 
     const pb = authSrv.GetPocketBase()
     const this_user = pb.authStore.model as any
@@ -98,8 +101,9 @@ export class KanbanComponent  {
       this.backgroundUrl = this.apiUrl + '/api/files/users/' + this.user['id'] + '/'  + this.user['background']
     }
 
-    this.pocketAnotacao.fetchUserAnotacoesObservable().subscribe((anotacoes) => {
-
+    this.pocketAnotacao.fetchPublicBlocos().subscribe((anotacoes) => {
+      console.log("ANOTACOES: ", anotacoes)
+      this.blocos = anotacoes
     })
 
 
@@ -282,6 +286,10 @@ export class KanbanComponent  {
     if (record != null) {
       this.dialog.open(ViewAnotacaoComponent, {data : record}); 
     }
+  }
+
+  addBloco(){
+    this.pocketAnotacao.addBloco("Novo Bloco", true)
   }
 
 }

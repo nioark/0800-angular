@@ -6,12 +6,13 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { PocketCollectionsService } from '../../../../../../services/pocket-collections.service';
 import { ApiService } from '../../../../../../services/api.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 
 @Component({
   selector: 'app-select-clients',
   standalone: true,
-  imports: [MatInputModule, FormsModule,   MatDialogClose],
+  imports: [MatInputModule, FormsModule,   MatDialogClose, MatTooltipModule],
   templateUrl: './select-clients.component.html',
   styleUrl: './select-clients.component.scss'
 })

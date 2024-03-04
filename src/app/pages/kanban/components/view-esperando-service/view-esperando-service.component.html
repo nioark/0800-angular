@@ -14,6 +14,13 @@
 						</span>
 						Transferir
 					</button>
+				} @else {
+					<button type="button" (click)="selfTransfer()" class="ml-2 px-1 font-medium rounded-lg text-sm text-center inline-flex items-center text-green-600 hover:text-white border border-green-600 hover:bg-green-700 outline-none ">
+						<span class="material-symbols-outlined">
+						move_item
+						</span>
+						Transferir pra mim
+					</button>
 				}
 				
 				<div  mat-dialog-close class="text-white flex flex-grow justify-end">

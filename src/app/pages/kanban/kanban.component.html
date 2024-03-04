@@ -26,7 +26,7 @@
           @for (item of tecnicosdata ; track item.id) {
             <div
               cdkDropList
-              [cdkDropListData]="item.expand?.chamados_via_users"
+              [cdkDropListData]="item.expand?.chamados"
               (cdkDropListDropped)="dropTecnico($event, item)"
               (cdkDropListEntered)="tecnicoEntered($event)"
 
@@ -49,13 +49,13 @@
                   src="https://as2.ftcdn.net/v2/jpg/05/49/98/39/1000_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"
                 />
               }
-              @if (item.expand.chamados_via_users.length == 0) {
+              @if (item.chamados.length == 0) {
                 <span class="ml-1 mr-1 flex h-2 w-5 rounded-full bg-green-500"></span>
               }
-              @if (item.expand.chamados_via_users.length > 0 && item.expand.chamados_via_users.length < 3) {
+              @if (item.chamados.length > 0 && item.chamados.length < 3) {
                 <span class="ml-1 mr-1 flex h-2 w-5 rounded-full bg-yellow-400"></span>
               }
-              @if (item.expand.chamados_via_users.length > 2) {
+              @if (item.chamados.length > 2) {
                 <span class="ml-1 mr-1 flex h-2 w-5 rounded-full bg-red-500"></span>
               }
 
@@ -136,11 +136,14 @@
       </div>
     </div>
 
+    @for (bloco of blocos; track bloco) {
+      <app-bloco [bloco]="bloco"></app-bloco>
+    }
     <!-- <div class="ml-[7px] mr-[7px] h-full border border-dashed border-yellow-300"></div> -->
 
     <!-- Kanba pra cada técnico -->
     @for (tecnico of tecnicosdata; track tecnico) {
-      @if (tecnico.expand.chamados_via_users.length > 0) {
+      @if (tecnico.chamados.length > 0) {
         <div
         class="ml-4 flex h-fit min-h-64 w-64 min-w-64 select-none flex-col rounded-xl bg-slate-900 bg-opacity-95 p-2 text-gray-300 shadow-md shadow-purple-600"
         [ngClass]="{
@@ -166,10 +169,10 @@
         <div
             class="min-h-48 rounded-b-md p-2 pb-6"
             cdkDropList
-            [cdkDropListData]="tecnico.expand.chamados_via_users"
+            [cdkDropListData]="tecnico.expand.chamados"
             (cdkDropListDropped)="dropTecnico($event, tecnico)"
           >
-            @for (item of tecnico.expand.chamados_via_users; track item) {
+            @for (item of tecnico.chamados; track item) {
 
             <div
               (click)="openService(item)"
@@ -194,8 +197,8 @@
               </div>
 
               <div class="item-center flex w-full justify-end">
-                  @if (item.users.length > 1) {
-                    <span class="material-symbols-outlined"  [matTooltip]="getUserNames(item.users)">
+                  @if (item.expand.users.length > 1) {
+                    <span class="material-symbols-outlined"  [matTooltip]="getUserNames(item.expand.users)">
                       group
                     </span>
                   }
@@ -225,6 +228,13 @@
       </div>
       }
     }
+      <div
+        (click)="addBloco()"
+        class="duration-600 ml-4 flex h-fit min-h-20 w-64 min-w-64 cursor-pointer select-none flex-col items-center justify-center rounded-xl border-2 border-slate-800 bg-slate-200 bg-opacity-95 p-2 font-bold text-gray-800 transition-all animate-in zoom-in-[0.8] hover:bg-slate-300"
+      >
+        <span class="material-symbols-outlined text-2xl"> note_stack_add </span>
+        <h1>Adicionar bloco</h1>
+      </div>
   </div>
 
   <div (click)="changeWallpaper()" class="absolute bottom-0 right-0 mb-2 mr-2 cursor-pointer rounded-md bg-slate-600 px-2 pt-2 text-white hover:bg-slate-800">

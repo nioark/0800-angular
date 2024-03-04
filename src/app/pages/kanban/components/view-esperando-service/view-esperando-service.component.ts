@@ -51,4 +51,15 @@ export class ViewEsperandoServiceComponent {
   openImage(url : string){
     this.dialog.open(ViewImageComponent, {data: url});
   }
+
+  selfTransfer(){
+    this.pocketSrv.pb.collection('chamados').update(
+      this.data.id, 
+      {
+        users: [this.pocketSrv.pb.authStore.model!["id"]],
+      }
+    )
+
+    this.dialog.closeAll();
+  }
 }
