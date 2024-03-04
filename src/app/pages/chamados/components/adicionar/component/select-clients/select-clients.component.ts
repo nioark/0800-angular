@@ -32,6 +32,10 @@ export class SelectClientsComponent {
     })
   }
 
+  advancedSearch() {
+   this.data_search = this.searchDataFuzzy(this.users) 
+  }
+
   searchKeyup(event: Event, search: HTMLInputElement) {
     this.currentSearch = search.value;
     var timenow = Date.now();
@@ -54,8 +58,8 @@ export class SelectClientsComponent {
     if (this.currentSearch == '') return data;
 
     const searcher = new Searcher(data as any[], {
-      keySelector: (obj) => obj.nome,
-      threshold: 0.7
+      keySelector: (obj) => obj.nome + obj.telefone + obj.email + obj.celular,
+      threshold: 0.8
     });
 
     const result = searcher.search(this.currentSearch, { returnMatchData: true });
