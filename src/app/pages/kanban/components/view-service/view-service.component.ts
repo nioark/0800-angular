@@ -7,7 +7,7 @@ import {
   Pipe,
   ViewChild,
 } from '@angular/core';
-import { Observable, Subscription, from, interval, map } from 'rxjs';
+import { Observable, Subscription, find, from, interval, map } from 'rxjs';
 import { ServiceRelatorioComponent } from './components/service-relatorio/service-relatorio.component';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
@@ -81,6 +81,7 @@ export class ViewServiceComponent implements OnDestroy {
   chamadoTimersSubscription: Subscription | undefined;
   dataInjectedSubscription: Subscription | undefined;
   relatoriosSubscription: Subscription | undefined;
+  usersFinalizadosSubscription: Subscription | undefined;
 
   data: any;
   serverTime: Date = new Date();
@@ -108,6 +109,11 @@ export class ViewServiceComponent implements OnDestroy {
   relatorio_hora_inicio: any;
   relatorio_hora_fim: any;
 
+
+  usersFinalized: any = [];
+
+  userFinalized: boolean = false;
+
   constructor(
     @Inject(MAT_DIALOG_DATA)
     private dataInjected: {
@@ -122,6 +128,13 @@ export class ViewServiceComponent implements OnDestroy {
   ) {
     this.data = dataInjected.data;
     this.pb = AuthSrv.GetPocketBase();
+
+    this.usersFinalizadosSubscription = this.pocketSrv.getChamadoUsersFinalized(this.data.id).subscribe(
+      (data) => { 
+        this.usersFinalized = data;
+        this.userFinalized = this.getIsFinalized(this.AuthSrv.getID())
+      }
+    )
 
     this.initiliazeData();
 
@@ -144,6 +157,17 @@ export class ViewServiceComponent implements OnDestroy {
     if (!this.em_espera) {
       this.runTimers();
     }
+  }
+
+  getIsFinalized(user_id: string) : boolean {
+    let isFinalized: boolean = false;
+    this.usersFinalized.forEach((finalizado: any) => {
+          if (finalizado.user == user_id) {
+            isFinalized = true;
+          }
+      });
+
+    return isFinalized;
   }
 
   getTotalWorkedTime() : string {
@@ -266,6 +290,7 @@ export class ViewServiceComponent implements OnDestroy {
             findt['duracao_total_str'] = duracao_total_str;
             findt['duracao_total_seconds'] = duracao_total_seconds;
             findt['duracao_status'] = duracao.status;
+            console.log(findt,  duracao.total_elapsed_time_seconds);
           }
         });
 
@@ -378,7 +403,7 @@ export class ViewServiceComponent implements OnDestroy {
         user['duracao_status'] != undefined &&
         user['duracao_status'] == 'em_andamento'
       ) {
-        console.log('Adding timer', user)
+        // console.log('Adding timer', user)
           this.duracoes.find((duracao: any) => {
             if (duracao.user == user.id) {
               let last_start = new Date(duracao.last_start) as any;
@@ -548,7 +573,7 @@ export class ViewServiceComponent implements OnDestroy {
 
   finalizarChamado() {
     this.dialog
-      .open(ConfirmFinalizarComponent)
+      .open(ConfirmFinalizarComponent, { data: this.data })
       .afterClosed()
       .subscribe((res) => {
         console.log(res);

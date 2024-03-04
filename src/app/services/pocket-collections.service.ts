@@ -521,6 +521,32 @@ export class PocketCollectionsService {
     })
   }
 
+  getChamadoUsersFinalized(chamado_id : string) : Observable<any>{
+    const usersSubject = new Subject<any[]>; 
+
+    let users: any[] = []
+
+    this.pb.collection('user_finalizados').getFullList({ filter: `chamado.id = '${chamado_id}'` }).then((item) => {
+      usersSubject.next(item);
+    })
+
+    this.pb.collection('user_finalizados').subscribe(chamado_id, (e) => {
+      if(e.action == "create"){
+        users.push(e.record)
+        usersSubject.next(users);
+      } else if(e.action == "update"){
+        let findIndex = users.findIndex((user) => user.id == e.record.id)
+        users[findIndex] = e.record
+        usersSubject.next(users);
+      } else if(e.action == "delete"){
+        users = users.filter((user) => user.id != e.record.id) 
+        usersSubject.next(users);
+      }
+    }, {filter: `chamado = '${chamado_id}'`})
+
+    return usersSubject.asObservable();
+  }
+
   getChamadoTimers(chamado_id : string) : Observable<any>{
     const timersSubject = new Subject<any[]>;
     
@@ -584,5 +610,13 @@ export class PocketCollectionsService {
         this.pb.collection('relatorio_sketchs').delete(sketch.id)
       })
     ).subscribe()
+  }
+
+  addUserFinalizado(chamado_id : string, userId : string, duracao : number){
+    this.pb.collection('user_finalizados').create({ 
+      "user": userId,
+      "chamado": chamado_id,
+      "duracao": duracao
+    })
   }
 }

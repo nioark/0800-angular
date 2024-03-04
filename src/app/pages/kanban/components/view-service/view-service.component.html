@@ -8,8 +8,8 @@
 
 				<h1 class="w-128 text-xl">{{ data.title }}</h1>
 
-				@if (participando && !finalizado) {
-					@if (pausado) {
+				@if (participando && !finalizado && !userFinalized) {
+					@if (pausado ) {
 						<button
 							(click)="resumeTimer()"
 							type="button"
@@ -31,14 +31,16 @@
 				}
 
 				@if ((isAdmin || participando) && !finalizado) {
-					<button
-						(click)="finalizarChamado()"
-						type="button"
-						class="ml-2 inline-flex items-center rounded-lg border border-purple-700 px-1 text-center text-sm font-medium text-purple-700 hover:bg-purple-800 hover:text-white"
-					>
-						<span class="material-symbols-outlined" > save </span>
-						<div class="sm:flex hidden">Finalizar</div>
-					</button>
+					@if (!userFinalized) {
+						<button
+							(click)="finalizarChamado()"
+							type="button"
+							class="ml-2 inline-flex items-center rounded-lg border border-purple-700 px-1 text-center text-sm font-medium text-purple-700 hover:bg-purple-800 hover:text-white"
+						>
+							<span class="material-symbols-outlined" > save </span>
+							<div class="sm:flex hidden">Finalizar</div>
+						</button>
+					}
 
 					<button
 						(click)="cancelarChamado()"
@@ -131,7 +133,7 @@
 									{{ tecnico.duracao_total_str }}
 								</h1>
 
-								@if (!finalizado){
+								@if (!finalizado && !this.getIsFinalized(tecnico.id)) {
 									<div
 										class="flex w-full justify-end"
 										(click)="resumeTimerUser(tecnico.id)"
@@ -140,6 +142,18 @@
 											class="material-symbols-outlined text-yellow-400 transition-all hover:cursor-pointer hover:text-yellow-200"
 										>
 											pause
+										</span>
+									</div>
+								}
+
+								@if (!finalizado && this.getIsFinalized(tecnico.id)) {
+									<div
+										class="flex w-full justify-end"
+									>
+										<span
+											class="material-symbols-outlined text-purple-400 transition-all "
+										>
+											check_indeterminate_small
 										</span>
 									</div>
 								}
