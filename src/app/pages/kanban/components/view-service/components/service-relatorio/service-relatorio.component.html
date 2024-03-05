@@ -1,114 +1,124 @@
-<div class="mt-4">
-	<div class="inline-flex w-full items-center justify-center">
-		<hr class="my-8 h-1 w-[500px] rounded border-0 bg-gray-200 dark:bg-gray-700" />
-		<div class="absolute left-1/2 -translate-x-1/2 bg-slate-900 px-4">
-			<div class="flex items-center text-gray-200">
-				@if (user["avatar"] != "") {
-					<img
-						class="h-8 min-h-8 w-8 min-w-8 rounded-full object-cover"
-						[src]="
-							apiUrl + '/api/files/users/' + user.id + '/' + user['avatar']
-						"
-					/>
-				} @else {
-					<img
-						class="h-8 w-8 rounded-full"
-						src="https://as2.ftcdn.net/v2/jpg/05/49/98/39/1000_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"
-					/>
-				}
-				<h1 class="text-md ml-2">{{ user["username"] }}</h1>
-				<div class="ml-2 text-xs text-gray-500">{{ timeStamp }}</div>
-				@if (relatorio_data["interacao_start"] && relatorio_data["interacao_end"]){
-					<div matTooltip="Horario de início da interação" class="cursor-pointer ml-2 text-sm text-white font-bold">- {{ getTimeFromDate(relatorio_data["interacao_start"])}}</div>
-					<div matTooltip="Horario de fim da interação" class="cursor-pointer ml-1 text-sm text-white font-bold">- {{ getTimeFromDate(relatorio_data["interacao_end"])}}</div>
-				}
-			</div>
-		</div>
-	</div>
+<div class="mt-4 flex flex-col">
+  <div class="flex w-full flex-col items-center justify-center">
+    <hr class="my-8 h-1 w-full rounded border-0 bg-gray-200 dark:bg-gray-700" />
+    <div class="-mt-12 flex items-center bg-slate-900 px-4 text-gray-200">
+      @if (user["avatar"] != "") {
+        <img
+          class="h-8 min-h-8 w-8 min-w-8 rounded-full object-cover"
+          [src]="apiUrl + '/api/files/users/' + user.id + '/' + user['avatar']"
+        />
+      } @else {
+        <img
+          class="h-8 w-8 rounded-full"
+          src="https://as2.ftcdn.net/v2/jpg/05/49/98/39/1000_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"
+        />
+      }
+      <h1 class="text-md ml-2">{{ user["username"] }}</h1>
+      <div class="ml-2 text-xs text-gray-500">{{ timeStamp }}</div>
+      @if (
+        relatorio_data["interacao_start"] && relatorio_data["interacao_end"]
+      ) {
+        <div
+          matTooltip="Horario de início da interação"
+          class="ml-2 cursor-pointer text-sm font-bold text-white"
+        >
+          - {{ getTimeFromDate(relatorio_data["interacao_start"]) }}
+        </div>
+        <div
+          matTooltip="Horario de fim da interação"
+          class="ml-1 cursor-pointer text-sm font-bold text-white"
+        >
+          - {{ getTimeFromDate(relatorio_data["interacao_end"]) }}
+        </div>
+      }
+    </div>
+  </div>
 
-	<div
-		class="mt-3 flex max-h-[600px] w-full flex-col overflow-auto rounded-md bg-slate-200"
-	>
-		@if (!mostrarEditor) {
-			<article class="prose flex w-full min-w-full p-8">
-				<div class="w-full" [innerHTML]="html | sanitizeHtml"></div>
-			</article>
-		} @else {
-			<editor
-				class="mt-4"
-				#editor
-				(onInit)="editorCarregado()"
-				[init]="{
-					plugins:
-						'  autolink wordcount lists link image searchreplace fullscreen media table code  directionality codesample',
-					base_url: '/tinymce',
-					suffix: '.min',
-					selector: 'textarea',
+  <div class="mt-3 flex w-full flex-col overflow-auto rounded-md bg-slate-200">
+    @if (!mostrarEditor) {
+      <article class="prose flex w-full min-w-full p-8">
+        <div class="w-full" [innerHTML]="html | sanitizeHtml"></div>
+      </article>
+    } @else {
+      <editor
+        class="mt-4"
+        #editor
+        (onInit)="editorCarregado()"
+        [init]="{
+          plugins:
+            '  autolink wordcount lists link image searchreplace fullscreen media table code  directionality codesample',
+          base_url: '/tinymce',
+          suffix: '.min',
+          selector: 'textarea',
 
-					codesample_languages: [
-						{ text: 'HTML/XML', value: 'markup' },
-						{ text: 'CSS', value: 'css' },
-						{ text: 'SQL', value: 'sql' },
-						{ text: 'Bash', value: 'sh' },
-						{ text: 'JavaScript', value: 'javascript' },
-						{ text: 'Go', value: 'go' },
-						{ text: 'Dart', value: 'dart' },
-						{ text: 'Zig', value: 'zig' },
-						{ text: 'Rust', value: 'rust' },
-						{ text: 'Lua', value: 'lua' },
-						{ text: 'PHP', value: 'php' },
-						{ text: 'Ruby', value: 'ruby' },
-						{ text: 'Python', value: 'python' },
-						{ text: 'Java', value: 'java' },
-						{ text: 'C', value: 'c' },
-						{ text: 'C#', value: 'csharp' },
-						{ text: 'C++', value: 'cpp' },
-						{ text: 'Markdown', value: 'markdown' },
-						{ text: 'Swift', value: 'swift' },
-						{ text: 'Kotlin', value: 'kotlin' },
-						{ text: 'Elixir', value: 'elixir' },
-						{ text: 'Scala', value: 'scala' },
-						{ text: 'Julia', value: 'julia' },
-						{ text: 'Haskell', value: 'haskell' }
-					],
-					toolbar:
-						'styles | alignleft aligncenter alignright | image | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'
-				}"
-			></editor>
-		}
-		@if (isFromUser && !mostrarEditor) {
-			<div class="flex w-full justify-end mt-2">
-				<button
-					(click)="carregarEditor()"
-					type="submit"
-					class="text-md mb-1 mr-1 flex items-center rounded-lg bg-blue-700 px-1 py-1 text-xs font-bold text-white hover:bg-blue-600"
-				>
-					<span class="material-symbols-outlined"> edit </span>
-					Editar
-				</button>
-			</div>
-		}
+          codesample_languages: [
+            { text: 'HTML/XML', value: 'markup' },
+            { text: 'CSS', value: 'css' },
+            { text: 'SQL', value: 'sql' },
+            { text: 'Bash', value: 'sh' },
+            { text: 'JavaScript', value: 'javascript' },
+            { text: 'Go', value: 'go' },
+            { text: 'Dart', value: 'dart' },
+            { text: 'Zig', value: 'zig' },
+            { text: 'Rust', value: 'rust' },
+            { text: 'Lua', value: 'lua' },
+            { text: 'PHP', value: 'php' },
+            { text: 'Ruby', value: 'ruby' },
+            { text: 'Python', value: 'python' },
+            { text: 'Java', value: 'java' },
+            { text: 'C', value: 'c' },
+            { text: 'C#', value: 'csharp' },
+            { text: 'C++', value: 'cpp' },
+            { text: 'Markdown', value: 'markdown' },
+            { text: 'Swift', value: 'swift' },
+            { text: 'Kotlin', value: 'kotlin' },
+            { text: 'Elixir', value: 'elixir' },
+            { text: 'Scala', value: 'scala' },
+            { text: 'Julia', value: 'julia' },
+            { text: 'Haskell', value: 'haskell' }
+          ],
+          toolbar:
+            'styles | alignleft aligncenter alignright | image | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'
+        }"
+      ></editor>
+    }
+    @if (isFromUser && !mostrarEditor && !finalized) {
+      <div class="mt-2 flex w-full justify-end">
+        <button
+          (click)="carregarEditor()"
+          type="submit"
+          class="text-md mb-1 mr-1 flex items-center rounded-lg bg-blue-700 px-1 py-1 text-xs font-bold text-white hover:bg-blue-600"
+        >
+          <span class="material-symbols-outlined"> edit </span>
+          Editar
+        </button>
+      </div>
+    }
 
-		@if (mostrarEditor) {
-			<div class="justify-start flex w-full p-2">
-				<div class="flex flex-col">
-					<label for="start-time" class="text-sm text-black font-bold">Hora de ínicio:</label>
-					<input class="h-8 " id="start-time" type="time" name="start-time" />
-				</div>
-				<div class="flex flex-col ml-2">
-					<label for="end-time" class="text-sm text-black font-bold">Hora de fim:</label>
-					<input class="h-8" id="end-time" type="time" name="end-time" />
-				</div>
+    @if (mostrarEditor) {
+      <div class="flex w-full justify-start p-2">
+        <div class="flex flex-col">
+          <label for="start-time" class="text-sm font-bold text-black"
+            >Hora de ínicio:</label
+          >
+          <input class="h-8" id="start-time" type="time" name="start-time" />
+        </div>
+        <div class="ml-2 flex flex-col">
+          <label for="end-time" class="text-sm font-bold text-black"
+            >Hora de fim:</label
+          >
+          <input class="h-8" id="end-time" type="time" name="end-time" />
+        </div>
 
-				<button
-					(click)="updateRelatorio()"
-					type="submit"
-					class="text-md ml-2 mb-1 mt-5 mr-1 flex items-center rounded-lg bg-blue-700 px-1 py-1 text-md font-bold text-white hover:bg-blue-600"
-				>
-					<span class="material-symbols-outlined"> save </span>
-					Alterar
-				</button>
-			</div>
-		}
-	</div>
+        <button
+          (click)="updateRelatorio()"
+          type="submit"
+          class="text-md text-md mb-1 ml-2 mr-1 mt-5 flex items-center rounded-lg bg-blue-700 px-1 py-1 font-bold text-white hover:bg-blue-600"
+        >
+          <span class="material-symbols-outlined"> save </span>
+          Alterar
+        </button>
+      </div>
+    }
+  </div>
 </div>

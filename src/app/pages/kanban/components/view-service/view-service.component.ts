@@ -46,6 +46,7 @@ import { environment } from '../../../../environment';
 import { ViewImageComponent } from '../view-image/view-image.component';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
+import { SanitizeHtmlPipe } from '../../../../sanitize-html.pipe';
 
 @Component({
   selector: 'app-view-service',
@@ -60,7 +61,9 @@ import { MatInputModule } from '@angular/material/input';
     ImgAuthPipe,
     EditorModule,
     MatTooltipModule,
-    MatInputModule, FormsModule
+    MatInputModule,
+    FormsModule,
+    SanitizeHtmlPipe,
   ],
 })
 export class ViewServiceComponent implements OnDestroy {
@@ -75,6 +78,9 @@ export class ViewServiceComponent implements OnDestroy {
   apiUrl = environment.apiUrl;
 
   @ViewChild('editor') editorNew: EditorComponent | undefined;
+
+  @ViewChild('editorDescricao') editorDescricao: EditorComponent | undefined;
+  mostrarEditorDescricao: boolean = false;
 
   clockIntervalSubscription: Subscription | undefined;
   saveIntervalSubscription: Subscription | undefined;
@@ -109,7 +115,6 @@ export class ViewServiceComponent implements OnDestroy {
   relatorio_hora_inicio: any;
   relatorio_hora_fim: any;
 
-
   usersFinalized: any = [];
 
   userFinalized: boolean = false;
@@ -129,12 +134,12 @@ export class ViewServiceComponent implements OnDestroy {
     this.data = dataInjected.data;
     this.pb = AuthSrv.GetPocketBase();
 
-    this.usersFinalizadosSubscription = this.pocketSrv.getChamadoUsersFinalized(this.data.id).subscribe(
-      (data) => { 
+    this.usersFinalizadosSubscription = this.pocketSrv
+      .getChamadoUsersFinalized(this.data.id)
+      .subscribe((data) => {
         this.usersFinalized = data;
-        this.userFinalized = this.getIsFinalized(this.AuthSrv.getID())
-      }
-    )
+        this.userFinalized = this.getIsFinalized(this.AuthSrv.getID());
+      });
 
     this.initiliazeData();
 
@@ -153,80 +158,103 @@ export class ViewServiceComponent implements OnDestroy {
         });
         console.log(this.relatorios);
       });
+  }
 
-    if (!this.em_espera) {
-      this.runTimers();
+  changeTitle(event: Event) {
+    this.pocketSrv.salvarTitulo(
+      this.data.id,
+      (event.target as HTMLInputElement).value,
+    );
+  }
+
+  showEditorDescricao() {
+    this.mostrarEditorDescricao = true;
+  }
+
+  editorCarregadoDescricao() {
+    console.log('Teste');
+
+    if (this.editorDescricao) {
+      console.log('Carregado');
+      this.editorDescricao?.editor.setContent(this.data.description);
     }
   }
 
-  getIsFinalized(user_id: string) : boolean {
+  salvarDescricao() {
+    this.mostrarEditorDescricao = false;
+    if (!this.editorDescricao) return;
+
+    let content = this.editorDescricao?.editor.getContent();
+    this.data.description = content;
+    this.pocketSrv.salvarDescricao(this.data.id, content);
+  }
+
+  getIsFinalized(user_id: string): boolean {
     let isFinalized: boolean = false;
     this.usersFinalized.forEach((finalizado: any) => {
-          if (finalizado.user == user_id) {
-            isFinalized = true;
-          }
-      });
+      if (finalizado.user == user_id) {
+        isFinalized = true;
+      }
+    });
 
     return isFinalized;
   }
 
-  getTotalWorkedTime() : string {
-    console.log("this.total_worked_time", this.total_worked_time);
-     return this.getTimeFromMill(this.total_worked_time * 1000);
+  getTotalWorkedTime(): string {
+    console.log('this.total_worked_time', this.total_worked_time);
+    return this.getTimeFromMill(this.total_worked_time * 1000);
   }
 
-  getTimeFromMill(timeMilliseconds : number) : string {
-      // Total number of seconds in the difference
-      const totalSeconds = Math.floor(timeMilliseconds / 1000);
-       
-      // Total number of minutes in the difference
-      const totalMinutes = Math.floor(totalSeconds / 60);
-       
-      // Total number of hours in the difference
-      const totalHours = Math.floor(totalMinutes / 60);
-       
-      // Getting the number of seconds left in one minute
-      const remSeconds = totalSeconds % 60;
-       
-      // Getting the number of minutes left in one hour
-      const remMinutes = totalMinutes % 60;
+  getTimeFromMill(timeMilliseconds: number): string {
+    // Total number of seconds in the difference
+    const totalSeconds = Math.floor(timeMilliseconds / 1000);
 
-      let seconds = remSeconds.toString();
-      if (totalSeconds < 10){
-        seconds = '0' + seconds;
-      }
-      let minutes = remMinutes.toString();
-      if (totalMinutes < 10){
-        minutes = '0' + minutes; 
-      }
-      let hours = totalHours.toString();
-      if (totalHours < 10){
-        hours = '0' + hours; 
-      }
-       
-      return `${hours}:${minutes}:${seconds}`;
+    // Total number of minutes in the difference
+    const totalMinutes = Math.floor(totalSeconds / 60);
+
+    // Total number of hours in the difference
+    const totalHours = Math.floor(totalMinutes / 60);
+
+    // Getting the number of seconds left in one minute
+    const remSeconds = totalSeconds % 60;
+
+    // Getting the number of minutes left in one hour
+    const remMinutes = totalMinutes % 60;
+
+    let seconds = remSeconds.toString();
+    if (totalSeconds < 10) {
+      seconds = '0' + seconds;
+    }
+    let minutes = remMinutes.toString();
+    if (totalMinutes < 10) {
+      minutes = '0' + minutes;
+    }
+    let hours = totalHours.toString();
+    if (totalHours < 10) {
+      hours = '0' + hours;
+    }
+
+    return `${hours}:${minutes}:${seconds}`;
   }
 
-  getTimeFromDate(date : Date) : string {
-    return this.getTimeFromMill(date.getTime()) 
+  getTimeFromDate(date: Date): string {
+    return this.getTimeFromMill(date.getTime());
   }
 
-  getTotalTime() : string {
+  getTotalTime(): string {
     // Future Date
-      const firstDate: Date = new Date(this.data.end_time);
-       
-      // Current Date
-      const secondDate: Date = new Date(this.data.created);
-       
-      // Time Difference in Milliseconds
-     const milliDiff: number = firstDate.getTime()
-          - secondDate.getTime();
+    const firstDate: Date = new Date(this.data.end_time);
 
-      return this.getTimeFromMill(milliDiff);
-     
+    // Current Date
+    const secondDate: Date = new Date(this.data.created);
+
+    // Time Difference in Milliseconds
+    const milliDiff: number = firstDate.getTime() - secondDate.getTime();
+
+    return this.getTimeFromMill(milliDiff);
   }
 
-  relatorioSketchLogic(){
+  relatorioSketchLogic() {
     this.saveIntervalSubscription = interval(15000).subscribe(() => {
       this.saveEditor();
     });
@@ -235,71 +263,6 @@ export class ViewServiceComponent implements OnDestroy {
       this.mostrarEditor = true;
       this.sketch = sketchData['sketch'];
     });
-  }
-
-  runTimers() {
-    this.updateTimers();
-    this.clockIntervalSubscription = this.clockObserver$.subscribe(
-      (currentTime) => {
-        this.updateTimers();
-      },
-    );
-
-    this.chamadoTimersSubscription = this.pocketSrv
-      .getChamadoTimers(this.data.id)
-      .subscribe((data) => {
-        console.log('Timers data update ', data);
-        data.forEach((duracao: any) => {
-          var duracao_total_str: any;
-          var duracao_total_seconds: any;
-          //Primeira vez abrindo o chamado
-          if (duracao.last_end == '' && duracao.status == 'em_andamento') {
-            let last_start = new Date(duracao.last_start) as any;
-            let date_now = this.getCurrentServerTime() as any;
-
-            const dates_difference = (date_now - last_start) / 1_000;
-            duracao_total_seconds = dates_difference;
-            duracao_total_str = new Date(duracao_total_seconds * 1000)
-              .toISOString()
-              .slice(11, 19);
-          } else if (
-            duracao.last_end != '' &&
-            duracao.status == 'em_andamento'
-          ) {
-            let last_start = new Date(duracao.last_start) as any;
-            let date_now = this.getCurrentServerTime() as any;
-
-            duracao_total_seconds = (date_now - last_start) / 1_000;
-            duracao_total_seconds += duracao.total_elapsed_time_seconds;
-            duracao_total_str = new Date(duracao_total_seconds * 1000)
-              .toISOString()
-              .slice(11, 19);
-          } else if (duracao.status == 'em_pausa') {
-            duracao_total_seconds = duracao.total_elapsed_time_seconds;
-            duracao_total_str = new Date(duracao_total_seconds * 1000)
-              .toISOString()
-              .slice(11, 19);
-          }
-
-          const findt = this.data.expand.users.find(
-            (user: any) => user.id == duracao.user,
-          );
-
-          if (findt) {
-            this.total_worked_time += duracao.total_elapsed_time_seconds;
-            findt['duracao_total_str'] = duracao_total_str;
-            findt['duracao_total_seconds'] = duracao_total_seconds;
-            findt['duracao_status'] = duracao.status;
-            console.log(findt,  duracao.total_elapsed_time_seconds);
-          }
-        });
-
-
-        this.duracoes = data;
-        console.log("Durações", data)
-
-        this.updateTimers();
-      });
   }
 
   initiliazeData() {
@@ -352,6 +315,16 @@ export class ViewServiceComponent implements OnDestroy {
     }
   }
 
+  editorCarregado() {
+    if (this.sketch) {
+      this.editorNew!.editor.setContent(this.sketch as string);
+    }
+  }
+
+  getCurrentServerTime(): Date {
+    return new Date(new Date().getTime() - this.timeDifference.getTime());
+  }
+
   syncTimeWithServer() {
     this.api.GetTime().subscribe((time) => {
       this.serverTime = time;
@@ -391,66 +364,6 @@ export class ViewServiceComponent implements OnDestroy {
     });
   }
 
-  editorCarregado() {
-    if (this.sketch) {
-      this.editorNew!.editor.setContent(this.sketch as string);
-    }
-  }
-
-  updateTimers() {
-    this.data.expand.users.map((user: any) => {
-      if (
-        user['duracao_status'] != undefined &&
-        user['duracao_status'] == 'em_andamento'
-      ) {
-        // console.log('Adding timer', user)
-          this.duracoes.find((duracao: any) => {
-            if (duracao.user == user.id) {
-              let last_start = new Date(duracao.last_start) as any;
-              let date_now = this.getCurrentServerTime() as any;
-
-              const dates_difference = (date_now - last_start) / 1_000;
-
-              user['duracao_total_seconds'] = dates_difference;
-
-              user['duracao_total_str'] = new Date(
-              user['duracao_total_seconds'] * 1000,
-            )
-              .toISOString()
-              .slice(11, 19);
-            }
-          })
-
-      } else if (
-        user['duracao_status'] != undefined &&
-        user['duracao_status'] == 'em_pausa'
-      ) {
-          user['duracao_total_str'] = new Date(
-          user['duracao_total_seconds'] * 1000,
-        )
-          .toISOString()
-          .slice(11, 19);
-      } else {
-        user['duracao_total_str'] = '00:00:00';
-      }
-
-      if (user.id == this.pb.authStore.model!['id']) {
-        if (
-          user.duracao_status == 'em_pausa' ||
-          user.duracao_total_str == '00:00:00'
-        ) {
-          this.pausado = true;
-        } else {
-          this.pausado = false;
-        }
-      }
-    });
-  }
-
-  getCurrentServerTime(): Date {
-    return new Date(new Date().getTime() - this.timeDifference.getTime());
-  }
-
   onFecharChamado() {
     this.saveEditor();
   }
@@ -459,6 +372,7 @@ export class ViewServiceComponent implements OnDestroy {
     console.log('Saving editor...');
     if (this.editorNew != undefined) {
       const html = this.editorNew.editor.getContent();
+      console.log(html);
 
       if (html != '') {
         this.pocketSrv.saveRelatorioSketch(this.data.id, html);
@@ -485,15 +399,30 @@ export class ViewServiceComponent implements OnDestroy {
 
   sendRelatorio() {
     if (this.editorNew) {
-      const start_time = (<HTMLInputElement> document.getElementById("start-time")).value
-      const end_time = (<HTMLInputElement> document.getElementById("end-time")).value
+      const start_time = (<HTMLInputElement>(
+        document.getElementById('start-time')
+      )).value;
+      const end_time = (<HTMLInputElement>document.getElementById('end-time'))
+        .value;
 
       var date_now = new Date();
-      var date_start = new Date(date_now.getFullYear(), date_now.getMonth(), date_now.getDate(), parseInt(start_time.split(":")[0]), parseInt(start_time.split(":")[1]));
-      var date_end = new Date(date_now.getFullYear(), date_now.getMonth(), date_now.getDate(), parseInt(end_time.split(":")[0]), parseInt(end_time.split(":")[1]));
+      var date_start = new Date(
+        date_now.getFullYear(),
+        date_now.getMonth(),
+        date_now.getDate(),
+        parseInt(start_time.split(':')[0]),
+        parseInt(start_time.split(':')[1]),
+      );
+      var date_end = new Date(
+        date_now.getFullYear(),
+        date_now.getMonth(),
+        date_now.getDate(),
+        parseInt(end_time.split(':')[0]),
+        parseInt(end_time.split(':')[1]),
+      );
 
-      console.log( date_start)
-      console.log( date_end)      
+      console.log(date_start);
+      console.log(date_end);
       const html = this.editorNew.editor.getContent();
 
       from(
@@ -502,7 +431,7 @@ export class ViewServiceComponent implements OnDestroy {
           relatorio: html,
           chamado: this.data.id,
           interacao_start: date_start,
-          interacao_end: date_end
+          interacao_end: date_end,
         }),
       ).subscribe((res) => {
         this.eraseEditor();
@@ -537,38 +466,6 @@ export class ViewServiceComponent implements OnDestroy {
 
   setEditor(val: boolean) {
     this.mostrarEditor = val;
-  }
-
-  resumeTimer() {
-    this.pocketSrv.startUserTimer(this.data.id).subscribe((started) => {
-      if (!started) {
-        console.log('Não foi possivel continuar o timer: ');
-      }
-    });
-  }
-
-  pauseTimer() {
-    this.pocketSrv.pauseUserTimer(this.data.id).subscribe((paused) => {
-      if (!paused) {
-        console.log('Não foi possivel parar o timer: ');
-      }
-    });
-  }
-
-  resumeTimerUser(userId: string) {
-    this.pocketSrv.startUserTimer(this.data.id, userId).subscribe((started) => {
-      if (!started) {
-        console.log('Não foi possivel continuar o timer de outro usuario: ');
-      }
-    });
-  }
-
-  pauseTimerUser(userId: string) {
-    this.pocketSrv.pauseUserTimer(this.data.id, userId).subscribe((paused) => {
-      if (paused) {
-        console.log('Não foi possivel parar o timer de outro usuario: ');
-      }
-    });
   }
 
   finalizarChamado() {

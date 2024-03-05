@@ -1,378 +1,420 @@
 <div class="flex h-screen w-screen flex-col items-center bg-transparent p-8">
-	<div>
-		<div class="z-10 sm:w-[800px] w-[400px] rounded-lg bg-slate-900 p-4">
-			<div class="flex h-8 w-full items-center text-white">
-				<span class="material-symbols-outlined mr-2 text-3xl">
-					home_repair_service
-				</span>
+  <div class="z-10 flex w-[400px] rounded-lg bg-gray-900 p-4 sm:w-[800px]">
+    <div class="w-full">
+      <div class="flex h-8 w-full items-center text-white">
+        <span class="material-symbols-outlined mr-2 text-3xl">
+          home_repair_service
+        </span>
 
-				<h1 class="w-128 text-xl">{{ data.title }}</h1>
+        @if ((isAdmin || participando) && !finalizado) {
+          <input
+            (change)="changeTitle($event)"
+            spellcheck="false"
+            class="w-128 bg-transparent text-xl outline-none"
+            [value]="data.title"
+          />
+        } @else {
+          <h1 class="w-128 text-xl">{{ data.title }}</h1>
+        }
+      </div>
 
-				@if (participando && !finalizado && !userFinalized) {
-					@if (pausado ) {
-						<button
-							(click)="resumeTimer()"
-							type="button"
-							class="ml-2 inline-flex items-center rounded-lg border border-green-600 px-1 text-center text-sm font-medium text-green-600 outline-none hover:bg-green-700 hover:text-white"
-						>
-							<span class="material-symbols-outlined"> resume </span>
-							<div class="sm:flex hidden">Iniciar</div>
-						</button>
-					} @else {
-						<button
-							(click)="pauseTimer()"
-							type="button"
-							class="ml-2 inline-flex items-center rounded-lg border border-yellow-400 px-1 text-center text-sm font-medium text-yellow-400 outline-none hover:bg-yellow-500 hover:text-white"
-						>
-							<span class="material-symbols-outlined"> pause </span>
-							<div class="sm:flex hidden">Pausar</div>
-						</button>
-					}
-				}
-
-				@if ((isAdmin || participando) && !finalizado) {
-					@if (!userFinalized) {
-						<button
-							(click)="finalizarChamado()"
-							type="button"
-							class="ml-2 inline-flex items-center rounded-lg border border-purple-700 px-1 text-center text-sm font-medium text-purple-700 hover:bg-purple-800 hover:text-white"
-						>
-							<span class="material-symbols-outlined" > save </span>
-							<div class="sm:flex hidden">Finalizar</div>
-						</button>
-					}
-
-					<button
-						(click)="cancelarChamado()"
-						type="button"
-						class="ml-2 inline-flex items-center rounded-lg border border-red-700 px-1 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white "
-					>
-						<span class="material-symbols-outlined"> remove </span>
-						<div class="sm:flex hidden">Cancelar</div>
-					</button>
-				}
-
-				@if (isAdmin && finalizado && !faturado && !cancelado) {
-					<button
-						(click)="marcarFaturado()"
-						type="button"
-						class="ml-2 inline-flex items-center rounded-lg border border-amber-400 px-1 text-center text-sm font-medium text-amber-400 hover:bg-amber-500 hover:text-white"
-					>
-						<span class="material-symbols-outlined"> save </span>
-						Marcar como registrado
-					</button>
-				}
-
-				<div mat-dialog-close (click)="onFecharChamado()" class="flex flex-grow justify-end text-white">
-					<span
-						class="material-symbols-outlined all h-10 rounded-full p-1 text-3xl transition hover:cursor-pointer hover:bg-slate-600"
-					>
-						close
-					</span>
-				</div>
-			</div>
-
-<!-- 			@if (end_at != ''){
+      <!-- 			@if (end_at != ''){
 				<h1 class="ml-8 text-white font-bold" matTooltip="Duração do chamado da criação até a finalização">{{getTotalTime()}}</h1>
 			}
- -->
-			<div class="mt-4 flex text-white">
-				<div class="ml-8 flex flex-col">
-					<div class="flex items-center">
-						<h1 class="mb-1 text-sm font-bold">Técnicos</h1>
-						@if ((participando || isAdmin) && !finalizado) {
-							<span
-								(click)="openAddView()"
-								class="material-symbols-outlined ml-2 text-green-400 transition-all hover:cursor-pointer hover:text-blue-400"
-							>
-								person_add
-							</span>
-						}
-					</div>
+		-->
+      <div class="mt-8 flex text-white">
+        <div class="flex w-full">
+          <div class="flex w-full">
+            <div class="ml-8 flex flex-col">
+              <div class="flex items-center">
+                <h1 class="mb-1 text-sm font-bold">Técnicos</h1>
+              </div>
 
-					@for (tecnico of data.expand.users; track tecnico) {
-						<div class="flex h-6 cursor-default items-center">
-							<span class="material-symbols-outlined mr-2 text-xl">
-								account_circle
-							</span>
+              @for (tecnico of data.expand.users; track tecnico) {
+                <div class="flex h-6 cursor-default items-center">
+                  <span class="material-symbols-outlined mr-2 text-xl">
+                    account_circle
+                  </span>
 
-							<h1 class="">{{ tecnico.username }}</h1>
-						</div>
-					}
+                  <h1 class="">{{ tecnico.username }}</h1>
+                </div>
+              }
 
-					@if (!criadorParticipa) {
-						<div class="flex h-6 cursor-default items-center">
-							<span
-								class="material-symbols-outlined mr-2 text-xl"
-								matTooltip="Quem criou pode visualizar"
-							>
-								visibility
-							</span>
+              @if (!criadorParticipa) {
+                <div class="flex h-6 cursor-default items-center">
+                  <span
+                    class="material-symbols-outlined mr-2 text-xl"
+                    matTooltip="Quem criou pode visualizar"
+                  >
+                    visibility
+                  </span>
 
-							<h1 class="">
-								{{ data.expand.created_by.username }}
-							</h1>
-						</div>
-					}
-				</div>
+                  <h1 class="">
+                    {{ data.expand.created_by.username }}
+                  </h1>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
 
-				<div class="ml-8 flex flex-col">
-					<h1 class="mb-1 text-sm font-bold">Tempo Decorrido</h1>
+      <div class="ml-8 mt-4 flex flex-col text-white">
+        <h1 class="text-sm font-bold">Empresa</h1>
+        <div class="flex h-8 items-center">
+          <span class="material-symbols-outlined mr-2 text-xl">
+            corporate_fare
+          </span>
 
-					@for (tecnico of data.expand.users; track tecnico) {
-						<div class="flex h-6 w-32 select-none items-center">
-							<span class="material-symbols-outlined mr-2 text-xl">
-								timer
-							</span>
+          <h1 class="">{{ data.cliente_data.nome }}</h1>
+        </div>
+        <div class="text-sm">
+          @if (data.cliente_data?.celular) {
+            <div class="flex items-center">
+              <span class="material-symbols-outlined mr-1 text-xl">
+                phone_iphone
+              </span>
+              {{ data.cliente_data.celular }}
+            </div>
+          }
+          @if (data.cliente_data?.telefone) {
+            <div class="flex items-center">
+              <span class="material-symbols-outlined mr-1 text-xl"> call </span>
+              {{ data.cliente_data.telefone }}
+            </div>
+          }
+          @if (data.cliente_data?.email) {
+            <div class="flex items-center">
+              <span class="material-symbols-outlined mr-1 text-xl">
+                email
+              </span>
+              {{ data.cliente_data.email }}
+            </div>
+          }
+        </div>
+      </div>
 
-							@if (
-								tecnico.duracao_status == "em_pausa" ||
-								tecnico.duracao_total_str == "00:00:00"
-							) {
-								<h1 [ngClass]="{ 'animate-pulse transition-all' : !finalizado}">
-									{{ tecnico.duracao_total_str }}
-								</h1>
+      <!-- Descrição Title -->
+      <div class="mt-6 flex h-8 items-center text-white">
+        <span class="material-symbols-outlined mr-2 text-3xl"> subject </span>
 
-								@if (!finalizado && !this.getIsFinalized(tecnico.id)) {
-									<div
-										class="flex w-full justify-end"
-										(click)="resumeTimerUser(tecnico.id)"
-									>
-										<span
-											class="material-symbols-outlined text-yellow-400 transition-all hover:cursor-pointer hover:text-yellow-200"
-										>
-											pause
-										</span>
-									</div>
-								}
+        @if (!mostrarEditorDescricao) {
+          <div class="flex items-center">
+            <h1 class="text-xl">Descrição</h1>
+            <div
+              (click)="showEditorDescricao()"
+              type="button"
+              class="me-2 ml-4 flex items-center rounded-lg bg-indigo-700 px-2 py-1 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+              matTooltip="Salva um rascunho do relátorio"
+            >
+              <span class="material-symbols-outlined mr-1"> edit_note </span>
+              Editar
+            </div>
+          </div>
+        } @else {
+          <div class="flex items-center">
+            <h1 class="text-xl">Descrição</h1>
+            <button
+              (click)="salvarDescricao()"
+              type="button"
+              class="me-2 ml-4 inline-flex items-center rounded-lg bg-indigo-700 px-2 py-1 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+              matTooltip="Salva um rascunho do relátorio"
+            >
+              <span class="material-symbols-outlined"> save </span>
+              Salvar
+            </button>
+          </div>
+        }
+      </div>
 
-								@if (!finalizado && this.getIsFinalized(tecnico.id)) {
-									<div
-										class="flex w-full justify-end"
-									>
-										<span
-											class="material-symbols-outlined text-purple-400 transition-all "
-										>
-											check_indeterminate_small
-										</span>
-									</div>
-								}
-							} @else {
-								<h1 class="transition-all">
-									{{ tecnico.duracao_total_str }}
-								</h1>
-								<div
-									class="flex w-full justify-end"
-									(click)="pauseTimerUser(tecnico.id)"
-								>
-									<span
-										class="material-symbols-outlined text-green-400 transition-all hover:cursor-pointer hover:text-green-200"
-									>
-										resume
-									</span>
-								</div>
-							}
-						</div>
-					}
-				</div>
-			</div>
+      <!-- Descrição content & editor -->
+      <div class="flex text-white">
+        <div class="ml-8 w-full text-gray-100">
+          <!-- @if (data.description != "") { -->
 
-			<div class="ml-8 mt-4 flex flex-col text-white">
-				<h1 class="text-sm font-bold">Empresa</h1>
-				<div class="flex h-8 items-center">
-					<span class="material-symbols-outlined mr-2 text-xl">
-						corporate_fare
-					</span>
+          @if (!mostrarEditorDescricao) {
+            <div class="flex w-full text-white">
+              @if (data.description != "") {
+                <article
+                  class="prose prose-invert mt-2 w-full min-w-full rounded-lg bg-slate-800 px-2 py-2"
+                >
+                  <div
+                    class="w-full"
+                    [innerHTML]="data.description | sanitizeHtml"
+                  ></div>
+                </article>
+              }
+            </div>
+          } @else {
+            <editor
+              class="mt-4"
+              id="editorDescricao"
+              #editorDescricao
+              (onInit)="editorCarregadoDescricao()"
+              [init]="{
+                plugins:
+                  '  autolink wordcount lists link image searchreplace fullscreen media table code  directionality codesample',
+                base_url: '/tinymce',
+                suffix: '.min',
+                selector: 'textarea',
 
-					<h1 class="">{{ data.cliente_data.nome }}</h1>
-				</div>
-				<div class="text-sm">
-					@if (data.cliente_data?.celular) {
-						<div class="flex items-center">
-							<span class="material-symbols-outlined mr-1 text-xl">
-								phone_iphone
-							</span>
-							{{ data.cliente_data.celular }}
-						</div>
-					}
-					@if (data.cliente_data?.telefone) {
-						<div class="flex items-center">
-							<span class="material-symbols-outlined mr-1 text-xl"> call </span>
-							{{ data.cliente_data.telefone }}
-						</div>
-					}
-					@if (data.cliente_data?.email) {
-						<div class="flex items-center">
-							<span class="material-symbols-outlined mr-1 text-xl">
-								email
-							</span>
-							{{ data.cliente_data.email }}
-						</div>
-					}
-				</div>
-			</div>
+                codesample_languages: [
+                  { text: 'HTML/XML', value: 'markup' },
+                  { text: 'CSS', value: 'css' },
+                  { text: 'SQL', value: 'sql' },
+                  { text: 'Bash', value: 'sh' },
+                  { text: 'JavaScript', value: 'javascript' },
+                  { text: 'Go', value: 'go' },
+                  { text: 'Dart', value: 'dart' },
+                  { text: 'Zig', value: 'zig' },
+                  { text: 'Rust', value: 'rust' },
+                  { text: 'Lua', value: 'lua' },
+                  { text: 'PHP', value: 'php' },
+                  { text: 'Ruby', value: 'ruby' },
+                  { text: 'Python', value: 'python' },
+                  { text: 'Java', value: 'java' },
+                  { text: 'C', value: 'c' },
+                  { text: 'C#', value: 'csharp' },
+                  { text: 'C++', value: 'cpp' },
+                  { text: 'Markdown', value: 'markdown' },
+                  { text: 'Swift', value: 'swift' },
+                  { text: 'Kotlin', value: 'kotlin' },
+                  { text: 'Elixir', value: 'elixir' },
+                  { text: 'Scala', value: 'scala' },
+                  { text: 'Julia', value: 'julia' },
+                  { text: 'Haskell', value: 'haskell' }
+                ],
+                toolbar:
+                  'styles | alignleft aligncenter alignright | image | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'
+              }"
+            ></editor>
+          }
+        </div>
+      </div>
 
-			@if (data.description != "") {
-				<div class="mt-6 flex h-8 items-center text-white">
-					<span class="material-symbols-outlined mr-2 text-3xl"> subject </span>
+      @if (data.imagem != "") {
+        <div class="mb-6 mt-6 flex h-8 items-center text-white">
+          <span class="material-symbols-outlined mr-2 text-3xl"> image </span>
 
-					<div class="flex items-center">
-						<h1 class="text-xl">Descrição</h1>
-						
+          <div class="flex items-center">
+            <h1 class="text-xl">Imagem</h1>
+          </div>
+        </div>
+        <div class="flex w-full justify-center">
+          <div class="grid grid-cols-3 gap-4">
+            @for (image of data.imagem; track image) {
+              <img
+                (click)="
+                  openImage(
+                    apiUrl + '/api/files/chamados/' + data['id'] + '/' + image
+                  )
+                "
+                class="h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover hover:cursor-pointer hover:opacity-50"
+                [src]="
+                  apiUrl + '/api/files/chamados/' + data['id'] + '/' + image
+                "
+              />
+            }
+          </div>
+        </div>
+      }
 
-					</div>
-				</div>
+      @if (!em_espera) {
+        <div class="mt-6 flex h-8 items-center text-white">
+          <span class="material-symbols-outlined mr-2 text-3xl"> wysiwyg </span>
 
-				<div class="mt-4 flex text-white">
-					<div class="ml-10 w-[500px] text-gray-100">
-						{{ data.description }}
-					</div>
-				</div>
-			}
+          <h1 class="text-xl">Relátorios</h1>
+        </div>
 
-			@if (data.imagem != ""){
-				<div class="mt-6 mb-6 flex h-8 items-center text-white">
-					<span class="material-symbols-outlined mr-2 text-3xl"> image </span>
+        <div class="flex-col p-0">
+          @if (mostrarEditor && !finalizado) {
+            <editor
+              class="ml-8 mt-4"
+              id="editor"
+              #editor
+              (onInit)="editorCarregado()"
+              [init]="{
+                plugins:
+                  '  autolink wordcount lists link image searchreplace fullscreen media table code  directionality codesample',
+                base_url: '/tinymce',
+                suffix: '.min',
+                selector: 'textarea',
 
-					<div class="flex items-center">
-						<h1 class="text-xl">Imagem</h1>
-						
+                codesample_languages: [
+                  { text: 'HTML/XML', value: 'markup' },
+                  { text: 'CSS', value: 'css' },
+                  { text: 'SQL', value: 'sql' },
+                  { text: 'Bash', value: 'sh' },
+                  { text: 'JavaScript', value: 'javascript' },
+                  { text: 'Go', value: 'go' },
+                  { text: 'Dart', value: 'dart' },
+                  { text: 'Zig', value: 'zig' },
+                  { text: 'Rust', value: 'rust' },
+                  { text: 'Lua', value: 'lua' },
+                  { text: 'PHP', value: 'php' },
+                  { text: 'Ruby', value: 'ruby' },
+                  { text: 'Python', value: 'python' },
+                  { text: 'Java', value: 'java' },
+                  { text: 'C', value: 'c' },
+                  { text: 'C#', value: 'csharp' },
+                  { text: 'C++', value: 'cpp' },
+                  { text: 'Markdown', value: 'markdown' },
+                  { text: 'Swift', value: 'swift' },
+                  { text: 'Kotlin', value: 'kotlin' },
+                  { text: 'Elixir', value: 'elixir' },
+                  { text: 'Scala', value: 'scala' },
+                  { text: 'Julia', value: 'julia' },
+                  { text: 'Haskell', value: 'haskell' }
+                ],
+                toolbar:
+                  'styles | alignleft aligncenter alignright | image | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'
+              }"
+            ></editor>
 
-					</div>
-				</div>
-				<div class="w-full flex justify-center">
-					<div class="grid grid-cols-3 gap-4">
-						@for (image of data.imagem ; track image){
-					        <img
-					         (click)="openImage(apiUrl + '/api/files/chamados/' + data['id'] + '/'  + image)"
-					          class="min-w-56 h-56 w-56 min-h-56 max-h-56 rounded-md hover:cursor-pointer hover:opacity-50 object-cover"
-					          [src]="apiUrl + '/api/files/chamados/' + data['id'] + '/'  + image"
+            <div class="ml-8 flex w-full items-center justify-start pt-2">
+              <div class="flex flex-col">
+                <label for="start-time" class="text-sm font-bold text-white"
+                  >Hora de ínicio:</label
+                >
+                <input
+                  class="h-8"
+                  id="start-time"
+                  type="time"
+                  name="start-time"
+                />
+              </div>
+              <div class="ml-2 flex flex-col">
+                <label for="end-time" class="text-sm font-bold text-white"
+                  >Hora de fim:</label
+                >
+                <input class="h-8" id="end-time" type="time" name="end-time" />
+              </div>
 
-					        />
-					    }
-					</div>
-				</div>
-			}
+              <button
+                (click)="sendRelatorio()"
+                type="button"
+                class="me-2 ml-2 mt-4 inline-flex items-center rounded-lg bg-blue-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                <span class="material-symbols-outlined"> send </span>
+                Enviar relatório
+              </button>
 
-			@if (!em_espera) {
-				<div class="mt-6 flex h-8 items-center text-white">
-					<span class="material-symbols-outlined mr-2 text-3xl"> wysiwyg </span>
+              <button
+                (click)="saveEditor()"
+                type="button"
+                class="me-2 mt-4 inline-flex items-center rounded-lg bg-indigo-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+                matTooltip="Salva um rascunho do relátorio"
+              >
+                <span class="material-symbols-outlined"> save </span>
+                Salvar
+              </button>
+            </div>
 
-					<h1 class="text-xl">Relátorios</h1>
-				</div>
+            <!-- <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"> -->
+          } @else {
+            @if (!finalizado && !userFinalized) {
+              <div class="flex w-full">
+                <button
+                  (click)="setEditor(true)"
+                  type="button"
+                  class="me-2 ml-8 mt-2 inline-flex items-center rounded-lg bg-slate-700 px-4 py-2 text-center text-sm text-gray-300 hover:bg-slate-800"
+                >
+                  Escrever um relatório...
+                </button>
+              </div>
+            }
+          }
 
-				<div class="flex-col p-0">
-					@if (mostrarEditor && !finalizado) {
-						<editor
-							class="mt-4"
-							#editor
-							(onInit)="editorCarregado()"
-							[init]="{
-								plugins:
-									'  autolink wordcount lists link image searchreplace fullscreen media table code  directionality codesample',
-								base_url: '/tinymce',
-								suffix: '.min',
-								selector: 'textarea',
+          <div class="flex w-full flex-col pl-8">
+            @for (item of relatorios; track item) {
+              <app-service-relatorio
+                [finalized]="userFinalized"
+                [user]="item.expand.user"
+                [date]="item.created"
+                [html]="item.relatorio"
+                [relatorio_data]="item"
+              />
+              <!-- <hr class="w-48 h-1 mx-auto my-4 bg-gray-100 border-0 rounded md:my-10 dark:bg-gray-700"> -->
+            }
+          </div>
+        </div>
+      }
 
-								codesample_languages: [
-									{ text: 'HTML/XML', value: 'markup' },
-									{ text: 'CSS', value: 'css' },
-									{ text: 'SQL', value: 'sql' },
-									{ text: 'Bash', value: 'sh' },
-									{ text: 'JavaScript', value: 'javascript' },
-									{ text: 'Go', value: 'go' },
-									{ text: 'Dart', value: 'dart' },
-									{ text: 'Zig', value: 'zig' },
-									{ text: 'Rust', value: 'rust' },
-									{ text: 'Lua', value: 'lua' },
-									{ text: 'PHP', value: 'php' },
-									{ text: 'Ruby', value: 'ruby' },
-									{ text: 'Python', value: 'python' },
-									{ text: 'Java', value: 'java' },
-									{ text: 'C', value: 'c' },
-									{ text: 'C#', value: 'csharp' },
-									{ text: 'C++', value: 'cpp' },
-									{ text: 'Markdown', value: 'markdown' },
-									{ text: 'Swift', value: 'swift' },
-									{ text: 'Kotlin', value: 'kotlin' },
-									{ text: 'Elixir', value: 'elixir' },
-									{ text: 'Scala', value: 'scala' },
-									{ text: 'Julia', value: 'julia' },
-									{ text: 'Haskell', value: 'haskell' }
-								],
-								toolbar:
-									'styles | alignleft aligncenter alignright | image | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'
-							}"
-						></editor>
+      <div class="mt-4 flex items-center text-sm text-white">
+        <h1 matTooltip="Chamado criado em">{{ created_at }}</h1>
+        @if (end_at != "") {
+          <h1 matTooltip="Chamado terminado em">&nbsp; - {{ end_at }}</h1>
+          <!-- <h1 matTooltip="Duração do chamado">&nbsp; - {{getTotalTime()}}</h1> -->
+          <h1 class="font-bold text-yellow-300" matTooltip="Horas trabalhadas">
+            &nbsp; - {{ getTotalWorkedTime() }}
+          </h1>
+        }
+      </div>
+    </div>
+    <div class="z-10 flex w-1/4 flex-col pl-2">
+      <div
+        mat-dialog-close
+        (click)="onFecharChamado()"
+        class="flex w-full justify-end text-white"
+      >
+        <div
+          class="flex h-8 w-8 items-center justify-center rounded-full transition-all hover:cursor-pointer hover:bg-slate-600"
+        >
+          <span class="material-symbols-outlined p-1 text-2xl"> close </span>
+        </div>
+      </div>
 
-						<div class="flex w-full justify-start items-center pt-2">
-							<div class="flex flex-col">
-								<label for="start-time" class="text-sm text-white font-bold">Hora de ínicio:</label>
-								<input class="h-8 " id="start-time" type="time" name="start-time" />
-							</div>
-							<div class="flex flex-col ml-2">
-								<label for="end-time" class="text-sm text-white font-bold">Hora de fim:</label>
-								<input class="h-8" id="end-time" type="time" name="end-time" />
-							</div>
+      <div class="mt-8 flex w-full flex-col gap-2">
+        <h1 class="text-xs text-gray-400">Ações do chamado</h1>
+        @if ((isAdmin || participando) && !finalizado) {
+          @if (!userFinalized) {
+            <button
+              (click)="finalizarChamado()"
+              type="button"
+              class="inline-flex h-8 w-full items-center rounded-lg border border-purple-700 px-1 text-center text-sm font-medium text-purple-700 outline-none hover:bg-purple-800 hover:text-white"
+            >
+              <span class="material-symbols-outlined"> save </span>
+              <h1 class="ml-1">Finalizar</h1>
+            </button>
+          }
 
-							<button
-								(click)="sendRelatorio()"
-								type="button"
-								class="me-2 ml-2 mt-4 inline-flex items-center rounded-lg bg-blue-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-							>
-								<span class="material-symbols-outlined"> send </span>
-								Enviar relatório
-							</button>
+          <button
+            (click)="cancelarChamado()"
+            type="button"
+            class="inline-flex h-8 w-full items-center rounded-lg border border-red-700 px-1 text-center text-sm font-medium text-red-700 outline-none hover:bg-red-800 hover:text-white"
+          >
+            <span class="material-symbols-outlined"> remove </span>
+            <h1 class="ml-1">Cancelar</h1>
+          </button>
+        }
 
-							<button
-								(click)="saveEditor()"
-								type="button"
-								class="me-2 mt-4 inline-flex items-center rounded-lg bg-indigo-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
-								matTooltip="Salva um rascunho do relátorio"
-							>
-								<span class="material-symbols-outlined"> save </span>
-								Salvar
-							</button>
-						</div>
+        @if (isAdmin && finalizado && !faturado && !cancelado) {
+          <button
+            (click)="marcarFaturado()"
+            type="button"
+            class="inline-flex h-8 items-center rounded-lg border border-amber-400 px-1 text-center text-sm font-medium text-amber-400 hover:bg-amber-500 hover:text-white"
+          >
+            <span class="material-symbols-outlined"> save </span>
+            <h1 class="ml-1">Registrar</h1>
+          </button>
+        }
 
-						<!-- <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"> -->
-					} @else {
-						@if (!finalizado){
-							<div class="flex w-full justify-center">
-								<button
-									(click)="setEditor(true)"
-									type="button"
-									class="me-2 mt-2 inline-flex items-center rounded-lg bg-blue-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-								>
-									<span class="material-symbols-outlined"> Edit </span>
-									Escrever relatório
-								</button>
-							</div>
-						}
-					}
-
-					@for (item of relatorios; track item) {
-						<app-service-relatorio
-							[user]="item.expand.user"
-							[date]="item.created"
-							[html]="item.relatorio"
-							[relatorio_data]="item"
-						/>
-						<!-- <hr class="w-48 h-1 mx-auto my-4 bg-gray-100 border-0 rounded md:my-10 dark:bg-gray-700"> -->
-					}
-				</div>
-			}
-
-			<div class="text-white text-sm flex items-center mt-4" >
-				<h1 matTooltip="Chamado criado em">{{created_at}}</h1>
-				@if (end_at != "") {
-				 <h1 matTooltip="Chamado terminado em">&nbsp; - {{end_at}}</h1>
-				 <!-- <h1 matTooltip="Duração do chamado">&nbsp; - {{getTotalTime()}}</h1> -->
-				 <h1 class="text-yellow-300 font-bold" matTooltip="Horas trabalhadas">&nbsp; - {{getTotalWorkedTime()}}</h1>
-
-				}
-			</div>
-		</div>
-		<div class="h-8"></div>
-	</div>
+        @if ((participando || isAdmin) && !finalizado) {
+          <button
+            (click)="openAddView()"
+            type="button"
+            class="inline-flex h-8 items-center rounded-lg border border-green-400 px-1 text-center text-sm font-medium text-green-400 hover:bg-green-500 hover:text-white"
+          >
+            <span
+              class="material-symbols-outlined text-green-400 transition-all hover:cursor-pointer hover:text-blue-400"
+            >
+              person_add
+            </span>
+            <h1 class="ml-1">Colaboradores</h1>
+          </button>
+        }
+      </div>
+    </div>
+    <div class="h-8"></div>
+  </div>
 </div>
