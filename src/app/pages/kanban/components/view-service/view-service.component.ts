@@ -160,6 +160,52 @@ export class ViewServiceComponent implements OnDestroy {
       });
   }
 
+  mapIsVideo(imagens: any) {
+    imagens = imagens.map((img: any) => {
+      if (img.url != undefined) {
+        return img;
+      }
+      console.log(img);
+      let ext = img.split('.').pop();
+      let isVideo = false;
+      //get is video
+      if (
+        ext == 'mp4' ||
+        ext == 'mov' ||
+        ext == 'avi' ||
+        ext == 'mkv' ||
+        ext == 'webm' ||
+        ext == 'mpeg'
+      ) {
+        isVideo = true;
+      }
+      console.log(isVideo);
+
+      return { url: img, isVideo: isVideo, type: ext };
+    });
+
+    return imagens;
+  }
+
+  addImage(event: Event) {
+    let target = event.target as HTMLInputElement;
+
+    let files = target.files as FileList;
+
+    let file = files[0];
+
+    // this.images.push(URL.createObjectURL(file))
+
+    let formData = new FormData();
+    formData.append('imagem', file);
+
+    this.pocketSrv.addImage(this.data.id, formData);
+  }
+
+  removeImage(file_name: string) {
+    this.pocketSrv.removeImage(this.data.id, file_name);
+  }
+
   changeTitle(event: Event) {
     this.pocketSrv.salvarTitulo(
       this.data.id,
@@ -265,12 +311,19 @@ export class ViewServiceComponent implements OnDestroy {
     });
   }
 
+  mapImages() {
+    this.data.imagem = this.mapIsVideo(this.data.imagem);
+  }
+
   initiliazeData() {
+    this.mapImages();
+
     this.isAdmin = this.AuthSrv.IsAdmin();
 
     this.dataInjectedSubscription = this.dataInjected.dataObservable.subscribe(
       (data) => {
         this.data = data;
+        this.mapImages();
       },
     );
 

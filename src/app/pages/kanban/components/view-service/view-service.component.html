@@ -192,32 +192,88 @@
         </div>
       </div>
 
-      @if (data.imagem != "") {
-        <div class="mb-6 mt-6 flex h-8 items-center text-white">
-          <span class="material-symbols-outlined mr-2 text-3xl"> image </span>
+      <div class="mb-6 mt-6 flex h-8 items-center text-white">
+        <span class="material-symbols-outlined mr-2 text-3xl"> image </span>
 
-          <div class="flex items-center">
-            <h1 class="text-xl">Imagem</h1>
-          </div>
+        <div class="flex items-center">
+          <h1 class="text-xl">Imagem</h1>
         </div>
-        <div class="flex w-full justify-center">
-          <div class="grid grid-cols-3 gap-4">
-            @for (image of data.imagem; track image) {
-              <img
-                (click)="
-                  openImage(
-                    apiUrl + '/api/files/chamados/' + data['id'] + '/' + image
-                  )
-                "
-                class="h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover hover:cursor-pointer hover:opacity-50"
-                [src]="
-                  apiUrl + '/api/files/chamados/' + data['id'] + '/' + image
-                "
-              />
-            }
-          </div>
+      </div>
+      <div class="flex w-full justify-start">
+        <div class="ml-8 grid grid-cols-2 gap-4">
+          @for (image of data.imagem; track image) {
+            <div class="max-h-56">
+              @if (image.isVideo == false) {
+                <img
+                  (click)="
+                    openImage(
+                      apiUrl +
+                        '/api/files/chamados/' +
+                        data['id'] +
+                        '/' +
+                        image.url
+                    )
+                  "
+                  class="peer h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover hover:cursor-pointer hover:opacity-50"
+                  [src]="
+                    apiUrl +
+                    '/api/files/chamados/' +
+                    data['id'] +
+                    '/' +
+                    image.url
+                  "
+                />
+              } @else {
+                <video
+                  class="peer h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover"
+                  controls
+                >
+                  <source
+                    [src]="
+                      apiUrl +
+                      '/api/files/chamados/' +
+                      data['id'] +
+                      '/' +
+                      image.url
+                    "
+                    type="video/{{ image.type }}"
+                  />
+                  Your browser does not support the video tag.
+                </video>
+              }
+              <span
+                (click)="removeImage(image.url)"
+                class="material-symbols-outlined ml-2 -translate-y-10 cursor-pointer pt-2 text-2xl text-red-600 opacity-0 transition-all hover:text-red-700 hover:opacity-100 peer-hover:opacity-100"
+              >
+                delete
+              </span>
+            </div>
+          }
+
+          <label
+            for="dropzone-file"
+            class="flex h-56 w-56 cursor-pointer flex-col items-center justify-center rounded-md outline-dashed outline-4 outline-gray-800 transition-all hover:bg-gray-800"
+          >
+            <span class="material-symbols-outlined h-8 w-8 text-gray-500">
+              add_photo_alternate
+            </span>
+            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+              <span class="text-center"
+                >Clique para<br />
+                adicionar</span
+              >
+            </p>
+            <!-- <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 20MB)</p> -->
+
+            <input
+              (change)="addImage($event)"
+              id="dropzone-file"
+              type="file"
+              class="hidden"
+            />
+          </label>
         </div>
-      }
+      </div>
 
       @if (!em_espera) {
         <div class="mt-6 flex h-8 items-center text-white">

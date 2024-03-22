@@ -603,6 +603,16 @@ export class PocketCollectionsService {
     return startedSubject.asObservable();
   }
 
+  addImage(id_chamado: string, image: FormData) {
+    this.pb.collection('chamados').update(id_chamado, image);
+  }
+
+  removeImage(id_chamado: string, image_name: string) {
+    this.pb.collection('chamados').update(id_chamado, {
+      'imagem-': image_name,
+    });
+  }
+
   pauseUserTimer(
     chamado_id: string,
     userId = this.pb.authStore.model!['id'],

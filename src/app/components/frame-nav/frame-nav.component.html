@@ -1,29 +1,34 @@
-<div class="sm:flex hidden">
-  <div class="z-50 h-full w-16 flex flex-col justify-between bg-slate-900 ">
+<div class="hidden sm:flex">
+  <div class="z-50 flex h-full w-16 flex-col justify-between bg-slate-900">
     <div>
-      <div (click)="OpenSettings()" class="group inline-flex h-16 w-16 items-center justify-center hover:opacity-65 cursor-pointer">
+      <div
+        (click)="OpenSettings()"
+        class="group inline-flex h-16 w-16 cursor-pointer items-center justify-center hover:opacity-65"
+      >
         @if (user) {
-           @if (user["avatar"] != ""){
+          @if (user["avatar"] != "") {
             <img
               class="h-10 w-10 rounded-lg"
-              [src]="apiUrl + '/api/files/users/' + user['id'] + '/'  + user['avatar']"
+              [src]="
+                apiUrl + '/api/files/users/' + user['id'] + '/' + user['avatar']
+              "
             />
-
-            } @else {
-              <span
-                class="grid h-10 w-10 place-content-center rounded-lg bg-gray-100 text-sm text-gray-600"
-              >
-                {{
-                  user["username"].charAt(0).toUpperCase() +
-                    user["username"].slice(1, 3)
-                }}
-              </span>
-            }
+          } @else {
+            <span
+              class="grid h-10 w-10 place-content-center rounded-lg bg-gray-100 text-sm text-gray-600"
+            >
+              {{
+                user["username"].charAt(0).toUpperCase() +
+                  user["username"].slice(1, 3)
+              }}
+            </span>
           }
-          <span class="material-symbols-outlined absolute text-white invisible group-hover:visible">
+        }
+        <span
+          class="material-symbols-outlined invisible absolute text-white group-hover:visible"
+        >
           settings
-          </span>
-          
+        </span>
       </div>
 
       <div class="border-t border-gray-100">
@@ -34,7 +39,9 @@
                 (click)="navigate('')"
                 class="group relative flex cursor-pointer justify-center rounded px-2 py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
               >
-                <span class="material-symbols-outlined text-[1.8rem]">home</span>
+                <span class="material-symbols-outlined text-[1.8rem]"
+                  >home</span
+                >
                 <span
                   class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >Home</span
@@ -46,7 +53,9 @@
                 (click)="navigate('/chamados/aberto')"
                 class="group relative flex cursor-pointer justify-center rounded px-2 py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
               >
-                <span class="material-symbols-outlined text-[1.8rem]">desktop_windows</span>
+                <span class="material-symbols-outlined text-[1.8rem]"
+                  >desktop_windows</span
+                >
                 <span
                   class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >Chamados</span
@@ -56,9 +65,11 @@
             <li>
               <a
                 (click)="navigate('/tecnicos')"
-                class="group relative flex hover:cursor-pointer justify-center rounded py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
+                class="group relative flex justify-center rounded py-1.5 text-gray-500 transition-all hover:cursor-pointer hover:bg-slate-700 hover:text-gray-400"
               >
-                <span class="material-symbols-outlined text-[1.8rem]">view_kanban</span>
+                <span class="material-symbols-outlined text-[1.8rem]"
+                  >view_kanban</span
+                >
                 <span
                   class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >Painel de chamados
@@ -68,9 +79,11 @@
             <li>
               <a
                 (click)="navigate('/anotacoes')"
-                class="group relative flex hover:cursor-pointer justify-center rounded py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
+                class="group relative flex justify-center rounded py-1.5 text-gray-500 transition-all hover:cursor-pointer hover:bg-slate-700 hover:text-gray-400"
               >
-                <span class="material-symbols-outlined text-[1.8rem]">note_stack</span>
+                <span class="material-symbols-outlined text-[1.8rem]"
+                  >note_stack</span
+                >
                 <span
                   class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >Painel de anotações
@@ -82,14 +95,15 @@
                 (click)="navigate('/registros')"
                 class="group relative flex justify-center rounded px-2 py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
               >
-                <span class="material-symbols-outlined text-[1.8rem]">description</span>
+                <span class="material-symbols-outlined text-[1.8rem]"
+                  >description</span
+                >
                 <span
                   class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >Registros</span
                 >
               </a>
             </li>
-            
           </ul>
         </div>
       </div>
@@ -205,92 +219,100 @@
     </div>
 </div> -->
 
+<div class="flex w-full max-w-full flex-col sm:max-w-[calc(100vw-4rem)]">
+  <div class="z-50 flex h-16 w-screen bg-slate-900 sm:hidden">
+    <div
+      (click)="OpenSettings()"
+      class="group flex h-16 w-16 cursor-pointer items-center justify-center hover:opacity-65"
+    >
+      @if (user) {
+        @if (user["avatar"] != "") {
+          <img
+            class="h-10 w-10 rounded-lg"
+            [src]="
+              apiUrl + '/api/files/users/' + user['id'] + '/' + user['avatar']
+            "
+          />
+        } @else {
+          <span
+            class="grid h-10 w-10 place-content-center rounded-lg bg-gray-100 text-sm text-gray-600"
+          >
+            {{
+              user["username"].charAt(0).toUpperCase() +
+                user["username"].slice(1, 3)
+            }}
+          </span>
+        }
+      }
+      <span
+        class="material-symbols-outlined invisible absolute text-white group-hover:visible"
+      >
+        settings
+      </span>
+    </div>
 
-<div class="flex  w-full sm:max-w-[calc(100vw-4rem)] max-w-full flex-col">
-
-  <div class="z-50 h-16 w-screen flex sm:hidden  bg-slate-900 ">
-      <div (click)="OpenSettings()" class="group flex h-16 w-16 items-center justify-center hover:opacity-65 cursor-pointer">
-        @if (user) {
-           @if (user["avatar"] != ""){
-            <img
-              class="h-10 w-10 rounded-lg"
-              [src]="apiUrl + '/api/files/users/' + user['id'] + '/'  + user['avatar']"
-            />
-
-            } @else {
-              <span
-                class="grid h-10 w-10 place-content-center rounded-lg bg-gray-100 text-sm text-gray-600"
-              >
-                {{
-                  user["username"].charAt(0).toUpperCase() +
-                    user["username"].slice(1, 3)
-                }}
-              </span>
-            }
-          }
-          <span class="material-symbols-outlined absolute text-white invisible group-hover:visible">
-          settings
-          </span>        
-      </div>
-
-      <div class="">
-        <div class="select-none space-x-1 flex  gap-1 pt-4">
-          <div>
-            <a
-              (click)="navigate('')"
-              class="group relative flex cursor-pointer justify-center rounded w-[40px]  px-2 py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
+    <div class="">
+      <div class="flex select-none gap-1 space-x-1 pt-4">
+        <div>
+          <a
+            (click)="navigate('')"
+            class="group relative flex w-[40px] cursor-pointer justify-center rounded px-2 py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
+          >
+            <span class="material-symbols-outlined">home</span>
+            <span
+              class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
+              >Home</span
             >
-              <span class="material-symbols-outlined">home</span>
-              <span
-                class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
-                >Home</span
-              >
-            </a>
-          </div>
-          <div>
-            <a
-              (click)="navigate('/chamados/aberto')"
-              class="group relative flex cursor-pointer justify-center rounded w-[40px] px-2 py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
+          </a>
+        </div>
+        <div>
+          <a
+            (click)="navigate('/chamados/aberto')"
+            class="group relative flex w-[40px] cursor-pointer justify-center rounded px-2 py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
+          >
+            <span class="material-symbols-outlined">desktop_windows</span>
+            <span
+              class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
+              >Chamados</span
             >
-              <span class="material-symbols-outlined">desktop_windows</span>
-              <span
-                class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
-                >Chamados</span
-              >
-            </a>
-          </div>
-          <div>
-            <a
-              (click)="navigate('/tecnicos')"
-              class="group relative flex hover:cursor-pointer justify-center w-[40px] rounded py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
+          </a>
+        </div>
+        <div>
+          <a
+            (click)="navigate('/tecnicos')"
+            class="group relative flex w-[40px] justify-center rounded py-1.5 text-gray-500 transition-all hover:cursor-pointer hover:bg-slate-700 hover:text-gray-400"
+          >
+            <span class="material-symbols-outlined">group</span>
+            <span
+              class="invisible absolute start-full top-1/2 z-10 ms-4 w-[40px] -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
+              >Técnicos
+            </span>
+          </a>
+        </div>
+        <div>
+          <a
+            (click)="navigate('/registros')"
+            class="group relative flex w-[40px] justify-center rounded px-2 py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
+          >
+            <span class="material-symbols-outlined">description</span>
+            <span
+              class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
+              >Registros</span
             >
-              <span class="material-symbols-outlined">group</span>
-              <span
-                class="invisible absolute start-full top-1/2 z-10 ms-4 w-[40px] -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
-                >Técnicos
-              </span>
-            </a>
-          </div>
-          <div>
-            <a
-              (click)="navigate('/registros')"
-              class="group relative flex justify-center rounded px-2 py-1.5 w-[40px] text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
-            >
-              <span class="material-symbols-outlined">description</span>
-              <span
-                class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
-                >Registros</span
-              >
-            </a>
-          </div>
-          
+          </a>
         </div>
       </div>
     </div>
+  </div>
 
-  <div class="sm:flex hidden min-h-12 justify-end bg-slate-900 pr-4 text-white">
-    <div class="flex h-full items-center justify-center mr-auto ml-2 cursor-default select-none font-bold" matTooltip="
-A versão 0800 está em fase de teste, portanto, é natural que alguns bugs ocorram e serão corrigidos.">0800 Preview version</div>
+  <div class="hidden min-h-12 justify-end bg-slate-900 pr-4 text-white sm:flex">
+    <div
+      class="ml-2 mr-auto flex h-full cursor-default select-none items-center justify-center font-bold"
+      matTooltip="
+A versão 0800 está em fase de teste, portanto, é natural que alguns bugs ocorram e serão corrigidos."
+    >
+      0800 Preview version
+    </div>
     <div
       class="flex h-full cursor-default items-center justify-center"
       matTooltip="São os chamados que estão em espera, esperando para serem atríbuidos a um técnico"
@@ -299,7 +321,7 @@ A versão 0800 está em fase de teste, portanto, é natural que alguns bugs ocor
       <div class="mr-2 font-bold">{{ chamados_em_espera }}</div>
       Em Espera
     </div>
-    <div
+    <!--     <div
       class="flex h-full cursor-default items-center justify-center pl-4"
       matTooltip="São os chamados que estão atribuido a um técnico, mas ainda não foram iniciados"
     >
@@ -314,7 +336,7 @@ A versão 0800 está em fase de teste, portanto, é natural que alguns bugs ocor
       <span class="me-3 flex h-3 w-3 rounded-full bg-green-500"></span>
       <div class="mr-2 font-bold">{{ chamados_em_andamento }}</div>
       Em Andamento
-    </div>
+    </div> -->
   </div>
   <div class="flex h-full w-full">
     <ng-content></ng-content>
