@@ -1,0 +1,89 @@
+<div class="mb-4 mt-4 grid grid-cols-3 gap-4">
+  <!-- Total de usuarios -->
+  <div
+    class="flex h-24 flex-col items-start justify-start rounded bg-white p-2 dark:bg-gray-800">
+    <div class="flex w-full">
+      <h1 [countUp]=usersTotal [duration]="1000"  class="text-3xl text-gray-800 dark:text-gray-200"></h1>
+
+      <span
+        class="material-symbols-outlined ml-auto text-gray-800 dark:text-gray-200">
+        group
+      </span>
+    </div>
+    <p class="mt-auto text-lg text-gray-800 dark:text-gray-400">
+      Total de usuarios
+    </p>
+  </div>
+  <!-- Total de dominios -->
+  <div
+    class="flex h-24 flex-col items-start justify-start rounded bg-white p-2 dark:bg-gray-800">
+    <div class="flex w-full">
+      <h1 [countUp]=server.length [duration]="1000"  class="text-3xl text-gray-800 dark:text-gray-200"></h1>
+      <span
+        class="material-symbols-outlined ml-auto text-gray-800 dark:text-gray-200">
+        dns
+      </span>
+    </div>
+    <p class="mt-auto text-lg text-gray-800 dark:text-gray-400">
+      Total de dominios
+    </p>
+  </div>
+  <!-- Total de servidores -->
+  <div
+    class="flex h-24 flex-col items-start justify-start rounded bg-white p-2 dark:bg-gray-800">
+    <div class="flex w-full">
+      <h1 [countUp]=5 [duration]="1000" class="text-3xl text-gray-800 dark:text-gray-200"></h1>
+      <span
+        class="material-symbols-outlined ml-auto text-gray-800 dark:text-gray-200">
+        storage
+      </span>
+    </div>
+    <p class="mt-auto text-lg text-gray-800 dark:text-gray-400">
+      Total de servidores
+    </p>
+  </div>
+
+
+
+</div>
+
+<!-- <div
+  class="mb-4 mt-4 flex h-52 flex-col items-start justify-start overflow-hidden rounded-md border-2 border-gray-300 bg-gray-300 bg-white dark:border-gray-700 dark:bg-gray-700 dark:bg-gray-800">
+      <iframe [src]="grafana_urls[0]"
+      width="100%"
+      height="100%"
+      frameborder="0"></iframe>
+</div> -->
+@if (isAdmin) {
+  <div class="mb-4 mt-4 grid grid-cols-2 gap-4">
+    <div
+      class="flex h-[480px] flex-col items-start justify-start overflow-hidden rounded-md border-2 border-gray-300 bg-gray-300 bg-white dark:border-gray-700 dark:bg-gray-700 dark:bg-gray-800">
+        <iframe [src]="grafana_urls[0]"
+        width="100%"
+          height="100%"
+        frameborder="0"></iframe>
+    </div>
+     <div
+      class="flex h-[480px] flex-col items-start justify-start overflow-hidden rounded-md border-2 border-gray-300 bg-gray-300 bg-white dark:border-gray-700 dark:bg-gray-700 dark:bg-gray-800">
+        <iframe [src]="grafana_urls[1]"
+        width="100%"
+          height="100%"
+        frameborder="0"></iframe>
+    </div>
+     <div
+      class="flex h-[480px] flex-col items-start justify-start overflow-hidden rounded-md border-2 border-gray-300 bg-gray-300 bg-white dark:border-gray-700 dark:bg-gray-700 dark:bg-gray-800">
+        <iframe [src]="grafana_urls[2]"
+        width="100%"
+          height="100%"
+        frameborder="0"></iframe>
+    </div>
+       <div
+      class="flex h-[480px] flex-col items-start justify-start overflow-hidden rounded-md border-2 border-gray-300 bg-gray-300 bg-white dark:border-gray-700 dark:bg-gray-700 dark:bg-gray-800">
+        <iframe [src]="grafana_urls[3]"
+        width="100%"
+          height="100%"
+        frameborder="0"></iframe>
+    </div>
+  </div>
+}
+

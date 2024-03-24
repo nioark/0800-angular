@@ -1,0 +1,609 @@
+<app-frame-nav>
+  <app-sidebar></app-sidebar>
+  <div
+    class="fixed bottom-0 left-1/2 z-10 mb-2 flex w-96 -translate-x-48 flex-col space-y-2"
+  >
+    <!-- Use ng-template to ensure that the generated components end up in the right place -->
+    <ng-template #container> </ng-template>
+  </div>
+
+  <section class="h-full w-full bg-gray-100 p-3 dark:bg-gray-900">
+    <div
+      class="mx-auto h-full max-w-screen-xl rounded-md border-2 dark:border-gray-700"
+    >
+      <!-- Start coding here -->
+
+      <div
+        class="relative flex h-full flex-col overflow-hidden bg-white shadow-md dark:bg-gray-800"
+      >
+        <div
+          class="flex flex-col items-center justify-between space-y-3 p-4 md:flex-row md:space-x-4 md:space-y-0"
+        >
+          <div class="w-full">
+            <div class="flex w-2/3 items-center">
+              <label for="simple-search" class="sr-only">Search</label>
+              <div class="relative w-full">
+                <div
+                  class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="h-5 w-5 text-gray-500 dark:text-gray-400"
+                    fill="currentColor"
+                    viewbox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <input
+                  #search
+                  (keyup)="searchKeyup($event, search)"
+                  type="text"
+                  id="simple-search"
+                  class="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 pl-10 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+                  placeholder="Search"
+                  required=""
+                />
+              </div>
+            </div>
+
+            <!-- Filtros de servers -->
+            <app-servers-filter #filter></app-servers-filter>
+          </div>
+          <div
+            class="flex w-full flex-shrink-0 flex-col items-stretch justify-end space-y-2 md:w-auto md:flex-row md:items-center md:space-x-3 md:space-y-0"
+          >
+            <div class="flex w-full items-center space-x-3 md:w-auto">
+              <button
+                id="filterDropdownButton"
+                data-dropdown-toggle="filterDropdown"
+                class="hover:text-primary-700 flex w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 md:w-auto"
+                type="button"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                  class="mr-2 h-4 w-4 text-gray-400"
+                  viewbox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                Filtros
+                <svg
+                  class="-mr-1 ml-1.5 h-5 w-5"
+                  fill="currentColor"
+                  viewbox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    fill-rule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  />
+                </svg>
+              </button>
+              <div
+                id="filterDropdown"
+                class="z-10 hidden w-48 rounded-lg bg-white p-3 shadow dark:bg-gray-700"
+              >
+                <h6
+                  class="mb-3 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Selecione um filtro
+                </h6>
+                <ul
+                  class="space-y-2 text-sm"
+                  aria-labelledby="filterDropdownButton"
+                >
+                  <li class="flex items-center">
+                    <input
+                      (click)="changedFilters('discocheio')"
+                      #discocheio
+                      id="1"
+                      type="checkbox"
+                      value=""
+                      class="text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 h-4 w-4 rounded border-gray-300 bg-gray-100 focus:ring-2 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700"
+                    />
+                    <label
+                      for="1"
+                      class="text ml-2 select-none text-sm font-medium text-gray-900 dark:text-gray-100"
+                      >Disco cheio</label
+                    >
+                  </li>
+                  <li class="flex items-center">
+                    <input
+                      (click)="changedFilters('usuariolotados')"
+                      #usuariolotados
+                      id="2"
+                      type="checkbox"
+                      value=""
+                      class="text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 h-4 w-4 rounded border-gray-300 bg-gray-100 focus:ring-2 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700"
+                    />
+                    <label
+                      for="2"
+                      class="ml-2 select-none text-sm font-medium text-gray-900 dark:text-gray-100"
+                      >Usuarios lotados</label
+                    >
+                  </li>
+                  <li class="flex items-center">
+                    <input
+                      (click)="changedFilters('dominiossuspensos')"
+                      #dominiossuspensos
+                      id="3"
+                      type="checkbox"
+                      value=""
+                      class="text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 h-4 w-4 rounded border-gray-300 bg-gray-100 focus:ring-2 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700"
+                    />
+                    <label
+                      for="3"
+                      class="ml-2 select-none text-sm font-medium text-gray-900 dark:text-gray-100"
+                      >Domínios suspensos</label
+                    >
+                  </li>
+                  <li class="flex items-center">
+                    <input
+                      (click)="changedFilters('dominiosduplicados')"
+                      #dominiosduplicados
+                      id="4"
+                      type="checkbox"
+                      value=""
+                      class="text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 h-4 w-4 rounded border-gray-300 bg-gray-100 focus:ring-2 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700"
+                    />
+                    <label
+                      for="4"
+                      class="ml-2 select-none text-sm font-medium text-gray-900 dark:text-gray-100"
+                      >Domínios duplicados</label
+                    >
+                  </li>
+                  <li class="flex items-center">
+                    <input
+                      (click)="changedFilters('dominiossemcontratos')"
+                      #dominiossemcontratos
+                      id="5"
+                      type="checkbox"
+                      value=""
+                      class="text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 h-4 w-4 rounded border-gray-300 bg-gray-100 focus:ring-2 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700"
+                    />
+                    <label
+                      for="5"
+                      class="ml-2 select-none text-sm font-medium text-gray-900 dark:text-gray-100"
+                      >Sem contratos</label
+                    >
+                  </li>
+                  <li class="flex items-center">
+                    <input
+                      (click)="changedFilters('escondersuspensos')"
+                      checked
+                      #escondersuspensos
+                      id="6"
+                      type="checkbox"
+                      value=""
+                      class="text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 h-4 w-4 rounded border-gray-300 bg-gray-100 focus:ring-2 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700"
+                    />
+                    <label
+                      for="6"
+                      class="ml-2 select-none text-sm font-medium text-gray-900 dark:text-gray-100"
+                      >Esconder suspensos</label
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          #pulse
+          (wheel)="onWheel()"
+          (scroll)="onWheel()"
+          id="scroll"
+          class="h-full animate-pulse overflow-x-auto"
+        >
+          <table
+            class="w-full min-w-[800px] text-left text-sm text-gray-800 dark:text-white"
+          >
+            <thead
+              class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
+            >
+              <tr>
+                <th scope="col" class="px-4 py-3">
+                  <div
+                    (click)="changedOrderBy('domain')"
+                    class="flex select-none items-center hover:cursor-pointer"
+                  >
+                    Domínio
+                    <a
+                      ><svg
+                        class="ms-1.5 h-3 w-3"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"
+                        />
+                      </svg>
+                    </a>
+                  </div>
+                </th>
+                <th scope="col" class="px-4 py-3">
+                  <div
+                    (click)="changedOrderBy('usedUsers')"
+                    class="flex select-none items-center hover:cursor-pointer"
+                  >
+                    Contas
+                    <a>
+                      <svg
+                        class="ms-1.5 h-3 w-3"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"
+                        />
+                      </svg>
+                    </a>
+                  </div>
+                </th>
+                <th scope="col" class="px-4 py-3">
+                  <div
+                    (click)="changedOrderBy('usedStorageBytes')"
+                    class="flex select-none items-center hover:cursor-pointer"
+                  >
+                    Disco
+                    <a>
+                      <svg
+                        class="ms-1.5 h-3 w-3"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"
+                        />
+                      </svg>
+                    </a>
+                  </div>
+                </th>
+                <th scope="col" class="px-4 py-3">
+                  <div
+                    (click)="changedOrderBy('pacote')"
+                    class="flex select-none items-center hover:cursor-pointer"
+                  >
+                    Pacote
+                    <a>
+                      <svg
+                        class="ms-1.5 h-3 w-3"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"
+                        />
+                      </svg>
+                    </a>
+                  </div>
+                </th>
+
+                @if (isAdmin) {
+                  <th scope="col" class="px-4 py-3">
+                    <div
+                      (click)="changedOrderBy('price')"
+                      class="flex select-none items-center hover:cursor-pointer"
+                    >
+                      Preço
+                      <a
+                        ><svg
+                          class="ms-1.5 h-3 w-3"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"
+                          />
+                        </svg>
+                      </a>
+                    </div>
+                  </th>
+                }
+                <th scope="col" class="px-4 py-3">
+                  <span class="sr-only">Actions</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (server of data_view; track server.uuid) {
+                <tr
+                  (click)="openServer(server.serviceId, server.serverId)"
+                  [ngClass]="{ 'row-tabela-deleted': server.suspended == true }"
+                  class="border-b hover:cursor-pointer dark:border-gray-700 hover:dark:bg-slate-800 md:h-[75px] xl:h-[57px]"
+                >
+                  <th>
+                    <div class="flex items-center">
+                      <div
+                        [ngClass]="{
+                          'bg-blue-700': server.serverId == 0,
+                          'bg-purple-600': server.serverId == 1,
+                          'bg-pink-800': server.serverId == 2,
+                          'bg-teal-600': server.serverId == 3,
+                          'bg-lime-600': server.serverId == 4
+                        }"
+                        class="ml-[2px] h-10 w-1 rounded-sm"
+                      ></div>
+
+                      <div class="group flex items-center">
+                        <app-address-link
+                          domain="{{ server.domain }}"
+                          webDomain="{{ server.dns }}"
+                          emailDomain="{{ server.dns }}"
+                        >
+                        </app-address-link>
+
+                        <span
+                          arial-label="Copiar link"
+                          (click)="copy(server.domain, $event)"
+                          class="material-symbols-outlined hidden h-8 w-8 rounded-md p-1 transition-all hover:scale-105 hover:cursor-pointer hover:bg-slate-600 group-hover:block"
+                        >
+                          content_copy
+                        </span>
+                      </div>
+
+                      @if (
+                        server.contratoID == 0 || server.contratoID == null
+                      ) {
+                        <span class="material-symbols-outlined text-yellow-400">
+                          warning
+                        </span>
+
+                        <h1 class="ml-2 text-xs text-yellow-400">
+                          Sem contrato!
+                        </h1>
+                      }
+                    </div>
+                  </th>
+                  <ng-container *ngIf="server.unlimitedUsers == false">
+                    <td
+                      class="px-4 py-3"
+                      [ngClass]="{
+                        'text-gray-800 dark:text-white':
+                          server.usedUsersPercentage < 50,
+                        'text-yellow-400':
+                          server.usedUsersPercentage >= 50 &&
+                          server.usedUsersPercentage < 85,
+                        'text-red-600': server.usedUsersPercentage >= 85
+                      }"
+                    >
+                      {{ server.usedUsers }} / {{ server.maxUsers }}
+                    </td>
+                  </ng-container>
+                  <ng-container *ngIf="server.unlimitedUsers == true">
+                    <td class="px-4 py-3">{{ server.usedUsers }} / ∞</td>
+                  </ng-container>
+                  <td class="px-4 py-3">
+                    <div class="mb-1 flex justify-between">
+                      <span
+                        class="text-sm font-medium text-blue-700 dark:text-white"
+                        >{{ server.usedStorage }}</span
+                      >
+                      <ng-container *ngIf="server.unlimitedStorage == false">
+                        <span
+                          class="text-sm font-medium text-blue-700 dark:text-white"
+                          >{{ server.maxStorage }}
+                        </span>
+                      </ng-container>
+                      <ng-container *ngIf="server.unlimitedStorage == true">
+                        <span
+                          class="text-sm font-medium text-blue-700 dark:text-white"
+                          >∞</span
+                        >
+                      </ng-container>
+                    </div>
+                    <div
+                      class="h-1.5 w-full rounded-full bg-gray-200 dark:bg-gray-700"
+                    >
+                      <div
+                        [ngClass]="{
+                          'bg-purple-600': server.unlimitedStorage == true,
+                          'bg-blue-600':
+                            server.usedStoragePercentage < 50 &&
+                            server.unlimitedStorage == false,
+                          'bg-yellow-400':
+                            server.usedStoragePercentage >= 50 &&
+                            server.usedStoragePercentage < 75 &&
+                            server.unlimitedStorage == false,
+                          'bg-red-600':
+                            server.usedStoragePercentage >= 75 &&
+                            server.unlimitedStorage == false
+                        }"
+                        class="h-1.5 rounded-full bg-blue-600"
+                        style="width: {{ server.usedStoragePercentage }}%"
+                      ></div>
+                    </div>
+                  </td>
+                  <td class="w-48 px-4 py-3">
+                    <span
+                      class="me-2 rounded bg-blue-100 px-2.5 py-0.5 text-sm font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+                      >{{ server.pacote }}</span
+                    >
+                  </td>
+                  @if (isAdmin) {
+                    <td class="px-4 py-3 text-green-400">
+                      @if (
+                        server.contratoID == 0 || server.contratoID == null
+                      ) {
+                        *
+                      } @else {
+                        @if (server.price == 0) {
+                          R$ {{ round(server.contrato.mensalidade) }}
+                        } @else {
+                          R$ {{ round(server.price) }}
+                        }
+                      }
+                    </td>
+                  }
+                  <td class="flex w-16 items-center justify-end px-4 py-3">
+                    <!-- (click)="toggleOption(button, option, $event)" -->
+                    <!-- <button
+                      (click)="stopEvent($event)"
+                      #button
+                      id="apple-imac-27-dropdown-button"
+                      data-dropdown-toggle="apple-imac-27-dropdown"
+                      class="inline-flex items-center rounded-lg p-0.5 text-center text-sm font-medium text-gray-500 hover:text-gray-800 focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
+                      type="button">
+                      <svg
+                        class="h-5 w-5"
+                        aria-hidden="true"
+                        fill="currentColor"
+                        viewbox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                      </svg>
+                    </button> -->
+                    @if (server.serverType == "cwp") {
+                      <img
+                        (click)="
+                          openCwp(
+                            server.serverId,
+                            server.serviceId,
+                            $event,
+                            server.domain
+                          )
+                        "
+                        class="h-8 w-8 rounded-md p-1 transition-all hover:scale-105 hover:cursor-pointer hover:bg-slate-600"
+                        src="assets/cwp.png"
+                      />
+                    } @else {
+                      <img
+                        (click)="
+                          openCpanel(
+                            server.serverId,
+                            server.serviceId,
+                            $event,
+                            server.domain
+                          )
+                        "
+                        class="mt-1 h-8 w-8 rounded-md p-1 py-2 transition-all hover:scale-105 hover:cursor-pointer hover:bg-slate-600"
+                        src="assets/cpanel.png"
+                      />
+                    }
+
+                    <div
+                      #option
+                      id="apple-imac-27-dropdown"
+                      class="z-10 hidden w-44 divide-y divide-gray-100 rounded bg-white shadow dark:divide-gray-600 dark:bg-gray-700"
+                    >
+                      <ul
+                        class="py-1 text-sm text-gray-700 dark:text-gray-200"
+                        aria-labelledby="apple-imac-27-dropdown-button"
+                      >
+                        <li>
+                          <a
+                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                            >Ver</a
+                          >
+                        </li>
+                      </ul>
+                      <div class="py-1">
+                        <a
+                          class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:text-red-500 dark:hover:bg-gray-600 dark:hover:text-white"
+                          >Suspender</a
+                        >
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+              <div id="heightclass" class=""></div>
+            </tbody>
+          </table>
+        </div>
+        <nav
+          class="flex flex-col items-start justify-between space-y-3 p-4 md:flex-row md:items-center md:space-y-0"
+          aria-label="Table navigation"
+        >
+          <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            Showing
+            <span class="font-semibold text-gray-900 dark:text-white">{{
+              data.length
+            }}</span>
+            domains
+
+            <span class="font-semibold text-gray-900 dark:text-white">{{
+              this.usersAmmount
+            }}</span>
+            emails
+            <!-- <span class="font-semibold text-gray-900 dark:text-white">1000</span> -->
+          </span>
+          <div
+            (click)="gotoPath('servers/config')"
+            class="cursor-pointer rounded-md p-2 hover:bg-slate-600"
+          >
+            <svg
+              class="h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 hover:rotate-90 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                d="M18 7.5h-.423l-.452-1.09.3-.3a1.5 1.5 0 0 0 0-2.121L16.01 2.575a1.5 1.5 0 0 0-2.121 0l-.3.3-1.089-.452V2A1.5 1.5 0 0 0 11 .5H9A1.5 1.5 0 0 0 7.5 2v.423l-1.09.452-.3-.3a1.5 1.5 0 0 0-2.121 0L2.576 3.99a1.5 1.5 0 0 0 0 2.121l.3.3L2.423 7.5H2A1.5 1.5 0 0 0 .5 9v2A1.5 1.5 0 0 0 2 12.5h.423l.452 1.09-.3.3a1.5 1.5 0 0 0 0 2.121l1.415 1.413a1.5 1.5 0 0 0 2.121 0l.3-.3 1.09.452V18A1.5 1.5 0 0 0 9 19.5h2a1.5 1.5 0 0 0 1.5-1.5v-.423l1.09-.452.3.3a1.5 1.5 0 0 0 2.121 0l1.415-1.414a1.5 1.5 0 0 0 0-2.121l-.3-.3.452-1.09H18a1.5 1.5 0 0 0 1.5-1.5V9A1.5 1.5 0 0 0 18 7.5Zm-8 6a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"
+              />
+            </svg>
+          </div>
+          <!-- <ul class="inline-flex items-stretch -space-x-px">
+                  <li>
+                      <a href="#" class="ml-0 flex h-full items-center justify-center rounded-l-lg border border-gray-300 bg-white px-3 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                          <span class="sr-only">Previous</span>
+                          <svg class="h-5 w-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                              <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                          </svg>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#" class="flex items-center justify-center border border-gray-300 bg-white px-3 py-2 text-sm leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+                  </li>
+                  <li>
+                      <a href="#" class="flex items-center justify-center border border-gray-300 bg-white px-3 py-2 text-sm leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
+                  </li>
+                  <li>
+                      <a href="#" aria-current="page" class="text-primary-600 bg-primary-50 border-primary-300 hover:bg-primary-100 hover:text-primary-700 z-10 flex items-center justify-center border px-3 py-2 text-sm leading-tight dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
+                  </li>
+                  <li>
+                      <a href="#" class="flex items-center justify-center border border-gray-300 bg-white px-3 py-2 text-sm leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">...</a>
+                  </li>
+                  <li>
+                      <a href="#" class="flex items-center justify-center border border-gray-300 bg-white px-3 py-2 text-sm leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">100</a>
+                  </li>
+                  <li>
+                      <a href="#" class="flex h-full items-center justify-center rounded-r-lg border border-gray-300 bg-white px-3 py-1.5 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                          <span class="sr-only">Next</span>
+                          <svg class="h-5 w-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                          </svg>
+                      </a>
+                  </li>
+              </ul> -->
+        </nav>
+      </div>
+    </div>
+  </section>
+</app-frame-nav>

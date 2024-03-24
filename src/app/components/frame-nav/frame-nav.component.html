@@ -93,7 +93,7 @@
             <li>
               <a
                 (click)="navigate('/registros')"
-                class="group relative flex justify-center rounded px-2 py-1.5 text-gray-500 transition-all hover:bg-slate-700 hover:text-gray-400"
+                class="group relative flex justify-center rounded py-1.5 text-gray-500 transition-all hover:cursor-pointer hover:bg-slate-700 hover:text-gray-400"
               >
                 <span class="material-symbols-outlined text-[1.8rem]"
                   >description</span
@@ -101,6 +101,18 @@
                 <span
                   class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
                   >Registros</span
+                >
+              </a>
+            </li>
+            <li>
+              <a
+                (click)="navigate('/dominios/servers')"
+                class="group relative flex justify-center rounded py-1.5 text-gray-500 transition-all hover:cursor-pointer hover:bg-slate-700 hover:text-gray-400"
+              >
+                <span class="material-symbols-outlined text-[1.8rem]">web</span>
+                <span
+                  class="invisible absolute start-full top-1/2 z-10 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
+                  >Domínios</span
                 >
               </a>
             </li>
@@ -306,13 +318,13 @@
   </div>
 
   <div class="hidden min-h-12 justify-end bg-slate-900 pr-4 text-white sm:flex">
-    <div
+    <!--     <div
       class="ml-2 mr-auto flex h-full cursor-default select-none items-center justify-center font-bold"
       matTooltip="
 A versão 0800 está em fase de teste, portanto, é natural que alguns bugs ocorram e serão corrigidos."
     >
-      0800 Preview version
-    </div>
+      Painel Rsol
+    </div> -->
     <div
       class="flex h-full cursor-default items-center justify-center"
       matTooltip="São os chamados que estão em espera, esperando para serem atríbuidos a um técnico"

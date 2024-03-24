@@ -1,0 +1,26 @@
+<!-- <a tabindex="0" role="link" aria-label="tooltip 1" class="relative"
+  (mouseenter)="showTooltip()" (focus)="showTooltip()" (mouseleave)="hideTooltip()"> -->
+<a tabindex="0" role="link" aria-label="tooltip 1" class="relative"
+>
+
+  <th  scope="row" class="px-4 py-3 font-medium text-blue-600 hover:cursor-pointer select-none  hover:underline dark:text-blue-500">{{domain}}</th>
+
+  <div #tooltip1 id="tooltip1" role="tooltip" class="absolute left-0 z-20 ml-2 hidden w-64 rounded bg-white p-4 px-5 shadow-lg transition duration-150 ease-in-out dark:bg-gray-700">
+      <!-- <svg class="absolute bottom-0 left-0 top-0 -ml-2 h-full fill-slate-800 stroke-slate-800" width="9px" height="16px" viewBox="0 0 9 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <g id="Page-1" stroke="none" stroke-width="1" fill="white" fill-rule="evenodd">
+              <g id="Tooltips-" transform="translate(-874.000000, -1029.000000)" fill="#FFFFFF">
+                  <g id="Group-3-Copy-16" transform="translate(850.000000, 975.000000)">
+                      <g id="Group-2" transform="translate(24.000000, 0.000000)">
+                          <polygon id="Triangle" transform="translate(4.500000, 62.000000) rotate(-90.000000) translate(-4.500000, -62.000000) " points="4.5 57.5 12.5 66.5 -3.5 66.5"></polygon>
+                      </g>
+                  </g>
+              </g>
+          </g>
+      </svg> -->
+      <p class="text-md pb-1 font-bold text-gray-800 dark:text-gray-200">Site</p>
+      <p class="pb-3 text-sm leading-4 text-blue-600 hover:underline dark:text-blue-500">{{webDomain}}</p>
+      <p class="text-md pb-1 font-bold text-gray-800 dark:text-gray-200">Email</p>
+      <p class="pb-3 text-sm leading-4 text-blue-600 hover:underline dark:text-blue-500">{{emailDomain}}
+      </p>
+  </div>
+</a>

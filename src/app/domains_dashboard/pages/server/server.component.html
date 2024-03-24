@@ -1,0 +1,352 @@
+<app-frame-nav>
+  <ng-container *ngIf="server$ | async as server">
+    <div
+      class="flex h-full min-h-full w-full bg-gray-100 px-3 pb-3 pt-3 dark:bg-gray-900"
+    >
+      <div
+        class="flex h-full w-full flex-col items-center overflow-auto rounded-md border-2 bg-white p-2 dark:border-gray-700 dark:bg-gray-800"
+      >
+        <div class="flex w-full flex-col items-center">
+          <!-- Top Header -->
+          <div class="flex w-full justify-start">
+            <nav class="flex" aria-label="Breadcrumb">
+              <ol
+                class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse"
+              >
+                <li class="inline-flex items-center">
+                  <a
+                    (click)="gotoPath('/dashboard')"
+                    class="inline-flex cursor-pointer items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
+                  >
+                    <svg
+                      class="me-2.5 h-3 w-3"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"
+                      />
+                    </svg>
+                    Dashboard
+                  </a>
+                </li>
+                <li>
+                  <div class="flex items-center">
+                    <svg
+                      class="mx-1 h-3 w-3 text-gray-400 rtl:rotate-180"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 6 10"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m1 9 4-4-4-4"
+                      />
+                    </svg>
+                    <a
+                      (click)="gotoPath('/servers')"
+                      class="ms-1 cursor-pointer text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
+                      >Servers</a
+                    >
+                  </div>
+                </li>
+                <li aria-current="page">
+                  <div class="flex items-center">
+                    <svg
+                      class="mx-1 h-3 w-3 text-gray-400 rtl:rotate-180"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 6 10"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m1 9 4-4-4-4"
+                      />
+                    </svg>
+                    <span
+                      class="ms-1 cursor-default text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2"
+                      >Dominio</span
+                    >
+                  </div>
+                </li>
+              </ol>
+            </nav>
+          </div>
+
+          <!-- Header -->
+          <div class="mt-2 flex w-full">
+            <div
+              class="flex h-10 w-full items-start justify-start gap-2 text-xl text-gray-800 dark:text-gray-50"
+            >
+              <h1>Dominio</h1>
+              <a class="font-bold text-blue-500 hover:underline">{{
+                server.domain
+              }}</a>
+              <!-- <h3>Site www.com.br</h3>
+        <h3>Email www.com.br</h3> -->
+            </div>
+          </div>
+
+          <!-- Graficos -->
+          <div
+            class="mt-2 flex hidden h-96 w-full flex-col gap-2 text-gray-800 dark:text-gray-50 lg:h-80 lg:flex-row"
+          >
+            <!-- Large graph -->
+            <!-- <div
+            class="flex h-full w-full items-center justify-center overflow-hidden rounded-md bg-gray-300 dark:bg-gray-700 lg:w-9/12">
+            <iframe [src]="grafanaUrl" width="100%" height="100%" frameborder="0"></iframe>
+          </div> -->
+
+            <!-- Two small graphs -->
+            <div class="flex h-full gap-2 rounded-md lg:w-1/2 lg:flex-col">
+              <div
+                class="flex w-full items-center justify-center overflow-hidden rounded-md bg-gray-300 dark:bg-gray-700 lg:h-1/2"
+              >
+                <!-- <iframe
+                src="http://192.168.101.36:3000/d-solo/rYdddlPWk/node-exporter-full?orgId=1&from=1703076663777&to=1703163063777&panelId=74"
+                width="100%"
+                height="100%"
+                frameborder="0"></iframe> -->
+              </div>
+              <div
+                class="flex w-full items-center justify-center overflow-hidden rounded-md bg-gray-300 dark:bg-gray-700 lg:h-1/2"
+              >
+                <!-- <iframe
+                src="http://192.168.101.36:3000/d-solo/rYdddlPWk/node-exporter-full?orgId=1&from=1703162923759&to=1703163223760&panelId=3"
+                width="100%"
+                height="100%"
+                frameborder="0"></iframe> -->
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="mt-2 flex w-full items-center justify-start gap-2 text-gray-800 dark:text-gray-50"
+          >
+            <div
+              class="justify-center-center flex w-full flex-col gap-2 xl:flex-row"
+            >
+              <app-radial-graph
+                title="Contas"
+                [total]="server.unlimitedUsers ? '\u221E' : totalAccounts"
+                [percentage]="percentageAccounts"
+                [legend2]="accountsUsedLegend"
+                [legend1]="accountsRemainingLegend"
+                [legend2Value]="accountsUsedValue"
+                [legend1Value]="
+                  server.unlimitedUsers ? '\u221E' : accountsRemainingValue
+                "
+                [color]="accountsColor"
+                class="w-full"
+              ></app-radial-graph>
+              <app-radial-graph-two
+                [color]="storageColor"
+                title="Armazenamento"
+                [total]="server.unlimitedStorage ? '\u221E' : totalStorage"
+                [percentage]="percentageStorage"
+                [legend2]="storageUsedLegend"
+                [legend1]="storageRemainingLegend"
+                [legend2Value]="storageUsedValue"
+                [legend1Value]="
+                  server.unlimitedStorage ? '\u221E' : storageRemainingValue
+                "
+                [secondarypercentage]="emailStoragePercentage"
+                legend3="Emails"
+                [legend3Value]="totalStorageMail"
+                class="w-full"
+              ></app-radial-graph-two>
+
+              <div
+                class="h-52 w-full rounded-md bg-gray-200 p-2 dark:bg-gray-700"
+              >
+                <div class="flex w-full text-xl font-bold">Faturamento</div>
+                <div
+                  class="flex h-full w-full flex-col items-center justify-center pb-8 text-3xl font-bold text-green-400"
+                >
+                  R$ {{ round(server.price) }}
+                  <span
+                    class="me-2 mt-2 rounded bg-blue-100 px-2.5 py-0.5 text-lg font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+                    >{{ server.pacote }}</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Emails lista -->
+
+          <div class="mt-2 h-full w-full overflow-x-auto rounded-md">
+            <table
+              class="w-full min-w-[800px] text-left text-sm text-gray-800 dark:text-white"
+            >
+              <thead
+                class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
+              >
+                <tr>
+                  <th scope="col" class="px-4 py-3">
+                    <div class="flex items-center">
+                      Email
+                      <a href="#"
+                        ><svg
+                          class="ms-1.5 h-3 w-3"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"
+                          />
+                        </svg>
+                      </a>
+                    </div>
+                  </th>
+                  <th scope="col" class="px-4 py-3">
+                    <div class="flex items-center">
+                      Disco
+                      <a href="#"
+                        ><svg
+                          class="ms-1.5 h-3 w-3"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"
+                          />
+                        </svg>
+                      </a>
+                    </div>
+                  </th>
+                  <th scope="col" class="px-4 py-3">
+                    <span class="sr-only">Actions</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngIf="emails$ | async">
+                  <ng-container *ngFor="let email of emailsData">
+                    <tr
+                      class="border-b transition-all hover:cursor-pointer dark:border-gray-700 hover:dark:bg-slate-800"
+                    >
+                      <!-- <th scope="row" class="px-4 py-3 font-medium text-blue-600 hover:cursor-default hover:underline dark:text-blue-500">alvesassociados.adv.br</th> -->
+                      <th>
+                        <div class="flex h-10 w-32 items-center rounded-sm">
+                          <div class="ml-[2px]">{{ email.email }}</div>
+                        </div>
+                      </th>
+                      <td class="px-4 py-3">
+                        <div class="mb-1 flex justify-between">
+                          <span
+                            class="text-sm font-medium text-blue-700 dark:text-white"
+                            >{{ email.diskUsedHuman }}</span
+                          >
+                          <!-- <ng-container *ngIf="server.unlimitedStorage == false"> -->
+                          <span
+                            class="text-sm font-medium text-blue-700 dark:text-white"
+                            >{{ totalStorageMail }}</span
+                          >
+                          <!-- </ng-container> -->
+                          <!-- <ng-container *ngIf="server.unlimitedStorage == true">
+                          <span
+                            class="text-sm font-medium text-blue-700 dark:text-white"
+                            >∞</span
+                          >
+                        </ng-container> -->
+                        </div>
+                        <div
+                          class="h-1.5 w-full rounded-full bg-gray-200 dark:bg-gray-700"
+                        >
+                          <div
+                            [ngClass]="{
+                              'bg-blue-600': 40 < 50,
+                              'bg-yellow-400': 40 >= 50 && 40 < 75,
+                              'bg-red-600': 40 >= 75
+                            }"
+                            class="h-1.5 rounded-full bg-blue-600"
+                            style="width: {{ email.storagePercentage }}%"
+                          ></div>
+                        </div>
+                      </td>
+
+                      <td class="flex items-center justify-end px-4 py-3">
+                        <!-- <button
+                        id="apple-imac-27-dropdown-button"
+                        data-dropdown-toggle="apple-imac-27-dropdown"
+                        class="inline-flex items-center rounded-lg p-0.5 text-center text-sm font-medium text-gray-500 hover:text-gray-800 focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
+                        type="button">
+                        <svg
+                          class="h-5 w-5"
+                          aria-hidden="true"
+                          fill="currentColor"
+                          viewbox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                        </svg>
+                      </button> -->
+                        <!--  <div
+                        id="apple-imac-27-dropdown"
+                        class="z-10 hidden w-44 divide-y divide-gray-100 rounded bg-white shadow dark:divide-gray-600 dark:bg-gray-700">
+                        <ul
+                          class="py-1 text-sm text-gray-700 dark:text-gray-200"
+                          aria-labelledby="apple-imac-27-dropdown-button">
+                          <li>
+                            <a
+                              href="#"
+                              class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                              >Show</a
+                            >
+                          </li>
+                          <li>
+                            <a
+                              href="#"
+                              class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                              >Edit</a
+                            >
+                          </li>
+                        </ul>
+                        <div class="py-1">
+                          <a
+                            href="#"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
+                            >Delete</a
+                          >
+                        </div>
+                      </div> -->
+                      </td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+              </tbody>
+              <ng-container *ngIf="server.serverType == 'cwp'">
+                <img
+                  (click)="openCwp()"
+                  class="ml-1 mt-2 w-6 transition-all hover:scale-105 hover:cursor-pointer"
+                  src="assets/cwp.png"
+                />
+              </ng-container>
+              <ng-container *ngIf="server.serverType != 'cwp'">
+                <img
+                  (click)="openCpanel()"
+                  class="ml-1 mt-2 w-6 transition-all hover:scale-105 hover:cursor-pointer"
+                  src="assets/cpanel.png"
+                />
+              </ng-container>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</app-frame-nav>
