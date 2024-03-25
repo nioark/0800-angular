@@ -27,8 +27,6 @@ func main() {
 
         e.Router.POST("/uploadFile", uploadFile, apis.RequireAdminOrRecordAuth())
 
-        // e.Router.POST("/fetchUrl", fetchUrl)
-
 
         return nil
     })

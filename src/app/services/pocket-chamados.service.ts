@@ -745,7 +745,7 @@ export class PocketChamadosService {
   }
 
   getUsers(): Observable<RecordModel[]> {
-    return from(this.pb.collection('users').getFullList());
+    return from(this.pb.collection('users').getFullList({requestKey: Math.floor(Math.random() * 1000000000).toString()}));
   }
 
   getRelatorioSketch(chamado_id: string): Observable<RecordModel> {

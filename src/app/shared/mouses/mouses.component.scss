@@ -1,0 +1,27 @@
+:host {
+	position: absolute;
+	height: 100vh;
+	width: 100vw;
+	top: 0;
+    left: 0;
+    right: 0;
+    user-select: none;
+}
+
+size {
+    user-select: none;
+	top: 0;
+    left: 0;
+    right: 0;
+	position: absolute;
+	height: 100vh;
+	width: 100vw;
+}
+
+.text-user {
+ text-shadow:
+    1px 1px 0 #000,
+    -1px 1px 0 #000,
+    -1px -1px 0 #000,
+    1px -1px 0 #000;
+}
