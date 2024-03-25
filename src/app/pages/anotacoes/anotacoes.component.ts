@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../services/auth.service';
-import { PocketCollectionsService } from '../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../services/pocket-chamados.service';
 import { EditBackgroundComponent } from '../kanban/components/edit-background/edit-background.component';
 import { FrameNavComponent } from '../../components/frame-nav/frame-nav.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -19,7 +19,7 @@ import { Subject } from 'rxjs';
 @Component({
   selector: 'app-anotacoes',
   standalone: true,
-   imports: [FrameNavComponent, MatTooltipModule, CommonModule, BlocoComponent],
+  imports: [FrameNavComponent, MatTooltipModule, CommonModule, BlocoComponent],
   templateUrl: './anotacoes.component.html',
   styleUrl: './anotacoes.component.scss',
 })
@@ -30,12 +30,11 @@ export class AnotacoesComponent {
   dragging = false;
   @ViewChild('parent') slider: ElementRef;
 
-  backgroundUrl = "/assets/cool-background.png"
+  backgroundUrl = '/assets/cool-background.png';
 
-  user : AuthModel
+  user: AuthModel;
 
-  blocos : RecordModel[] | undefined
-
+  blocos: RecordModel[] | undefined;
 
   constructor(
     private change: ChangeDetectorRef,
@@ -44,14 +43,12 @@ export class AnotacoesComponent {
     public PocketAnotacoesService: PocketAnotacoesService,
   ) {
     this.slider = new ElementRef(null);
-    this.user = this.PocketAnotacoesService.pb.authStore.model!
+    this.user = this.PocketAnotacoesService.pb.authStore.model!;
 
     this.PocketAnotacoesService.getBlocosOwnAnotacoes().subscribe((blocos) => {
-      this.blocos = blocos
-      console.log("this.blocos", this.blocos)
-    })
+      this.blocos = blocos;
+    });
   }
-
 
   startDragging(e: MouseEvent, flag: boolean) {
     const element = e.target as any as HTMLElement;
@@ -101,11 +98,11 @@ export class AnotacoesComponent {
     event.preventDefault();
   }
 
-  changeWallpaper(){
-    const dialogRef = this.dialog.open(EditBackgroundComponent)
+  changeWallpaper() {
+    const dialogRef = this.dialog.open(EditBackgroundComponent);
   }
 
-  addBloco(){
-    this.PocketAnotacoesService.addBloco("Novo Bloco")
+  addBloco() {
+    this.PocketAnotacoesService.addBloco('Novo Bloco');
   }
 }

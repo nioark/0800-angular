@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogClose } from '@angular/material/dialog';
-import { PocketCollectionsService } from '../../../../../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../../../../../services/pocket-chamados.service';
 import { AuthService } from '../../../../../../services/auth.service';
 import { CommonModule } from '@angular/common';
 
@@ -22,7 +22,7 @@ export class ConfirmFinalizarComponent {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) private data: any,
-    private pocket: PocketCollectionsService,
+    private pocket: PocketChamadosService,
     private authSrv: AuthService,
   ) {
     let id = this.authSrv.getID();

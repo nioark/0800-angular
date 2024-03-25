@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PocketCollectionsService } from '../../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../../services/pocket-chamados.service';
 import { AuthModel } from 'pocketbase';
 import { environment } from '../../../environment';
 import { CommonModule } from '@angular/common';
@@ -25,7 +25,7 @@ export class UserSettingsComponent {
   error = ''
 
 
-  constructor(private pocket : PocketCollectionsService, private authServ : AuthService, private dialog : Dialog) {
+  constructor(private pocket : PocketChamadosService, private authServ : AuthService, private dialog : Dialog) {
     this.user =  pocket.pb.authStore.model
   }
 

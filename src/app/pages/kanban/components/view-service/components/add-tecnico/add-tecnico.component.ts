@@ -6,7 +6,7 @@ import {AsyncPipe} from '@angular/common';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import { PocketCollectionsService } from '../../../../../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../../../../../services/pocket-chamados.service';
 import { RecordModel } from 'pocketbase';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -28,7 +28,7 @@ export class AddTecnicoComponent {
   users: RecordModel[] = [];
   filteredUsers: Observable<RecordModel[]> | undefined;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public chamadoData: any, private pocketSrv : PocketCollectionsService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public chamadoData: any, private pocketSrv : PocketChamadosService) {
     pocketSrv.getTecnicosJoinChamados().subscribe(data => {
       this.users = data
       this.users = this.users.filter(user => {

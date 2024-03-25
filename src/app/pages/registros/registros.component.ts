@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FrameNavComponent } from '../../components/frame-nav/frame-nav.component';
-import { PocketCollectionsService } from '../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../services/pocket-chamados.service';
 import { CommonModule, JsonPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { ViewServiceComponent } from '../kanban/components/view-service/view-service.component';
@@ -65,7 +65,7 @@ export class RegistrosComponent {
   usersFilterID : string[] = []
 
   constructor(
-    private pocketSrv: PocketCollectionsService,
+    private pocketSrv: PocketChamadosService,
     private dialog: MatDialog,
     private authSrv: AuthService
   ) {

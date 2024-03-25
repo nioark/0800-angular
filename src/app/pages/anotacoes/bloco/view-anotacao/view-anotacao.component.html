@@ -1,210 +1,168 @@
 <div class="flex h-screen w-screen flex-col items-center bg-transparent p-8">
-	<div>
-		<div class="z-10 w-[400px] rounded-lg bg-gray-900 p-4 sm:w-[800px]">
-			<div class="flex h-8 w-full items-center text-white">
-				<span class="material-symbols-outlined mr-2 text-3xl"> title </span>
+  <div>
+    <div class="z-10 w-[400px] rounded-lg bg-gray-900 p-4 sm:w-[800px]">
+      <div class="flex h-8 w-full items-center text-white">
+        <span class="material-symbols-outlined mr-2 text-3xl"> title </span>
 
-				<input
-					(change)="changeTitle($event)"
-					spellcheck="false"
-					class="w-128 bg-transparent text-xl outline-none"
-					[value]="data.titulo"
-				/>
+        <input
+          (change)="changeTitle($event)"
+          spellcheck="false"
+          class="w-128 bg-transparent text-xl outline-none"
+          [value]="data.titulo"
+        />
 
-				<div class="flex flex-grow justify-end items-center text-white">
-				    <span  mat-button [matMenuTriggerFor]="menu" class="mr-2 hover:text-gray-300 cursor-pointer transition-all material-symbols-outlined text-3xl text-white "> more_horiz </span>
-				    <!-- Dropdown menu -->
-				    <mat-menu #menu="matMenu" class="customize">
-				        <button (click)="excluirAnotacao()" mat-menu-item> 
-				        	<div class="flex items-center">
-					        	<span class="material-symbols-outlined mr-1">
-									delete
-								</span>Excluir
-							</div>
-						</button>
-						@if (data.expand.bloco.public == false) {
-					        <button (click)="transferirAnotacao()" mat-menu-item>
-					        	<div class="flex items-center">
-						        	<span class="material-symbols-outlined mr-1">
-										move_item
-									</span>
+        <div class="flex flex-grow items-center justify-end text-white">
+          <span
+            mat-button
+            [matMenuTriggerFor]="menu"
+            class="material-symbols-outlined mr-2 cursor-pointer text-3xl text-white transition-all hover:text-gray-300"
+          >
+            more_horiz
+          </span>
+          <!-- Dropdown menu -->
+          <mat-menu #menu="matMenu" class="customize">
+            <button (click)="excluirAnotacao()" mat-menu-item>
+              <div class="flex items-center">
+                <span class="material-symbols-outlined mr-1"> delete </span
+                >Excluir
+              </div>
+            </button>
+            @if (data.expand.bloco.public == false) {
+              <button (click)="transferirAnotacao()" mat-menu-item>
+                <div class="flex items-center">
+                  <span class="material-symbols-outlined mr-1">
+                    move_item
+                  </span>
 
-							        Transferir
-								</div>
-						    </button>
-						}
-				        <button (click)="copiarAnotacao()" mat-menu-item>
-				        	<div class="flex items-center">
-					        	<span class="material-symbols-outlined mr-1">
-									content_copy
-								</span>
+                  Transferir
+                </div>
+              </button>
+            }
+            <button (click)="copiarAnotacao()" mat-menu-item>
+              <div class="flex items-center">
+                <span class="material-symbols-outlined mr-1">
+                  content_copy
+                </span>
 
-						        Copiar
-							</div>
-					    </button>
-				    </mat-menu>
-					<span
-						mat-dialog-close
-						class="material-symbols-outlined all h-10 rounded-full p-1 text-3xl transition hover:cursor-pointer hover:bg-slate-600"
-					>
-						close
-					</span>
-				</div>
-			</div>
+                Copiar
+              </div>
+            </button>
+          </mat-menu>
+          <span
+            mat-dialog-close
+            class="material-symbols-outlined all h-10 rounded-full p-1 text-3xl transition hover:cursor-pointer hover:bg-slate-600"
+          >
+            close
+          </span>
+        </div>
+      </div>
 
-			<div class="mt-6 flex h-8 items-center text-white">
-				<span class="material-symbols-outlined mr-2 text-3xl"> subject </span>
+      <div class="mt-6 flex h-8 items-center text-white">
+        <span class="material-symbols-outlined mr-2 text-3xl"> subject </span>
 
-				@if (!mostrarEditor) {
-					<div class="flex items-center">
-						<h1 class="text-xl">Descrição</h1>
-						<div
-							(click)="showEditor()"
-							type="button"
-							class="me-2 ml-4 flex items-center rounded-lg bg-indigo-700 px-2 py-1 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
-							matTooltip="Salva um rascunho do relátorio"
-						>
-							<span class="material-symbols-outlined mr-1"> edit_note </span>
-							Editar
-						</div>
-					</div>
-				} @else {
-					<div class="flex items-center">
-						<h1 class="text-xl">Descrição</h1>
-						<button
-							(click)="salvarDescricao()"
-							type="button"
-							class="me-2 ml-4 inline-flex items-center rounded-lg bg-indigo-700 px-2 py-1 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
-							matTooltip="Salva um rascunho do relátorio"
-						>
-							<span class="material-symbols-outlined"> save </span>
-							Salvar
-						</button>
-					</div>
-				}
-			</div>
+        @if (!mostrarEditor) {
+          <div class="flex items-center">
+            <h1 class="text-xl">Descrição</h1>
+            <div
+              (click)="showEditor()"
+              type="button"
+              class="me-2 ml-4 flex items-center rounded-lg bg-indigo-700 px-2 py-1 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+              matTooltip="Salva um rascunho do relátorio"
+            >
+              <span class="material-symbols-outlined mr-1"> edit_note </span>
+              Editar
+            </div>
+          </div>
+        } @else {
+          <div class="flex items-center">
+            <h1 class="text-xl">Descrição</h1>
+            <button
+              (click)="salvarDescricao()"
+              type="button"
+              class="me-2 ml-4 inline-flex items-center rounded-lg bg-indigo-700 px-2 py-1 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+              matTooltip="Salva um rascunho do relátorio"
+            >
+              <span class="material-symbols-outlined"> save </span>
+              Salvar
+            </button>
+          </div>
+        }
+      </div>
 
-			@if (!mostrarEditor) {
-				<div class="flex w-full text-white">
-					<article
-						class="prose prose-invert w-full min-w-full rounded-lg px-4 pl-10"
-					>
-						<div
-							class="w-full"
-							[innerHTML]="data.descricao | sanitizeHtml"
-						></div>
-					</article>
-				</div>
-			} @else {
-				<editor
-					class="mt-4"
-					#editor
-					(onInit)="editorCarregado()"
-					[init]="{
-						plugins:
-							'  autolink wordcount lists link image searchreplace fullscreen media table code  directionality codesample',
-						base_url: '/tinymce',
-						suffix: '.min',
-						selector: 'textarea',
+      @if (!mostrarEditor) {
+        <div class="flex w-full text-white">
+          <article
+            class="prose prose-invert w-full min-w-full rounded-lg px-4 pl-10"
+          >
+            <div
+              class="w-full"
+              [innerHTML]="data.descricao | sanitizeHtml"
+            ></div>
+          </article>
+        </div>
+      } @else {
+        <editor
+          class="mt-4"
+          #editor
+          (onInit)="editorCarregado()"
+          [init]="{
+            plugins:
+              '  autolink wordcount lists link image searchreplace fullscreen media table code  directionality codesample',
+            base_url: '/tinymce',
+            suffix: '.min',
+            selector: 'textarea',
 
-						codesample_languages: [
-							{ text: 'HTML/XML', value: 'markup' },
-							{ text: 'CSS', value: 'css' },
-							{ text: 'SQL', value: 'sql' },
-							{ text: 'Bash', value: 'sh' },
-							{ text: 'JavaScript', value: 'javascript' },
-							{ text: 'Go', value: 'go' },
-							{ text: 'Dart', value: 'dart' },
-							{ text: 'Zig', value: 'zig' },
-							{ text: 'Rust', value: 'rust' },
-							{ text: 'Lua', value: 'lua' },
-							{ text: 'PHP', value: 'php' },
-							{ text: 'Ruby', value: 'ruby' },
-							{ text: 'Python', value: 'python' },
-							{ text: 'Java', value: 'java' },
-							{ text: 'C', value: 'c' },
-							{ text: 'C#', value: 'csharp' },
-							{ text: 'C++', value: 'cpp' },
-							{ text: 'Markdown', value: 'markdown' },
-							{ text: 'Swift', value: 'swift' },
-							{ text: 'Kotlin', value: 'kotlin' },
-							{ text: 'Elixir', value: 'elixir' },
-							{ text: 'Scala', value: 'scala' },
-							{ text: 'Julia', value: 'julia' },
-							{ text: 'Haskell', value: 'haskell' }
-						],
-						toolbar:
-							'styles | alignleft aligncenter alignright | image | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'
-					}"
-				></editor>
-			}
+            codesample_languages: [
+              { text: 'HTML/XML', value: 'markup' },
+              { text: 'CSS', value: 'css' },
+              { text: 'SQL', value: 'sql' },
+              { text: 'Bash', value: 'sh' },
+              { text: 'JavaScript', value: 'javascript' },
+              { text: 'Go', value: 'go' },
+              { text: 'Dart', value: 'dart' },
+              { text: 'Zig', value: 'zig' },
+              { text: 'Rust', value: 'rust' },
+              { text: 'Lua', value: 'lua' },
+              { text: 'PHP', value: 'php' },
+              { text: 'Ruby', value: 'ruby' },
+              { text: 'Python', value: 'python' },
+              { text: 'Java', value: 'java' },
+              { text: 'C', value: 'c' },
+              { text: 'C#', value: 'csharp' },
+              { text: 'C++', value: 'cpp' },
+              { text: 'Markdown', value: 'markdown' },
+              { text: 'Swift', value: 'swift' },
+              { text: 'Kotlin', value: 'kotlin' },
+              { text: 'Elixir', value: 'elixir' },
+              { text: 'Scala', value: 'scala' },
+              { text: 'Julia', value: 'julia' },
+              { text: 'Haskell', value: 'haskell' }
+            ],
+            toolbar:
+              'styles | alignleft aligncenter alignright | image | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'
+          }"
+        ></editor>
+      }
 
-			<div class="mb-6 mt-6 flex h-8 items-center text-white">
-				<span class="material-symbols-outlined mr-2 text-3xl"> image </span>
+      <div class="mb-6 mt-6 flex h-8 items-center text-white">
+        <span class="material-symbols-outlined mr-2 text-3xl"> image </span>
 
-				<div class="flex items-center">
-					<h1 class="text-xl">Imagem</h1>
-				</div>
-			</div>
-			<div class="flex w-full justify-center">
-				<div class="grid grid-cols-3 gap-4">
-					@for (image of data.imagens; track image) {
-						<div>
-						@if (image.isVideo == false){
-							<img
-								(click)="
-									openImage(
-										apiUrl + '/api/files/anotacoes/' + data['id'] + '/' + image.url
-									)
-								"
-								class="peer h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover hover:cursor-pointer hover:opacity-50"
-								[src]="
-									apiUrl + '/api/files/anotacoes/' + data['id'] + '/' + image.url
-								"
-							/>
-						}@else {
-							<video class="peer h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover " controls>
-							  <source 
-							  [src]="apiUrl + '/api/files/anotacoes/' + data['id'] + '/' + image.url
-								" type="video/{{image.type}}">
-							  Your browser does not support the video tag.
-							</video>
-						}
-						<span (click)="removeImage(image.url)" class="-mt-56 pt-2 ml-2 absolute peer-hover:opacity-100 hover:opacity-100 hover:text-red-700 cursor-pointer opacity-0 transition-all text-red-600 text-2xl material-symbols-outlined">
-							delete
-						</span>
-					</div>
-					}
+        <div class="flex items-center">
+          <h1 class="text-xl">Mídias</h1>
+        </div>
+      </div>
+      <div class="ml-8 flex w-full justify-center">
+        <app-media
+          [midias]="data.midias"
+          collection="anotacoes"
+          [objectID]="data.id"
+        ></app-media>
 
-					<label
-						for="dropzone-file"
-						class="flex h-56 w-56 cursor-pointer flex-col items-center justify-center rounded-md outline-dashed outline-4 outline-gray-800 transition-all hover:bg-gray-800"
-					>
-						<span class="material-symbols-outlined h-8 w-8 text-gray-500">
-							add_photo_alternate
-						</span>
-						<p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-							<span class="text-center"
-								>Clique para<br />
-								adicionar</span
-							>
-						</p>
-						<!-- <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 20MB)</p> -->
-
-						<input
-							(change)="addImage($event)"
-							id="dropzone-file"
-							type="file"
-							class="hidden"
-						/>
-					</label>
-				</div>
-			</div>
-
-			<!-- 			<div class="text-white text-sm flex items-center mt-4" >
+        <!-- 			<div class="text-white text-sm flex items-center mt-4" >
 				<h1 matTooltip="Anotação criada em">{{data.created}}</h1>
 			</div> -->
-		</div>
-		<div class="h-8"></div>
-	</div>
+      </div>
+      <div class="h-8"></div>
+    </div>
+  </div>
 </div>

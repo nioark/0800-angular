@@ -4,7 +4,7 @@ import { RecordModel } from 'pocketbase';
 import { Searcher } from 'fast-fuzzy';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
-import { PocketCollectionsService } from '../../../../../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../../../../../services/pocket-chamados.service';
 import { ApiService } from '../../../../../../services/api.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 

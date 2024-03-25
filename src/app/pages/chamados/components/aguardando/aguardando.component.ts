@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { AuthService } from '../../../../services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
-import { PocketCollectionsService } from '../../../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../../../services/pocket-chamados.service';
 import { ViewServiceComponent } from '../../../kanban/components/view-service/view-service.component';
 import { CommonModule } from '@angular/common';
 import { RecordModel } from 'pocketbase';
@@ -25,7 +25,7 @@ export class AguardandoComponent {
   observable : Observable<any>
  
 
-  constructor (public authSrv : AuthService, public dialog: MatDialog, public pocketCollectionsSrv : PocketCollectionsService) {
+  constructor (public authSrv : AuthService, public dialog: MatDialog, public pocketCollectionsSrv : PocketChamadosService) {
     this.observable = this.pocketCollectionsSrv.getChamadosWithStatus("aguardando", " && users.id ?= '" + this.pb.authStore.model!["id"] + "'")
   }
 

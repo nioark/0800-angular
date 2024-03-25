@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import PocketBase, { RecordModel } from 'pocketbase';
 import { environment } from '../environment';
 import { Observable, Subject } from 'rxjs';
+import { PocketSharedService } from './pocket-shared.service';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +10,7 @@ import { Observable, Subject } from 'rxjs';
 export class PocketAnotacoesService {
   pb = new PocketBase(environment.apiUrl);
 
-  constructor() {}
+  constructor(private sharedPocket: PocketSharedService) {}
 
   getAnotacaoObservable(id: string): Observable<RecordModel> {
     const subject = new Subject<RecordModel>();
@@ -65,11 +66,9 @@ export class PocketAnotacoesService {
   }
 
   async getBlocosOwnNoSync(): Promise<RecordModel[]> {
-    return await this.pb
-      .collection('blocos')
-      .getFullList({
-        filter: 'created_by = ' + "'" + this.pb.authStore.model!['id'] + "'",
-      });
+    return await this.pb.collection('blocos').getFullList({
+      filter: 'created_by = ' + "'" + this.pb.authStore.model!['id'] + "'",
+    });
   }
 
   // fetchUserAnotacoesObservable() : Observable<RecordModel[]>{
@@ -119,7 +118,10 @@ export class PocketAnotacoesService {
           subject.next(e.record.expand['bloco']);
         }
       },
-      { filter: "bloco = '" + id + "'", expand: 'bloco.anotacoes_via_bloco' },
+      {
+        filter: "bloco = '" + id + "'",
+        expand: 'bloco.anotacoes_via_bloco.bloco',
+      },
     );
 
     //Todo return something to tell what to unsubscribe to
@@ -170,17 +172,6 @@ export class PocketAnotacoesService {
   salvarAnotacaoDescricao(id_anotacao: string, descricao_html: string) {
     this.pb.collection('anotacoes').update(id_anotacao, {
       descricao: descricao_html,
-    });
-  }
-
-  addImage(id_anotacao: string, image: FormData) {
-    this.pb.collection('anotacoes').update(id_anotacao, image);
-  }
-
-  removeImage(id_anotacao: string, image_name: string) {
-    console.log('clicado');
-    this.pb.collection('anotacoes').update(id_anotacao, {
-      'imagens-': image_name,
     });
   }
 
@@ -280,7 +271,7 @@ export class PocketAnotacoesService {
       formData.append('imagens', blob);
     }
 
-    this.addImage(copia.id, formData);
+    this.sharedPocket.addMidia(copia.id, formData, 'anotacoes');
     console.log('formData: ', formData);
   }
 

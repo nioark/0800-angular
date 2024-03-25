@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogClose } from '@angular/material/dialog';
-import { PocketCollectionsService } from '../../../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../../../services/pocket-chamados.service';
 import { ViewSelectUserComponent } from '../view-select-user/view-select-user.component';
 import { AuthService } from '../../../../services/auth.service';
 import { environment } from '../../../../environment';
@@ -16,7 +16,7 @@ import { ViewImageComponent } from '../view-image/view-image.component';
 export class ViewEsperandoServiceComponent {
   user_admin: boolean = false;
   apiUrl = environment.apiUrl;
-  constructor (@Inject(MAT_DIALOG_DATA) public data: any, private authSrv : AuthService, public dialog: MatDialog,  public pocketSrv: PocketCollectionsService){
+  constructor (@Inject(MAT_DIALOG_DATA) public data: any, private authSrv : AuthService, public dialog: MatDialog,  public pocketSrv: PocketChamadosService){
     this.user_admin = authSrv.IsAdmin()
     console.log(this.user_admin)
   } 

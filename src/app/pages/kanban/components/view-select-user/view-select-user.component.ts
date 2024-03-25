@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogClose } from '@angular/material/dialog';
-import { PocketCollectionsService } from '../../../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../../../services/pocket-chamados.service';
 import { RecordModel } from 'pocketbase';
 import { Searcher } from 'fast-fuzzy';
 import { MatInputModule } from '@angular/material/input';
@@ -23,7 +23,7 @@ export class ViewSelectUserComponent {
   data_search : any[] = [];
   apiUrl = environment.apiUrl
 
-  constructor(@Inject(MAT_DIALOG_DATA) public users_data: any, private authSrv: AuthService, public pocketSrv: PocketCollectionsService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public users_data: any, private authSrv: AuthService, public pocketSrv: PocketChamadosService) {
     console.log("Chamado data: " , users_data)
     pocketSrv.pb.collection('users').getFullList().then((users) => {
       console.log(users)

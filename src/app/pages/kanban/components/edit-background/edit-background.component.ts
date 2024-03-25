@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthModel } from 'pocketbase';
-import { PocketCollectionsService } from '../../../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../../../services/pocket-chamados.service';
 import { AuthService } from '../../../../services/auth.service';
 import { Dialog } from '@angular/cdk/dialog';
 
@@ -15,7 +15,7 @@ export class EditBackgroundComponent {
   user: AuthModel;
 
   constructor(
-    private pocket: PocketCollectionsService,
+    private pocket: PocketChamadosService,
     private authServ: AuthService,
     private dialog: Dialog,
   ) {

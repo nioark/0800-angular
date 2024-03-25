@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FrameNavComponent } from '../../../../components/frame-nav/frame-nav.component';
 import { AuthService } from '../../../../services/auth.service';
 import { RecordModel, RecordSubscription } from 'pocketbase';
-import { PocketCollectionsService } from '../../../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../../../services/pocket-chamados.service';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ViewServiceComponent } from '../../../kanban/components/view-service/view-service.component';
@@ -27,7 +27,7 @@ export class AndamentoComponent {
   observable : Observable<any>
   emPausa : Observable<any> | undefined
 
-  constructor (public authSrv : AuthService, public dialog: MatDialog, public pocketCollectionsSrv : PocketCollectionsService) {
+  constructor (public authSrv : AuthService, public dialog: MatDialog, public pocketCollectionsSrv : PocketChamadosService) {
     this.observable = this.pocketCollectionsSrv.getChamadosWithMultipleStatus(["em_andamento", "em_pausa"], " && users.id ?= '" + this.pb.authStore.model!["id"] + "'")
   }
 

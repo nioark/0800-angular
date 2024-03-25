@@ -12,6 +12,7 @@
             spellcheck="false"
             class="w-128 bg-transparent text-xl outline-none"
             [value]="data.title"
+            [disabled]="userFinalized"
           />
         } @else {
           <h1 class="w-128 text-xl">{{ data.title }}</h1>
@@ -36,7 +37,16 @@
                     account_circle
                   </span>
 
-                  <h1 class="">{{ tecnico.username }}</h1>
+                  @if (getIsFinalized(tecnico.id)) {
+                    <h1
+                      class="line-through"
+                      matTooltip="Usuário finalizou o chamado"
+                    >
+                      {{ tecnico.username }}
+                    </h1>
+                  } @else {
+                    <h1 class="">{{ tecnico.username }}</h1>
+                  }
                 </div>
               }
 
@@ -101,15 +111,17 @@
         @if (!mostrarEditorDescricao) {
           <div class="flex items-center">
             <h1 class="text-xl">Descrição</h1>
-            <div
-              (click)="showEditorDescricao()"
-              type="button"
-              class="me-2 ml-4 flex items-center rounded-lg bg-indigo-700 px-2 py-1 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
-              matTooltip="Salva um rascunho do relátorio"
-            >
-              <span class="material-symbols-outlined mr-1"> edit_note </span>
-              Editar
-            </div>
+            @if (!userFinalized) {
+              <div
+                (click)="showEditorDescricao()"
+                type="button"
+                class="me-2 ml-4 flex items-center rounded-lg bg-indigo-700 px-2 py-1 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+                matTooltip="Salva um rascunho do relátorio"
+              >
+                <span class="material-symbols-outlined mr-1"> edit_note </span>
+                Editar
+              </div>
+            }
           </div>
         } @else {
           <div class="flex items-center">
@@ -199,80 +211,13 @@
           <h1 class="text-xl">Imagem</h1>
         </div>
       </div>
-      <div class="flex w-full justify-start">
-        <div class="ml-8 grid grid-cols-2 gap-4">
-          @for (image of data.imagem; track image) {
-            <div class="max-h-56">
-              @if (image.isVideo == false) {
-                <img
-                  (click)="
-                    openImage(
-                      apiUrl +
-                        '/api/files/chamados/' +
-                        data['id'] +
-                        '/' +
-                        image.url
-                    )
-                  "
-                  class="peer h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover hover:cursor-pointer hover:opacity-50"
-                  [src]="
-                    apiUrl +
-                    '/api/files/chamados/' +
-                    data['id'] +
-                    '/' +
-                    image.url
-                  "
-                />
-              } @else {
-                <video
-                  class="peer h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover"
-                  controls
-                >
-                  <source
-                    [src]="
-                      apiUrl +
-                      '/api/files/chamados/' +
-                      data['id'] +
-                      '/' +
-                      image.url
-                    "
-                    type="video/{{ image.type }}"
-                  />
-                  Your browser does not support the video tag.
-                </video>
-              }
-              <span
-                (click)="removeImage(image.url)"
-                class="material-symbols-outlined ml-2 -translate-y-10 cursor-pointer pt-2 text-2xl text-red-600 opacity-0 transition-all hover:text-red-700 hover:opacity-100 peer-hover:opacity-100"
-              >
-                delete
-              </span>
-            </div>
-          }
-
-          <label
-            for="dropzone-file"
-            class="flex h-56 w-56 cursor-pointer flex-col items-center justify-center rounded-md outline-dashed outline-4 outline-gray-800 transition-all hover:bg-gray-800"
-          >
-            <span class="material-symbols-outlined h-8 w-8 text-gray-500">
-              add_photo_alternate
-            </span>
-            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-              <span class="text-center"
-                >Clique para<br />
-                adicionar</span
-              >
-            </p>
-            <!-- <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 20MB)</p> -->
-
-            <input
-              (change)="addImage($event)"
-              id="dropzone-file"
-              type="file"
-              class="hidden"
-            />
-          </label>
-        </div>
+      <div class="h-128 ml-8 flex w-full justify-start">
+        <app-media
+          [midias]="data.midias"
+          collection="chamados"
+          [objectID]="data.id"
+          [showAddBtn]="!userFinalized"
+        ></app-media>
       </div>
 
       @if (!em_espera) {
@@ -431,6 +376,15 @@
             >
               <span class="material-symbols-outlined"> save </span>
               <h1 class="ml-1">Finalizar</h1>
+            </button>
+          } @else {
+            <button
+              (click)="reabrirChamado()"
+              type="button"
+              class="inline-flex h-8 w-full items-center rounded-lg border border-purple-700 px-1 text-center text-sm font-medium text-purple-700 outline-none hover:bg-purple-800 hover:text-white"
+            >
+              <span class="material-symbols-outlined"> undo </span>
+              <h1 class="ml-1">Reabrir</h1>
             </button>
           }
 

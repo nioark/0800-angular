@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { PocketCollectionsService } from '../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../services/pocket-chamados.service';
 import { Subscription } from 'rxjs';
 import Client, { AuthModel, RecordModel } from 'pocketbase';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -31,7 +31,7 @@ export class FrameNavComponent {
 
   apiUrl = environment.apiUrl
 
-  constructor(public router: Router, pocketCollectionsSrv: PocketCollectionsService, private dialog : MatDialog) {
+  constructor(public router: Router, pocketCollectionsSrv: PocketChamadosService, private dialog : MatDialog) {
     this.pb = pocketCollectionsSrv.pb
     if (!this.pb.authStore.isValid) {
       this.router.navigate(['/login']) 

@@ -23,7 +23,7 @@ import cloneDeep from 'lodash.clonedeep';
 @Injectable({
   providedIn: 'root',
 })
-export class PocketCollectionsService {
+export class PocketChamadosService {
   pb = new PocketBase(environment.apiUrl);
 
   private chamadosEvent: Subject<RecordSubscription<RecordModel>>;

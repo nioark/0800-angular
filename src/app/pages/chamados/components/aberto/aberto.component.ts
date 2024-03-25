@@ -5,7 +5,7 @@ import { catchError, switchMap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { FrameNavComponent } from '../../../../components/frame-nav/frame-nav.component';
 import { AuthService } from '../../../../services/auth.service';
-import { PocketCollectionsService } from '../../../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../../../services/pocket-chamados.service';
 import { ViewServiceComponent } from '../../../kanban/components/view-service/view-service.component';
 import { ViewEsperandoServiceComponent } from '../../../kanban/components/view-esperando-service/view-esperando-service.component';
 import { CommonModule } from '@angular/common';
@@ -28,7 +28,7 @@ export class AbertoComponent {
   subscription : Subscription | undefined
 
 
-  constructor(public authSrv: AuthService,public dialog: MatDialog, public pocketCollectionsSrv: PocketCollectionsService) {
+  constructor(public authSrv: AuthService,public dialog: MatDialog, public pocketCollectionsSrv: PocketChamadosService) {
 
   }
 

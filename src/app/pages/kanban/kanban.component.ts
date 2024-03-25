@@ -1,4 +1,13 @@
-import { ChangeDetectorRef, Component, ElementRef, HostBinding, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostBinding,
+  Input,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { FrameNavComponent } from '../../components/frame-nav/frame-nav.component';
 import {
   CdkDragDrop,
@@ -23,16 +32,25 @@ import {
   MatDialogClose,
 } from '@angular/material/dialog';
 
-import { CommonModule, NgOptimizedImage } from '@angular/common'
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 
-import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import PocketBase, { AuthModel, RecordModel } from 'pocketbase';
 
-import { BehaviorSubject, Observable, Subject, Subscription, from, interval, map, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  Subject,
+  Subscription,
+  from,
+  interval,
+  map,
+  tap,
+} from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { ViewServiceComponent } from './components/view-service/view-service.component';
-import { PocketCollectionsService } from '../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../services/pocket-chamados.service';
 import { AddFormComponent } from './components/add-form/add-form.component';
 import { ImgAuthPipe } from '../../img-auth.pipe';
 import { ViewEsperandoServiceComponent } from './components/view-esperando-service/view-esperando-service.component';
@@ -46,7 +64,6 @@ import { PocketAnotacoesService } from '../../services/pocket-anotacoes.service'
 import { ViewAnotacaoComponent } from '../anotacoes/bloco/view-anotacao/view-anotacao.component';
 import { BlocoComponent } from '../anotacoes/bloco/bloco.component';
 
-
 interface TecnicoServicos {
   nome: string;
   id: number;
@@ -56,120 +73,143 @@ interface TecnicoServicos {
 @Component({
   selector: 'app-kanban',
   standalone: true,
-  imports: [FrameNavComponent, BlocoComponent, CdkDropListGroup, CdkDropList, CdkDrag, AsyncPipe, MatTooltipModule, ImgAuthPipe,NgOptimizedImage, CommonModule, MatButtonModule, MatMenuModule],
+  imports: [
+    FrameNavComponent,
+    BlocoComponent,
+    CdkDropListGroup,
+    CdkDropList,
+    CdkDrag,
+    AsyncPipe,
+    MatTooltipModule,
+    ImgAuthPipe,
+    NgOptimizedImage,
+    CommonModule,
+    MatButtonModule,
+    MatMenuModule,
+  ],
   templateUrl: './kanban.component.html',
-  styleUrl: './kanban.component.scss'
+  styleUrl: './kanban.component.scss',
 })
-export class KanbanComponent  {
+export class KanbanComponent {
   currentTime$: Observable<Date> | undefined;
 
   mouseDown = false;
   startX: any;
   scrollLeft: any;
 
-  tecnicosdata: any
+  tecnicosdata: any;
   chamadosdata: any;
 
-  dragging = false
+  dragging = false;
 
-  apiUrl = environment.apiUrl
-  isAdmin : boolean = false
-  user : AuthModel
+  apiUrl = environment.apiUrl;
+  isAdmin: boolean = false;
+  user: AuthModel;
 
-  backgroundUrl = "/assets/cool-background.png"
+  backgroundUrl = '/assets/cool-background.png';
 
-  tecnicosChamadosSubscription : Subscription | undefined
-  chamadosEsperaSubscription : Subscription | undefined
+  tecnicosChamadosSubscription: Subscription | undefined;
+  chamadosEsperaSubscription: Subscription | undefined;
 
-  blocos : RecordModel[] = []
+  blocos: RecordModel[] = [];
 
-  anotacoes : RecordModel[] = []
+  anotacoes: RecordModel[] = [];
 
   @ViewChild('parent') slider: ElementRef;
-  constructor(private change:ChangeDetectorRef, private pocketAnotacao : PocketAnotacoesService, public dialog: MatDialog, private authSrv: AuthService, public pocketCollectionsSrv: PocketCollectionsService) {
+  constructor(
+    private change: ChangeDetectorRef,
+    private pocketAnotacao: PocketAnotacoesService,
+    public dialog: MatDialog,
+    private authSrv: AuthService,
+    public pocketCollectionsSrv: PocketChamadosService,
+  ) {
     this.slider = new ElementRef(null);
 
-    this.isAdmin = this.authSrv.IsAdmin()
-    this.user = this.pocketCollectionsSrv.pb.authStore.model!
+    this.isAdmin = this.authSrv.IsAdmin();
+    this.user = this.pocketCollectionsSrv.pb.authStore.model!;
 
-    this.tecnicosChamados = this.pocketCollectionsSrv.getTecnicosJoinChamados()
+    this.tecnicosChamados = this.pocketCollectionsSrv.getTecnicosJoinChamados();
 
-    const pb = authSrv.GetPocketBase()
-    const this_user = pb.authStore.model as any
+    const pb = authSrv.GetPocketBase();
+    const this_user = pb.authStore.model as any;
 
-    if (this.user['background'] != ""){
-      this.backgroundUrl = this.apiUrl + '/api/files/users/' + this.user['id'] + '/'  + this.user['background']
+    if (this.user['background'] != '') {
+      this.backgroundUrl =
+        this.apiUrl +
+        '/api/files/users/' +
+        this.user['id'] +
+        '/' +
+        this.user['background'];
     }
 
     this.pocketAnotacao.fetchPublicBlocos().subscribe((anotacoes) => {
-      console.log("ANOTACOES: ", anotacoes)
-      this.blocos = anotacoes
-    })
+      this.blocos = anotacoes;
+    });
 
+    this.tecnicosChamadosSubscription = this.tecnicosChamados.subscribe(
+      (tecnicos) => {
+        let mapped = tecnicos.map((user: any) => {
+          if (user?.expand?.chamados_via_users == undefined) {
+            user.expand = {};
+            user.expand.chamados_via_users = [];
+          }
+          user?.expand.chamados_via_users.sort((a: any, b: any) => {
+            return b.priority - a.priority;
+          });
 
-    this.tecnicosChamadosSubscription = this.tecnicosChamados.subscribe((tecnicos) => {
-      console.log("Tecnicos chamados: ", tecnicos)
+          user.canDragTo = user.id == this_user.id;
+        });
 
-      let mapped = tecnicos.map((user : any) => {
-        if (user?.expand?.chamados_via_users == undefined ) {
-          user.expand = {}
-          user.expand.chamados_via_users = []
-        }
-        user?.expand.chamados_via_users.sort((a : any, b : any) => {
-          return b.priority - a.priority
-        })
+        this.tecnicosdata = tecnicos;
 
-        user.canDragTo = user.id == this_user.id
-      })
+        // this.tecnicosdata = this.tecnicosdata.sort((a : any, b : any) => {
+        //   return a.id == this_user.id ? -1 : 1
+        // })
+      },
+    );
 
-      this.tecnicosdata = tecnicos
-
-      // this.tecnicosdata = this.tecnicosdata.sort((a : any, b : any) => {
-      //   return a.id == this_user.id ? -1 : 1
-      // })
-      console.log("Tecnicos join chamados updated: ", tecnicos)
-    })
-
-    this.chamadosEsperaSubscription = this.pocketCollectionsSrv.getChamadosWithStatus("em_espera").subscribe((chamados) => {
-      this.chamadosdata = chamados
-      console.log("Chamados em espera updated: ", chamados)
-    })
+    this.chamadosEsperaSubscription = this.pocketCollectionsSrv
+      .getChamadosWithStatus('em_espera')
+      .subscribe((chamados) => {
+        this.chamadosdata = chamados;
+      });
 
     // Create an observable that emits the current time every second
     this.currentTime$ = interval(1000).pipe(map(() => new Date()));
   }
 
-  tecnicosChamados : Observable<RecordModel[]> 
+  tecnicosChamados: Observable<RecordModel[]>;
 
-  ngOnDestroy(){
-    this.tecnicosChamadosSubscription?.unsubscribe() 
-    this.chamadosEsperaSubscription?.unsubscribe()
+  ngOnDestroy() {
+    this.tecnicosChamadosSubscription?.unsubscribe();
+    this.chamadosEsperaSubscription?.unsubscribe();
   }
 
   tecnicoEntered(event: CdkDragEnter<any>) {
-    window.document.querySelector<any>('.cdk-drag-placeholder').style.opacity = "0"
+    window.document.querySelector<any>('.cdk-drag-placeholder').style.opacity =
+      '0';
   }
 
-  updateStyle(){
-    window.document.querySelector<any>('.cdk-drag-placeholder').style.opacity = "1"
+  updateStyle() {
+    window.document.querySelector<any>('.cdk-drag-placeholder').style.opacity =
+      '1';
 
     // window.document.querySelector<any>('.cdk-drag-placeholder').style.display = "block"
   }
 
-  dropTecnico(event: CdkDragDrop<any>, user : any) {
-    const chamado = event.previousContainer.data[event.previousIndex]
+  dropTecnico(event: CdkDragDrop<any>, user: any) {
+    const chamado = event.previousContainer.data[event.previousIndex];
     // console.log(event.previousContainer, event.previousIndex)
     // console.log(chamado, user.username, user.id)
-    this.pocketCollectionsSrv.pushTecnicoChamado(user.id, chamado)
+    this.pocketCollectionsSrv.pushTecnicoChamado(user.id, chamado);
   }
 
   drop(event: CdkDragDrop<any>) {
-
     if (event.previousContainer === event.container) {
       // moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      console.log(event.container.data)
+      console.log(event.container.data);
     } else {
-      console.log(event.previousContainer.data, event.container.data)
+      console.log(event.previousContainer.data, event.container.data);
       // transferArrayItem(
       //   event.previousContainer.data,
       //   event.container.data,
@@ -178,25 +218,23 @@ export class KanbanComponent  {
       // );
     }
 
-
     // let new_array = JSON.parse(JSON.stringify(this.tecnicos));
     // this.tecnicosSubject$.next(new_array);
-
   }
 
   dragStarted(event: CdkDragStart<any>) {
-    console.log("Dragging")
-    this.dragging = true
+    console.log('Dragging');
+    this.dragging = true;
   }
 
   dragEnded(event: CdkDragEnd<any>) {
-    this.dragging = false 
+    this.dragging = false;
   }
 
-  startDragging(e : MouseEvent, flag : boolean) {
-    const element = e.target as any as HTMLElement
-    if (element.id != "parent") {
-      return
+  startDragging(e: MouseEvent, flag: boolean) {
+    const element = e.target as any as HTMLElement;
+    if (element.id != 'parent') {
+      return;
     }
 
     this.mouseDown = true;
@@ -204,12 +242,11 @@ export class KanbanComponent  {
     this.scrollLeft = this.slider?.nativeElement.scrollLeft;
   }
 
-  stopDragging(e : any, flag : boolean) {
+  stopDragging(e: any, flag: boolean) {
     this.mouseDown = false;
   }
 
-  moveEvent(e : any) {
-
+  moveEvent(e: any) {
     e.preventDefault();
     if (!this.mouseDown) {
       return;
@@ -217,7 +254,6 @@ export class KanbanComponent  {
 
     const x = e.pageX - this.slider?.nativeElement.offsetLeft;
     const scroll = x - this.startX;
-
 
     this.slider.nativeElement.scrollLeft = this.scrollLeft - scroll;
   }
@@ -243,53 +279,61 @@ export class KanbanComponent  {
     event.preventDefault();
   }
 
-  openService(element : any ){
-    if (element.description != "null"){
-      const chamadoSubject = new Subject<RecordModel>;
+  openService(element: any) {
+    if (element.description != 'null') {
+      const chamadoSubject = new Subject<RecordModel>();
 
       this.tecnicosChamados.subscribe((data) => {
-        data.forEach((tecnico : any) => {
-          tecnico.chamados.forEach((chamado : any) => {
-            if (chamado.id == element.id){
-              chamadoSubject.next(chamado)
+        data.forEach((tecnico: any) => {
+          tecnico.chamados.forEach((chamado: any) => {
+            if (chamado.id == element.id) {
+              chamadoSubject.next(chamado);
             }
-          })
-        })
-      })
-      
+          });
+        });
+      });
 
-      this.dialog.open(ViewServiceComponent, {data: {data: element, dataObservable: chamadoSubject}, disableClose: true});
+      this.dialog.open(ViewServiceComponent, {
+        data: { data: element, dataObservable: chamadoSubject },
+        disableClose: true,
+      });
     }
   }
 
-  openServiceEsperando(element : any ){
-    const dialogRef = this.dialog.open(ViewEsperandoServiceComponent, {data: element, disableClose: true}); 
+  openServiceEsperando(element: any) {
+    const dialogRef = this.dialog.open(ViewEsperandoServiceComponent, {
+      data: element,
+      disableClose: true,
+    });
   }
 
-  addService(){
+  addService() {
     const dialogRef = this.dialog.open(AddFormComponent);
   }
 
-  getUserNames(tecnicos : any){
-   return tecnicos.map((user : any) => user.username).join(',\n') 
+  getUserNames(tecnicos: any) {
+    return tecnicos.map((user: any) => user.username).join(',\n');
   }
 
-  changeWallpaper(){
-    const dialogRef = this.dialog.open(EditBackgroundComponent)
+  changeWallpaper() {
+    const dialogRef = this.dialog.open(EditBackgroundComponent);
   }
 
-  async addAnotacao(tecnico : any){
-    console.log(tecnico)
-    const record = await this.pocketAnotacao.addUserAnotacao(tecnico.id, "Nova anotação", "")
-    console.log("Anotação adicionada", record)
+  async addAnotacao(tecnico: any) {
+    console.log(tecnico);
+    const record = await this.pocketAnotacao.addUserAnotacao(
+      tecnico.id,
+      'Nova anotação',
+      '',
+    );
+    console.log('Anotação adicionada', record);
 
     if (record != null) {
-      this.dialog.open(ViewAnotacaoComponent, {data : record}); 
+      this.dialog.open(ViewAnotacaoComponent, { data: record });
     }
   }
 
-  addBloco(){
-    this.pocketAnotacao.addBloco("Novo Bloco", true)
+  addBloco() {
+    this.pocketAnotacao.addBloco('Novo Bloco', true);
   }
-
 }

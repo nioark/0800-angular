@@ -30,7 +30,7 @@ import {
 
 import Client, { RecordModel } from 'pocketbase';
 import { AuthService } from '../../../../services/auth.service';
-import { PocketCollectionsService } from '../../../../services/pocket-collections.service';
+import { PocketChamadosService } from '../../../../services/pocket-chamados.service';
 import { CommonModule } from '@angular/common';
 import { ImgAuthPipe } from '../../../../img-auth.pipe';
 import { EditorComponent, EditorModule } from '@tinymce/tinymce-angular';
@@ -47,6 +47,7 @@ import { ViewImageComponent } from '../view-image/view-image.component';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { SanitizeHtmlPipe } from '../../../../sanitize-html.pipe';
+import { MediaComponent } from '../../../../shared/media/media.component';
 
 @Component({
   selector: 'app-view-service',
@@ -64,6 +65,7 @@ import { SanitizeHtmlPipe } from '../../../../sanitize-html.pipe';
     MatInputModule,
     FormsModule,
     SanitizeHtmlPipe,
+    MediaComponent,
   ],
 })
 export class ViewServiceComponent implements OnDestroy {
@@ -128,7 +130,7 @@ export class ViewServiceComponent implements OnDestroy {
     private http: HttpClient,
     public dialog: MatDialog,
     public AuthSrv: AuthService,
-    public pocketSrv: PocketCollectionsService,
+    public pocketSrv: PocketChamadosService,
     private api: ApiService,
   ) {
     this.data = dataInjected.data;
@@ -139,6 +141,7 @@ export class ViewServiceComponent implements OnDestroy {
       .subscribe((data) => {
         this.usersFinalized = data;
         this.userFinalized = this.getIsFinalized(this.AuthSrv.getID());
+        console.log('Users finalizdaos', this.usersFinalized);
       });
 
     this.initiliazeData();
@@ -158,52 +161,6 @@ export class ViewServiceComponent implements OnDestroy {
         });
         console.log(this.relatorios);
       });
-  }
-
-  mapIsVideo(imagens: any) {
-    imagens = imagens.map((img: any) => {
-      if (img.url != undefined) {
-        return img;
-      }
-      console.log(img);
-      let ext = img.split('.').pop();
-      let isVideo = false;
-      //get is video
-      if (
-        ext == 'mp4' ||
-        ext == 'mov' ||
-        ext == 'avi' ||
-        ext == 'mkv' ||
-        ext == 'webm' ||
-        ext == 'mpeg'
-      ) {
-        isVideo = true;
-      }
-      console.log(isVideo);
-
-      return { url: img, isVideo: isVideo, type: ext };
-    });
-
-    return imagens;
-  }
-
-  addImage(event: Event) {
-    let target = event.target as HTMLInputElement;
-
-    let files = target.files as FileList;
-
-    let file = files[0];
-
-    // this.images.push(URL.createObjectURL(file))
-
-    let formData = new FormData();
-    formData.append('imagem', file);
-
-    this.pocketSrv.addImage(this.data.id, formData);
-  }
-
-  removeImage(file_name: string) {
-    this.pocketSrv.removeImage(this.data.id, file_name);
   }
 
   changeTitle(event: Event) {
@@ -311,19 +268,12 @@ export class ViewServiceComponent implements OnDestroy {
     });
   }
 
-  mapImages() {
-    this.data.imagem = this.mapIsVideo(this.data.imagem);
-  }
-
   initiliazeData() {
-    this.mapImages();
-
     this.isAdmin = this.AuthSrv.IsAdmin();
 
     this.dataInjectedSubscription = this.dataInjected.dataObservable.subscribe(
       (data) => {
         this.data = data;
-        this.mapImages();
       },
     );
 
@@ -535,6 +485,12 @@ export class ViewServiceComponent implements OnDestroy {
           this.dialog.closeAll();
         }
       });
+  }
+
+  reabrirChamado() {
+    this.api
+      .FinalizarChamado(this.data, 'aberto')
+      .subscribe((data) => console.log(data));
   }
 
   cancelarChamado() {
