@@ -4,11 +4,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { environment } from '../../environment';
 import { PocketAnotacoesService } from '../../services/pocket-anotacoes.service';
 import { PocketSharedService } from '../../services/pocket-shared.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-media',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './media.component.html',
   styleUrl: './media.component.scss',
 })

@@ -677,8 +677,9 @@ export class PocketChamadosService {
       });
 
     this.pb.collection('user_finalizados').subscribe(
-      chamado_id,
+      '*',
       (e) => {
+        console.log('Userfinalizado Event:', e);
         if (e.action == 'create') {
           users.push(e.record);
           usersSubject.next(users);

@@ -54,29 +54,37 @@ export class RegistrosComponent {
     end: new FormControl<Date | null>(null),
   });
 
-  startDate : Date | null = null;
-  endDate : Date | null = null;
+  startDate: Date | null = null;
+  endDate: Date | null = null;
 
   mostrarCancelados: boolean = false;
   mostrarFinalizados: boolean = true;
   mostrarFaturados: boolean = false;
 
-  usersFilter : RecordModel[] = []
-  usersFilterID : string[] = []
+  usersFilter: RecordModel[] = [];
+  usersFilterID: string[] = [];
 
   constructor(
     private pocketSrv: PocketChamadosService,
     private dialog: MatDialog,
-    private authSrv: AuthService
+    private authSrv: AuthService,
   ) {
-    let query = "(status = 'finalizado' || status = 'cancelado')"
-    if (!authSrv.IsAdmin()){
-       query += " && users.id ?= '" + pocketSrv.pb.authStore.model!['id'] + "'"
+    let query = "(status = 'finalizado' || status = 'cancelado')";
+    if (!authSrv.IsAdmin()) {
+      query += " && users.id ?= '" + pocketSrv.pb.authStore.model!['id'] + "'";
     }
 
-    console.log("User query", query)
+    console.log('User query', query);
 
-    pocketSrv.pb
+    this.pocketSrv
+      .getChamadosWithMultipleStatus(['finalizado', 'cancelado'])
+      .subscribe((chamados) => {
+        this.chamados = chamados;
+        console.log('Chamados: ', this.chamados);
+        this.search();
+      });
+
+    /*     pocketSrv.pb
       .collection('chamados')
       .getFullList({
         filter: query,
@@ -87,8 +95,7 @@ export class RegistrosComponent {
         this.search()
 
         console.log(this.chamados);
-      });
-
+      }); */
   }
 
   dateChanged() {
@@ -98,7 +105,7 @@ export class RegistrosComponent {
   }
 
   checkboxEvent(event: any) {
-    this.search()
+    this.search();
   }
 
   search() {
@@ -112,55 +119,63 @@ export class RegistrosComponent {
       });
     }
 
-    let canceladosFilter: RecordModel[] = []
+    let canceladosFilter: RecordModel[] = [];
     if (this.mostrarCancelados == true) {
-      canceladosFilter = fuzzyMatched.filter((chamado: { [x: string]: string; }) => { 
+      canceladosFilter = fuzzyMatched.filter(
+        (chamado: { [x: string]: string }) => {
           return chamado['status'] == 'cancelado';
-        });
+        },
+      );
     }
 
-    let finalizadosFilter: RecordModel[] = []
+    let finalizadosFilter: RecordModel[] = [];
     if (this.mostrarFinalizados == true) {
-      finalizadosFilter = fuzzyMatched.filter((chamado: { [x: string]: string; }) => { 
-          let faturado = chamado['faturado'] as unknown as boolean
-          return chamado['status'] == 'finalizado' && faturado == false
-        });
+      finalizadosFilter = fuzzyMatched.filter(
+        (chamado: { [x: string]: string }) => {
+          let faturado = chamado['faturado'] as unknown as boolean;
+          return chamado['status'] == 'finalizado' && faturado == false;
+        },
+      );
     }
 
-    let faturadosFilters: RecordModel[] = []
+    let faturadosFilters: RecordModel[] = [];
     if (this.mostrarFaturados == true) {
-      faturadosFilters = fuzzyMatched.filter((chamado: { [x: string]: string; }) => {
-        let faturado = chamado['faturado'] as unknown as boolean
+      faturadosFilters = fuzzyMatched.filter(
+        (chamado: { [x: string]: string }) => {
+          let faturado = chamado['faturado'] as unknown as boolean;
 
-        return faturado == true;
-      })
-
+          return faturado == true;
+        },
+      );
     }
 
-    fuzzyMatched = [...canceladosFilter, ...finalizadosFilter, ...faturadosFilters]
+    fuzzyMatched = [
+      ...canceladosFilter,
+      ...finalizadosFilter,
+      ...faturadosFilters,
+    ];
 
     if (this.usersFilterID.length > 0) {
-        fuzzyMatched = fuzzyMatched.filter((chamado) => {
-        let includedCount = 0
-
+      fuzzyMatched = fuzzyMatched.filter((chamado) => {
+        let includedCount = 0;
 
         this.usersFilterID.forEach((id) => {
-          console.log(chamado["users"], id)
-          if (chamado["users"].includes(id)) {
-            includedCount++
+          console.log(chamado['users'], id);
+          if (chamado['users'].includes(id)) {
+            includedCount++;
           }
-        })
-        return includedCount == this.usersFilterID.length
-      })
+        });
+        return includedCount == this.usersFilterID.length;
+      });
     }
 
     if (this.currentSearch == '') {
       //Sort date
       fuzzyMatched.sort((a, b) => {
         return new Date(b.created).getTime() - new Date(a.created).getTime();
-      })
+      });
     }
-    
+
     this.data_search = fuzzyMatched;
   }
 
@@ -195,30 +210,31 @@ export class RegistrosComponent {
   }
 
   joinNames(users: RecordModel[]) {
-    return users.map((user) => user["username"]).join(', '); 
+    return users.map((user) => user['username']).join(', ');
   }
 
-  openSelectView(){
+  openSelectView() {
+    this.dialog
+      .open(ViewSelectUserComponent, { data: this.usersFilterID })
+      .afterClosed()
+      .subscribe((users) => {
+        let usersSelected: RecordModel[] = [];
+        let usersSelectedID: string[] = [];
 
-    this.dialog.open(ViewSelectUserComponent, { data:  this.usersFilterID}).afterClosed().subscribe((users) => {
-      let usersSelected : RecordModel[] = []
-      let usersSelectedID : string[] = []
-
-      if (users == undefined) {
-        return
-      }
-      users.forEach((user: RecordModel) => {
-        if(user["selecionado"]) {
-          usersSelected.push(user)
-          usersSelectedID.push(user["id"])
+        if (users == undefined) {
+          return;
         }
-      })
+        users.forEach((user: RecordModel) => {
+          if (user['selecionado']) {
+            usersSelected.push(user);
+            usersSelectedID.push(user['id']);
+          }
+        });
 
-      this.usersFilter = usersSelected
-      this.usersFilterID = usersSelectedID
-      console.log("Selected user: ", usersSelected)
-      this.search()
-    })
-      
+        this.usersFilter = usersSelected;
+        this.usersFilterID = usersSelectedID;
+        console.log('Selected user: ', usersSelected);
+        this.search();
+      });
   }
 }

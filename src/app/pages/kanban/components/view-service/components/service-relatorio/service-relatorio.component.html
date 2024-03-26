@@ -36,9 +36,11 @@
 
   <div class="mt-3 flex w-full flex-col overflow-auto rounded-md bg-slate-200">
     @if (!mostrarEditor) {
-      <article class="prose flex w-full min-w-full p-8">
-        <div class="w-full" [innerHTML]="html | sanitizeHtml"></div>
-      </article>
+      @if (html != "") {
+        <article class="prose flex w-full min-w-full p-8">
+          <div class="w-full" [innerHTML]="html | sanitizeHtml"></div>
+        </article>
+      }
     } @else {
       <editor
         class="mt-4"

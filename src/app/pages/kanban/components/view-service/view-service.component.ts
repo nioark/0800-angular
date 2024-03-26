@@ -488,9 +488,9 @@ export class ViewServiceComponent implements OnDestroy {
   }
 
   reabrirChamado() {
-    this.api
-      .FinalizarChamado(this.data, 'aberto')
-      .subscribe((data) => console.log(data));
+    this.api.ReabrirChamado(this.data).subscribe((data) => console.log(data));
+
+    this.dialog.closeAll();
   }
 
   cancelarChamado() {

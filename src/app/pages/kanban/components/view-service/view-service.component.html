@@ -18,6 +18,20 @@
           <h1 class="w-128 text-xl">{{ data.title }}</h1>
         }
       </div>
+      @if ((userFinalized || finalizado) && !faturado && !cancelado) {
+        <span
+          class="me-2 ml-8 select-none rounded bg-purple-900 px-2.5 py-0.5 text-xs font-medium text-purple-300"
+          matTooltip="Você finalizou esse chamado"
+          >Finalizado</span
+        >
+      }
+      @if (faturado && !cancelado) {
+        <span
+          class="me-2 ml-8 select-none rounded bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-400"
+          matTooltip="Você finalizou esse chamado"
+          >Registrado</span
+        >
+      }
 
       <!-- 			@if (end_at != ''){
 				<h1 class="ml-8 text-white font-bold" matTooltip="Duração do chamado da criação até a finalização">{{getTotalTime()}}</h1>
@@ -204,21 +218,23 @@
         </div>
       </div>
 
-      <div class="mb-6 mt-6 flex h-8 items-center text-white">
-        <span class="material-symbols-outlined mr-2 text-3xl"> image </span>
+      @if (!((userFinalized || finalizado) && data.midias.length == 0)) {
+        <div class="mb-6 mt-6 flex h-8 items-center text-white">
+          <span class="material-symbols-outlined mr-2 text-3xl"> image </span>
 
-        <div class="flex items-center">
-          <h1 class="text-xl">Imagem</h1>
+          <div class="flex items-center">
+            <h1 class="text-xl">Mídias</h1>
+          </div>
         </div>
-      </div>
-      <div class="h-128 ml-8 flex w-full justify-start">
-        <app-media
-          [midias]="data.midias"
-          collection="chamados"
-          [objectID]="data.id"
-          [showAddBtn]="!userFinalized"
-        ></app-media>
-      </div>
+        <div class="ml-8 flex w-full justify-start">
+          <app-media
+            [midias]="data.midias"
+            collection="chamados"
+            [objectID]="data.id"
+            [showAddBtn]="!userFinalized"
+          ></app-media>
+        </div>
+      }
 
       @if (!em_espera) {
         <div class="mt-6 flex h-8 items-center text-white">
@@ -367,17 +383,8 @@
 
       <div class="mt-8 flex w-full flex-col gap-2">
         <h1 class="text-xs text-gray-400">Ações do chamado</h1>
-        @if ((isAdmin || participando) && !finalizado) {
-          @if (!userFinalized) {
-            <button
-              (click)="finalizarChamado()"
-              type="button"
-              class="inline-flex h-8 w-full items-center rounded-lg border border-purple-700 px-1 text-center text-sm font-medium text-purple-700 outline-none hover:bg-purple-800 hover:text-white"
-            >
-              <span class="material-symbols-outlined"> save </span>
-              <h1 class="ml-1">Finalizar</h1>
-            </button>
-          } @else {
+        @if (isAdmin || participando) {
+          @if (finalizado || userFinalized) {
             <button
               (click)="reabrirChamado()"
               type="button"
@@ -387,15 +394,27 @@
               <h1 class="ml-1">Reabrir</h1>
             </button>
           }
+          @if (!userFinalized && !finalizado) {
+            <button
+              (click)="finalizarChamado()"
+              type="button"
+              class="inline-flex h-8 w-full items-center rounded-lg border border-purple-700 px-1 text-center text-sm font-medium text-purple-700 outline-none hover:bg-purple-800 hover:text-white"
+            >
+              <span class="material-symbols-outlined"> save </span>
+              <h1 class="ml-1">Finalizar</h1>
+            </button>
+          }
 
-          <button
-            (click)="cancelarChamado()"
-            type="button"
-            class="inline-flex h-8 w-full items-center rounded-lg border border-red-700 px-1 text-center text-sm font-medium text-red-700 outline-none hover:bg-red-800 hover:text-white"
-          >
-            <span class="material-symbols-outlined"> remove </span>
-            <h1 class="ml-1">Cancelar</h1>
-          </button>
+          @if (!finalizado) {
+            <button
+              (click)="cancelarChamado()"
+              type="button"
+              class="inline-flex h-8 w-full items-center rounded-lg border border-red-700 px-1 text-center text-sm font-medium text-red-700 outline-none hover:bg-red-800 hover:text-white"
+            >
+              <span class="material-symbols-outlined"> remove </span>
+              <h1 class="ml-1">Cancelar</h1>
+            </button>
+          }
         }
 
         @if (isAdmin && finalizado && !faturado && !cancelado) {

@@ -1,29 +1,20 @@
-@for (midia of midiasObj; track midia) {
-  <div>
-    @if (midia.isVideo == false) {
-      <img
-        (click)="
-          openMidia(
-            apiUrl +
-              '/api/files/' +
-              collection +
-              '/' +
-              objectID +
-              '/' +
-              midia.url
-          )
-        "
-        class="peer h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover hover:cursor-pointer hover:opacity-50"
-        [src]="
-          apiUrl + '/api/files/' + collection + '/' + objectID + '/' + midia.url
-        "
-      />
-    } @else {
-      <video
-        class="peer h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover"
-        controls
-      >
-        <source
+<div class="gridDiv" [ngClass]="{ gridDivDisabled: midiasObj.length == 0 }">
+  @for (midia of midiasObj; track midia) {
+    <div>
+      @if (midia.isVideo == false) {
+        <img
+          (click)="
+            openMidia(
+              apiUrl +
+                '/api/files/' +
+                collection +
+                '/' +
+                objectID +
+                '/' +
+                midia.url
+            )
+          "
+          class="peer h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover hover:cursor-pointer hover:opacity-50"
           [src]="
             apiUrl +
             '/api/files/' +
@@ -33,41 +24,58 @@
             '/' +
             midia.url
           "
-          type="video/{{ midia.type }}"
         />
-        Your browser does not support the video tag.
-      </video>
-    }
-    <span
-      (click)="removeMidia(midia.url)"
-      class="material-symbols-outlined absolute -mt-56 ml-2 cursor-pointer pt-2 text-2xl text-red-600 opacity-0 transition-all hover:text-red-700 hover:opacity-100 peer-hover:opacity-100"
-    >
-      delete
-    </span>
-  </div>
-}
-
-@if (showAddBtn) {
-  <label
-    for="dropzone-file"
-    class="flex h-56 w-56 cursor-pointer flex-col items-center justify-center rounded-md outline-dashed outline-4 outline-gray-800 transition-all hover:bg-gray-800"
-  >
-    <span class="material-symbols-outlined h-8 w-8 text-gray-500">
-      add_photo_alternate
-    </span>
-    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-      <span class="text-center"
-        >Clique para<br />
-        adicionar</span
+      } @else {
+        <video
+          class="peer h-56 max-h-56 min-h-56 w-56 min-w-56 rounded-md object-cover"
+          controls
+        >
+          <source
+            [src]="
+              apiUrl +
+              '/api/files/' +
+              collection +
+              '/' +
+              objectID +
+              '/' +
+              midia.url
+            "
+            type="video/{{ midia.type }}"
+          />
+          Your browser does not support the video tag.
+        </video>
+      }
+      <span
+        (click)="removeMidia(midia.url)"
+        class="material-symbols-outlined absolute -mt-56 ml-2 cursor-pointer pt-2 text-2xl text-red-600 opacity-0 transition-all hover:text-red-700 hover:opacity-100 peer-hover:opacity-100"
       >
-    </p>
-    <!-- <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 20MB)</p> -->
+        delete
+      </span>
+    </div>
+  }
 
-    <input
-      (change)="addMidia($event)"
-      id="dropzone-file"
-      type="file"
-      class="hidden"
-    />
-  </label>
-}
+  @if (showAddBtn) {
+    <label
+      for="dropzone-file"
+      class="flex h-56 w-56 cursor-pointer flex-col items-center justify-center rounded-md outline-dashed outline-4 outline-gray-800 transition-all hover:bg-gray-800"
+    >
+      <span class="material-symbols-outlined h-8 w-8 text-gray-500">
+        add_photo_alternate
+      </span>
+      <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+        <span class="text-center"
+          >Clique para<br />
+          adicionar</span
+        >
+      </p>
+      <!-- <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 20MB)</p> -->
+
+      <input
+        (change)="addMidia($event)"
+        id="dropzone-file"
+        type="file"
+        class="hidden"
+      />
+    </label>
+  }
+</div>
