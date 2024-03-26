@@ -746,7 +746,13 @@ export class PocketChamadosService {
   }
 
   getUsers(): Observable<RecordModel[]> {
-    return from(this.pb.collection('users').getFullList({requestKey: Math.floor(Math.random() * 1000000000).toString()}));
+    return from(
+      this.pb
+        .collection('users')
+        .getFullList({
+          requestKey: Math.floor(Math.random() * 1000000000).toString(),
+        }),
+    );
   }
 
   getRelatorioSketch(chamado_id: string): Observable<RecordModel> {
@@ -791,6 +797,7 @@ export class PocketChamadosService {
   }
 
   addUserFinalizado(chamado_id: string, userId: string, duracao: number) {
+    console.log('Tentando adicionar');
     this.pb.collection('user_finalizados').create({
       user: userId,
       chamado: chamado_id,

@@ -1,25 +1,30 @@
 :host {
-	position: absolute;
-	height: 100vh;
-	width: 100vw;
-	top: 0;
-    left: 0;
-    right: 0;
-    user-select: none;
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  right: 0;
+  user-select: none;
+  z-index: -99;
 }
 
 size {
-    user-select: none;
-	top: 0;
-    left: 0;
-    right: 0;
-	position: absolute;
-	height: 100vh;
-	width: 100vw;
+  z-index: -99;
+
+  user-select: none;
+  top: 0;
+  left: 0;
+  right: 0;
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
 }
 
 .text-user {
- text-shadow:
+  z-index: 99;
+
+  text-shadow:
     1px 1px 0 #000,
     -1px 1px 0 #000,
     -1px -1px 0 #000,

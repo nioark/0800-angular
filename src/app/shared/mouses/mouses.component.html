@@ -1,8 +1,14 @@
-<div *ngFor="let usuario of usuarios | keyvalue" class="size"> 
-	<div  [style.left]="usuario.value.pos_x + 'px'" [style.top]="usuario.value.pos_y + 'px'" class="absolute">
-	    <span class="material-symbols-outlined mr-2 text-3xl">
-	    	arrow_selector_tool
-	    </span>
-	    <span class="text-lg text-user text-white">{{users[usuario.key].name}}</span>
-	</div>
+<div *ngFor="let usuario of usuarios | keyvalue" class="size">
+  <div
+    [style.left]="usuario.value.pos_x + 'px'"
+    [style.top]="usuario.value.pos_y + 'px'"
+    class="absolute"
+  >
+    <span class="material-symbols-outlined z-50 mr-2 text-3xl">
+      arrow_selector_tool
+    </span>
+    <span class="text-user text-lg text-white">{{
+      users[usuario.key].name
+    }}</span>
+  </div>
 </div>

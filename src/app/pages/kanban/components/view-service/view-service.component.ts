@@ -161,6 +161,9 @@ export class ViewServiceComponent implements OnDestroy {
         });
         console.log(this.relatorios);
       });
+
+    console.log('this.finalizado', this.finalizado);
+    console.log('this.userFinalized', this.userFinalized);
   }
 
   changeTitle(event: Event) {
@@ -489,8 +492,6 @@ export class ViewServiceComponent implements OnDestroy {
 
   reabrirChamado() {
     this.api.ReabrirChamado(this.data).subscribe((data) => console.log(data));
-
-    this.dialog.closeAll();
   }
 
   cancelarChamado() {

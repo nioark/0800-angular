@@ -18,9 +18,9 @@ export class ApiService {
   ) {
     this.pb = new PocketBase(environment.apiUrl);
 
-    addEventListener('mousemove', (event) => {
+    /*     addEventListener('mousemove', (event) => {
       this.handleMouseMove(event);
-    });
+    }); */
   }
 
   FetchPessoas(): Observable<any[]> {

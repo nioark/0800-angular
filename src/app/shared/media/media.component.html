@@ -1,4 +1,8 @@
-<div class="gridDiv" [ngClass]="{ gridDivDisabled: midiasObj.length == 0 }">
+<div
+  class="gridDiv"
+  [ngClass]="{ gridDivDisabled: midiasObj.length == 0 }"
+  *ngIf="midias"
+>
   @for (midia of midiasObj; track midia) {
     <div>
       @if (midia.isVideo == false) {

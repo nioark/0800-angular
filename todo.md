@@ -24,12 +24,15 @@
 -✅ Transformar mídia em um componente
 
 -✅ Arrumar problema de nao enviar video em chamado
--Lista de tarefas para anotação e serviços
+-Lista de tarefas completadas para anotação e serviços
 -✅ Badges de status do chamado
 -✅ Implementar mudança de titulo
 -✅ Adicionar visualização de quando o chamado está bloqueado por ter sido finalizado pelo usuário
 -✅ Mostrar técnico que já finalizou o chamado
 -✅ Resolver o problema de relatório vazios
+-Resolver lógica de mostrar botão de adicionar mídias ou esconde titulo quando vazio
+-✅ Resolver problema da ultima hora trabalhada não estar sendo adicionada
+-✅ Separar as horas dos relatórios
 -Sistema de agendamento de chamado e lista de chamados agendados de cada técnico
 -Painel de horas para cada técnico com uma possivel mensagem de aviso do tecnico
 -Adicionar botão de terminar chamado só para adms

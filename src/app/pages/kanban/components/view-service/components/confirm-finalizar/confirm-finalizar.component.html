@@ -1,4 +1,6 @@
-<div class="flex w-[600px] flex-col rounded-md bg-slate-800 p-4">
+<div
+  class="flex max-h-screen w-[600px] flex-col overflow-auto rounded-md bg-slate-800 p-4"
+>
   <h1 class="text-center text-2xl font-bold text-white">
     Deseja finalizar o chamado?
   </h1>
@@ -6,46 +8,71 @@
     Um chamado finalizado não podera ser alterado
   </h1>
 
-  <h1 class="text-md mt-4 px-2 text-center font-bold text-white">
-    Horas trabalhadas com base nos seus relatórios
-  </h1>
-
   <div class="e mt-4 flex w-full flex-col items-center gap-2">
-    @for (relatorio of relatorios; track relatorio) {
-      @if (!relatorio.hide) {
+    @for (hora of horas; track hora) {
+      @if (!hora.hide) {
         <div class="flex justify-start p-2">
-          <div class="flex flex-col">
-            <label for="start-time" class="text-sm font-bold text-white"
-              >Hora de ínicio:</label
+          @if (hora.type == "relatorio") {
+            <span
+              class="material-symbols-outlined mr-2 mt-6 select-none text-white"
+              matTooltip="Hora retirada dos seus relatórios"
+              >description</span
+            >
+          } @else {
+            <span
+              class="material-symbols-outlined mr-2 mt-6 select-none text-white"
+              matTooltip="Hora salvada no sistema"
+              >history</span
+            >
+          }
+          <div class="flex w-32 flex-col">
+            <label
+              for="start-time"
+              class="text-center text-sm font-bold text-white"
+              >Hora de ínicio</label
             >
             <input
-              class="h-8"
+              class="h-8 rounded-md"
+              [ngClass]="{
+                'cursor-not-allowed opacity-50': hora.type == 'relatorio'
+              }"
               id="start-time"
-              [(ngModel)]="relatorio.hora_start"
+              [(ngModel)]="hora.hora_start"
               type="time"
               name="start-time"
+              [disabled]="hora.type == 'relatorio'"
             />
           </div>
-          <div class="ml-2 flex flex-col">
-            <label for="end-time" class="text-sm font-bold text-white"
-              >Hora de fim:</label
+          <div class="ml-2 flex w-32 flex-col">
+            <label
+              for="end-time"
+              class="text-center text-sm font-bold text-white"
+              >Hora de fim</label
             >
             <input
-              class="h-8"
+              class="h-8 rounded-md"
+              [ngClass]="{
+                'cursor-not-allowed opacity-50': hora.type == 'relatorio'
+              }"
               id="end-time"
-              [(ngModel)]="relatorio.hora_end"
+              [(ngModel)]="hora.hora_end"
               type="time"
               name="end-time"
+              [disabled]="hora.type == 'relatorio'"
             />
           </div>
 
-          <button
-            type="submit"
-            class="text-md bg-remove-600 ml-2 mt-4 flex items-center justify-center rounded-lg bg-red-500 px-1 py-1 font-bold text-white hover:bg-red-600"
-            (click)="removeRelatorioHours(relatorio)"
-          >
-            <span class="material-symbols-outlined"> delete_forever </span>
-          </button>
+          @if (hora.type == "hora") {
+            <button
+              type="submit"
+              class="text-md bg-remove-600 ml-2 mt-[18px] flex items-center justify-center rounded-lg bg-red-500 px-2 py-1 font-bold text-white hover:bg-red-600"
+              (click)="removeHora(hora)"
+            >
+              <span class="material-symbols-outlined"> delete_forever </span>
+            </button>
+          } @else {
+            <div class="ml-2 w-[40px]"></div>
+          }
         </div>
       }
     }
