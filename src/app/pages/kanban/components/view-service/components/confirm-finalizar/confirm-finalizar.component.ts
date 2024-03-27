@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogClose } from '@angular/material/dialog';
 import { PocketChamadosService } from '../../../../../../services/pocket-chamados.service';
 import { AuthService } from '../../../../../../services/auth.service';
 import { CommonModule } from '@angular/common';
-import { PocketHorasService } from './pocket-horas.service';
+import { PocketHorasService } from '../service-horas/pocket-horas.service';
 import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
@@ -53,7 +53,8 @@ export class ConfirmFinalizarComponent {
           }
 
           relatorio.type = 'relatorio';
-
+          if (relatorio.interacao_start == '' || relatorio.interacao_end == '')
+            return;
           this.horas.unshift(relatorio);
         });
       });
@@ -127,6 +128,7 @@ export class ConfirmFinalizarComponent {
       interacao_end: '',
       hora_start: '',
       hora_end: '',
+      type: 'hora',
     });
   }
 

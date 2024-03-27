@@ -296,6 +296,7 @@ export class KanbanComponent {
       this.dialog.open(ViewServiceComponent, {
         data: { data: element, dataObservable: chamadoSubject },
         disableClose: true,
+        autoFocus: false,
       });
     }
   }

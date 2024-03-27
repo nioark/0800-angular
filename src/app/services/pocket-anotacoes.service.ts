@@ -104,17 +104,19 @@ export class PocketAnotacoesService {
     this.pb.collection('blocos').subscribe(
       id,
       function (e) {
-        console.log('EXPANDED VIA, ', e.record);
+        console.log('EXPANDED VIA BLOCOS, ', e.record);
 
         subject.next(e.record);
       },
-      { expand: 'anotacoes_via_bloco' },
+      { expand: 'anotacoes_via_bloco.bloco' },
     );
 
     this.pb.collection('anotacoes').subscribe(
       '*',
       function (e) {
+        console.log('Event anotacoes via bloco: ', e);
         if (e.record.expand) {
+          console.log('EXPANDED VIA ANOTACOES, ', e.record.expand['bloco']);
           subject.next(e.record.expand['bloco']);
         }
       },

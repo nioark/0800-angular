@@ -48,6 +48,7 @@ import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { SanitizeHtmlPipe } from '../../../../sanitize-html.pipe';
 import { MediaComponent } from '../../../../shared/media/media.component';
+import { ViewHoursComponent } from './components/view-hours/view-hours.component';
 
 @Component({
   selector: 'app-view-service',
@@ -207,7 +208,6 @@ export class ViewServiceComponent implements OnDestroy {
   }
 
   getTotalWorkedTime(): string {
-    console.log('this.total_worked_time', this.total_worked_time);
     return this.getTimeFromMill(this.total_worked_time * 1000);
   }
 
@@ -491,7 +491,9 @@ export class ViewServiceComponent implements OnDestroy {
   }
 
   reabrirChamado() {
-    this.api.ReabrirChamado(this.data).subscribe((data) => console.log(data));
+    this.api
+      .ReabrirChamado(this.data)
+      .subscribe((data) => this.dialog.closeAll());
   }
 
   cancelarChamado() {
@@ -518,7 +520,9 @@ export class ViewServiceComponent implements OnDestroy {
     this.dialog.closeAll();
   }
 
-  openImage(url: string) {
-    this.dialog.open(ViewImageComponent, { data: url });
+  openHours(tecnico_id: number) {
+    this.dialog.open(ViewHoursComponent, {
+      data: { chamado_id: this.data.id, tecnico_id: tecnico_id },
+    });
   }
 }

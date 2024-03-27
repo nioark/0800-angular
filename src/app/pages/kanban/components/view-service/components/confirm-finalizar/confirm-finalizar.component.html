@@ -25,7 +25,7 @@
               >history</span
             >
           }
-          <div class="flex w-32 flex-col">
+          <div class="flex w-[136px] flex-col">
             <label
               for="start-time"
               class="text-center text-sm font-bold text-white"
@@ -43,7 +43,7 @@
               [disabled]="hora.type == 'relatorio'"
             />
           </div>
-          <div class="ml-2 flex w-32 flex-col">
+          <div class="ml-2 flex w-[136px] flex-col">
             <label
               for="end-time"
               class="text-center text-sm font-bold text-white"
@@ -61,7 +61,6 @@
               [disabled]="hora.type == 'relatorio'"
             />
           </div>
-
           @if (hora.type == "hora") {
             <button
               type="submit"

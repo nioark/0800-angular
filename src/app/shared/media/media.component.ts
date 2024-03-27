@@ -39,7 +39,7 @@ export class MediaComponent implements OnInit, OnChanges {
   }
 
   getTypes(midias: any) {
-    if (!midias) return;
+    if (!midias) return [];
 
     let midiasObj = midias.map((imgUrl: string) => {
       let ext = imgUrl.split('.').pop();

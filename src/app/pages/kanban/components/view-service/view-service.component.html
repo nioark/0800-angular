@@ -21,15 +21,26 @@
       @if ((userFinalized || finalizado) && !faturado && !cancelado) {
         <span
           class="me-2 ml-8 select-none rounded bg-purple-900 px-2.5 py-0.5 text-xs font-medium text-purple-300"
-          matTooltip="Você finalizou esse chamado"
+          matTooltip="Chamado finalizado porem ainda pode ser aberto por um admin"
           >Finalizado</span
         >
-      }
-      @if (faturado && !cancelado) {
+      } @else if (faturado && !cancelado) {
         <span
           class="me-2 ml-8 select-none rounded bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-400"
-          matTooltip="Você finalizou esse chamado"
+          matTooltip="Chamado registrado e contabilizado no sistema"
           >Registrado</span
+        >
+      } @else if (em_andamento && !cancelado) {
+        <span
+          class="me-2 ml-8 select-none rounded bg-green-400 px-2.5 py-0.5 text-xs font-medium text-green-800"
+          matTooltip="Chamado em andamento"
+          >Em andamento</span
+        >
+      } @else if (cancelado) {
+        <span
+          class="me-2 ml-8 select-none rounded bg-red-900 px-2.5 py-0.5 text-xs font-medium text-red-300"
+          matTooltip="Chamado cancelado não pode ser reaberto"
+          >Cancelado</span
         >
       }
 
@@ -51,13 +62,25 @@
                     account_circle
                   </span>
 
-                  @if (getIsFinalized(tecnico.id)) {
+                  @if (getIsFinalized(tecnico.id) || finalizado) {
                     <h1
                       class="line-through"
                       matTooltip="Usuário finalizou o chamado"
                     >
                       {{ tecnico.username }}
                     </h1>
+
+                    <button
+                      type="button"
+                      class="ml-2 inline-flex h-6 w-full items-center rounded-lg border border-green-400 px-1 text-center text-xs font-medium text-green-400 outline-none hover:bg-green-500 hover:text-white"
+                      matTooltip="Visualizar as horas registradas pelo técnico"
+                      (click)="openHours(tecnico.id)"
+                    >
+                      <span class="material-symbols-outlined text-sm">
+                        schedule
+                      </span>
+                      <h1 class="ml-1">Horas</h1>
+                    </button>
                   } @else {
                     <h1 class="">{{ tecnico.username }}</h1>
                   }
@@ -218,7 +241,7 @@
         </div>
       </div>
 
-      @if (!((userFinalized || finalizado) && data.midias == [])) {
+      @if (!((userFinalized || finalizado) && data.midias.length == 0)) {
         <div class="mb-6 mt-6 flex h-8 items-center text-white">
           <span class="material-symbols-outlined mr-2 text-3xl"> image </span>
 
@@ -384,21 +407,34 @@
       <div class="mt-8 flex w-full flex-col gap-2">
         <h1 class="text-xs text-gray-400">Ações do chamado</h1>
         @if (isAdmin || participando) {
+          @if (!userFinalized && !finalizado && isAdmin) {
+            <button
+              (click)="reabrirChamado()"
+              type="button"
+              class="inline-flex h-8 w-full items-center rounded-lg border border-orange-400 px-1 text-center text-sm font-medium text-orange-400 outline-none hover:bg-orange-500 hover:text-white"
+              matTooltip="Força a finalização do chamado"
+            >
+              <span class="material-symbols-outlined"> near_me </span>
+              <h1 class="ml-1">Terminar</h1>
+            </button>
+          }
           @if (finalizado || userFinalized) {
             <button
               (click)="reabrirChamado()"
               type="button"
               class="inline-flex h-8 w-full items-center rounded-lg border border-purple-700 px-1 text-center text-sm font-medium text-purple-700 outline-none hover:bg-purple-800 hover:text-white"
+              matTooltip="Reabre o chamado possibilitando novas alterações"
             >
               <span class="material-symbols-outlined"> undo </span>
               <h1 class="ml-1">Reabrir</h1>
             </button>
           }
-          @if (!userFinalized && !finalizado) {
+          @if (!userFinalized && !finalizado && participando) {
             <button
               (click)="finalizarChamado()"
               type="button"
               class="inline-flex h-8 w-full items-center rounded-lg border border-purple-700 px-1 text-center text-sm font-medium text-purple-700 outline-none hover:bg-purple-800 hover:text-white"
+              matTooltip="Finaliza o chamado"
             >
               <span class="material-symbols-outlined"> save </span>
               <h1 class="ml-1">Finalizar</h1>
@@ -409,9 +445,9 @@
             <button
               (click)="cancelarChamado()"
               type="button"
-              class="inline-flex h-8 w-full items-center rounded-lg border border-red-700 px-1 text-center text-sm font-medium text-red-700 outline-none hover:bg-red-800 hover:text-white"
+              class="inline-flex h-8 w-full items-center rounded-lg border border-red-600 px-1 text-center text-sm font-medium text-red-600 outline-none hover:bg-red-700 hover:text-white"
             >
-              <span class="material-symbols-outlined"> remove </span>
+              <span class="material-symbols-outlined"> close </span>
               <h1 class="ml-1">Cancelar</h1>
             </button>
           }
@@ -432,13 +468,9 @@
           <button
             (click)="openAddView()"
             type="button"
-            class="inline-flex h-8 items-center rounded-lg border border-green-400 px-1 text-center text-sm font-medium text-green-400 hover:bg-green-500 hover:text-white"
+            class="inline-flex h-8 items-center rounded-lg border border-green-500 px-1 text-center text-sm font-medium text-green-500 hover:bg-green-600 hover:text-white"
           >
-            <span
-              class="material-symbols-outlined text-green-400 transition-all hover:cursor-pointer hover:text-blue-400"
-            >
-              person_add
-            </span>
+            <span class="material-symbols-outlined"> person_add </span>
             <h1 class="ml-1">Colaboradores</h1>
           </button>
         }

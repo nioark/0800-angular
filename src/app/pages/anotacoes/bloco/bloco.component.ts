@@ -32,6 +32,7 @@ export class BlocoComponent implements OnInit {
       .getBlocoObservable(this.bloco.id)
       .subscribe((bloco) => {
         this.bloco = bloco;
+        console.log('Bloco atualizado', this.bloco);
       });
   }
 
@@ -40,7 +41,7 @@ export class BlocoComponent implements OnInit {
   }
 
   openAnotacao(record: RecordModel) {
-    this.dialog.open(ViewAnotacaoComponent, { data: record });
+    this.dialog.open(ViewAnotacaoComponent, { data: record, autoFocus: false });
   }
 
   async addAnotacao() {
