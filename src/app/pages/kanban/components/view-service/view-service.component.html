@@ -64,7 +64,7 @@
 
                   @if (getIsFinalized(tecnico.id) || finalizado) {
                     <h1
-                      class="line-through"
+                      class="mr-2 line-through"
                       matTooltip="Usuário finalizou o chamado"
                     >
                       {{ tecnico.username }}
@@ -72,11 +72,13 @@
 
                     <button
                       type="button"
-                      class="ml-2 inline-flex h-6 w-full items-center rounded-lg border border-green-400 px-1 text-center text-xs font-medium text-green-400 outline-none hover:bg-green-500 hover:text-white"
+                      class="ml-auto inline-flex h-5 w-16 items-center rounded-lg border border-green-400 px-1 text-center text-xs font-medium text-green-400 outline-none hover:bg-green-500 hover:text-white"
                       matTooltip="Visualizar as horas registradas pelo técnico"
                       (click)="openHours(tecnico.id)"
                     >
-                      <span class="material-symbols-outlined text-sm">
+                      <span
+                        class="material-symbols-outlined flex items-center pb-[2px] text-sm"
+                      >
                         schedule
                       </span>
                       <h1 class="ml-1">Horas</h1>
@@ -142,104 +144,108 @@
       </div>
 
       <!-- Descrição Title -->
-      <div class="mt-6 flex h-8 items-center text-white">
-        <span class="material-symbols-outlined mr-2 text-3xl"> subject </span>
-
-        @if (!mostrarEditorDescricao) {
-          <div class="flex items-center">
-            <h1 class="text-xl">Descrição</h1>
-            @if (!userFinalized) {
-              <div
-                (click)="showEditorDescricao()"
-                type="button"
-                class="me-2 ml-4 flex items-center rounded-lg bg-indigo-700 px-2 py-1 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
-                matTooltip="Salva um rascunho do relátorio"
-              >
-                <span class="material-symbols-outlined mr-1"> edit_note </span>
-                Editar
-              </div>
-            }
-          </div>
-        } @else {
-          <div class="flex items-center">
-            <h1 class="text-xl">Descrição</h1>
-            <button
-              (click)="salvarDescricao()"
-              type="button"
-              class="me-2 ml-4 inline-flex items-center rounded-lg bg-indigo-700 px-2 py-1 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
-              matTooltip="Salva um rascunho do relátorio"
-            >
-              <span class="material-symbols-outlined"> save </span>
-              Salvar
-            </button>
-          </div>
-        }
-      </div>
-
-      <!-- Descrição content & editor -->
-      <div class="flex text-white">
-        <div class="ml-8 w-full text-gray-100">
-          <!-- @if (data.description != "") { -->
+      @if (!((userFinalized || finalizado) && data.description == "")) {
+        <div class="mt-6 flex h-8 items-center text-white">
+          <span class="material-symbols-outlined mr-2 text-3xl"> subject </span>
 
           @if (!mostrarEditorDescricao) {
-            <div class="flex w-full text-white">
-              @if (data.description != "") {
-                <article
-                  class="prose prose-invert mt-2 w-full min-w-full rounded-lg bg-slate-800 px-2 py-2"
+            <div class="flex items-center">
+              <h1 class="text-xl">Descrição</h1>
+              @if (!userFinalized) {
+                <div
+                  (click)="showEditorDescricao()"
+                  type="button"
+                  class="me-2 ml-4 flex cursor-pointer select-none items-center rounded-lg bg-indigo-700 px-2 py-1 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+                  matTooltip="Salva um rascunho do relátorio"
                 >
-                  <div
-                    class="w-full"
-                    [innerHTML]="data.description | sanitizeHtml"
-                  ></div>
-                </article>
+                  <span class="material-symbols-outlined mr-1">
+                    edit_note
+                  </span>
+                  Editar
+                </div>
               }
             </div>
           } @else {
-            <editor
-              class="mt-4"
-              id="editorDescricao"
-              #editorDescricao
-              (onInit)="editorCarregadoDescricao()"
-              [init]="{
-                plugins:
-                  '  autolink wordcount lists link image searchreplace fullscreen media table code  directionality codesample',
-                base_url: '/tinymce',
-                suffix: '.min',
-                selector: 'textarea',
-
-                codesample_languages: [
-                  { text: 'HTML/XML', value: 'markup' },
-                  { text: 'CSS', value: 'css' },
-                  { text: 'SQL', value: 'sql' },
-                  { text: 'Bash', value: 'sh' },
-                  { text: 'JavaScript', value: 'javascript' },
-                  { text: 'Go', value: 'go' },
-                  { text: 'Dart', value: 'dart' },
-                  { text: 'Zig', value: 'zig' },
-                  { text: 'Rust', value: 'rust' },
-                  { text: 'Lua', value: 'lua' },
-                  { text: 'PHP', value: 'php' },
-                  { text: 'Ruby', value: 'ruby' },
-                  { text: 'Python', value: 'python' },
-                  { text: 'Java', value: 'java' },
-                  { text: 'C', value: 'c' },
-                  { text: 'C#', value: 'csharp' },
-                  { text: 'C++', value: 'cpp' },
-                  { text: 'Markdown', value: 'markdown' },
-                  { text: 'Swift', value: 'swift' },
-                  { text: 'Kotlin', value: 'kotlin' },
-                  { text: 'Elixir', value: 'elixir' },
-                  { text: 'Scala', value: 'scala' },
-                  { text: 'Julia', value: 'julia' },
-                  { text: 'Haskell', value: 'haskell' }
-                ],
-                toolbar:
-                  'styles | alignleft aligncenter alignright | image | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'
-              }"
-            ></editor>
+            <div class="flex items-center">
+              <h1 class="text-xl">Descrição</h1>
+              <button
+                (click)="salvarDescricao()"
+                type="button"
+                class="me-2 ml-4 inline-flex items-center rounded-lg bg-indigo-700 px-2 py-1 text-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+                matTooltip="Salva um rascunho do relátorio"
+              >
+                <span class="material-symbols-outlined"> save </span>
+                Salvar
+              </button>
+            </div>
           }
         </div>
-      </div>
+
+        <!-- Descrição content & editor -->
+        <div class="flex text-white">
+          <div class="ml-8 w-full text-gray-100">
+            <!-- @if (data.description != "") { -->
+
+            @if (!mostrarEditorDescricao) {
+              <div class="flex w-full text-white">
+                @if (data.description != "") {
+                  <article
+                    class="prose prose-invert mt-2 w-full min-w-full rounded-lg bg-slate-800 px-2 py-2"
+                  >
+                    <div
+                      class="w-full"
+                      [innerHTML]="data.description | sanitizeHtml"
+                    ></div>
+                  </article>
+                }
+              </div>
+            } @else {
+              <editor
+                class="mt-4"
+                id="editorDescricao"
+                #editorDescricao
+                (onInit)="editorCarregadoDescricao()"
+                [init]="{
+                  plugins:
+                    '  autolink wordcount lists link image searchreplace fullscreen media table code  directionality codesample',
+                  base_url: '/tinymce',
+                  suffix: '.min',
+                  selector: 'textarea',
+
+                  codesample_languages: [
+                    { text: 'HTML/XML', value: 'markup' },
+                    { text: 'CSS', value: 'css' },
+                    { text: 'SQL', value: 'sql' },
+                    { text: 'Bash', value: 'sh' },
+                    { text: 'JavaScript', value: 'javascript' },
+                    { text: 'Go', value: 'go' },
+                    { text: 'Dart', value: 'dart' },
+                    { text: 'Zig', value: 'zig' },
+                    { text: 'Rust', value: 'rust' },
+                    { text: 'Lua', value: 'lua' },
+                    { text: 'PHP', value: 'php' },
+                    { text: 'Ruby', value: 'ruby' },
+                    { text: 'Python', value: 'python' },
+                    { text: 'Java', value: 'java' },
+                    { text: 'C', value: 'c' },
+                    { text: 'C#', value: 'csharp' },
+                    { text: 'C++', value: 'cpp' },
+                    { text: 'Markdown', value: 'markdown' },
+                    { text: 'Swift', value: 'swift' },
+                    { text: 'Kotlin', value: 'kotlin' },
+                    { text: 'Elixir', value: 'elixir' },
+                    { text: 'Scala', value: 'scala' },
+                    { text: 'Julia', value: 'julia' },
+                    { text: 'Haskell', value: 'haskell' }
+                  ],
+                  toolbar:
+                    'styles | alignleft aligncenter alignright | image | bold italic forecolor backcolor | bullist numlist | link table codesample direction | code fullscreen'
+                }"
+              ></editor>
+            }
+          </div>
+        </div>
+      }
 
       @if (!((userFinalized || finalizado) && data.midias.length == 0)) {
         <div class="mb-6 mt-6 flex h-8 items-center text-white">
@@ -259,7 +265,9 @@
         </div>
       }
 
-      @if (!em_espera) {
+      @if (
+        !em_espera && !((userFinalized || finalizado) && relatorios.length == 0)
+      ) {
         <div class="mt-6 flex h-8 items-center text-white">
           <span class="material-symbols-outlined mr-2 text-3xl"> wysiwyg </span>
 
@@ -385,7 +393,10 @@
         @if (end_at != "") {
           <h1 matTooltip="Chamado terminado em">&nbsp; - {{ end_at }}</h1>
           <!-- <h1 matTooltip="Duração do chamado">&nbsp; - {{getTotalTime()}}</h1> -->
-          <h1 class="font-bold text-yellow-300" matTooltip="Horas trabalhadas">
+          <h1
+            class="font-bold text-yellow-300"
+            matTooltip="Horas totais trabalhadas de todos os técnicos"
+          >
             &nbsp; - {{ getTotalWorkedTime() }}
           </h1>
         }
@@ -407,9 +418,9 @@
       <div class="mt-8 flex w-full flex-col gap-2">
         <h1 class="text-xs text-gray-400">Ações do chamado</h1>
         @if (isAdmin || participando) {
-          @if (!userFinalized && !finalizado && isAdmin) {
+          @if (!finalizado && isAdmin) {
             <button
-              (click)="reabrirChamado()"
+              (click)="terminarChamado()"
               type="button"
               class="inline-flex h-8 w-full items-center rounded-lg border border-orange-400 px-1 text-center text-sm font-medium text-orange-400 outline-none hover:bg-orange-500 hover:text-white"
               matTooltip="Força a finalização do chamado"
@@ -418,7 +429,7 @@
               <h1 class="ml-1">Terminar</h1>
             </button>
           }
-          @if (finalizado || userFinalized) {
+          @if ((finalizado || userFinalized) && isAdmin) {
             <button
               (click)="reabrirChamado()"
               type="button"

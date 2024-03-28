@@ -17,11 +17,13 @@ import { MatTooltip } from '@angular/material/tooltip';
 export class ViewHoursComponent {
   horas: any[] = [];
 
+  totalHours: number = 0;
+
   constructor(
     @Inject(MAT_DIALOG_DATA)
     private data: { chamado_id: string; tecnico_id: string },
     private pocket: PocketChamadosService,
-    private pocketHoras: PocketHorasService,
+    public pocketHoras: PocketHorasService,
     private authSrv: AuthService,
   ) {
     let id = data.tecnico_id;
@@ -32,19 +34,26 @@ export class ViewHoursComponent {
         //Todo update with new data from relatorios
         data.forEach((relatorio: any) => {
           if (relatorio.interacao_start != '') {
-            relatorio.hora_start = this.getTimeFromDate(
+            relatorio.hora_start = this.pocketHoras.getTimeFromDate(
               relatorio.interacao_start,
             );
           }
 
           if (relatorio.interacao_end != '') {
-            relatorio.hora_end = this.getTimeFromDate(relatorio.interacao_end);
+            relatorio.hora_end = this.pocketHoras.getTimeFromDate(
+              relatorio.interacao_end,
+            );
           }
 
           relatorio.type = 'relatorio';
           if (relatorio.interacao_start == '' || relatorio.interacao_end == '')
             return;
           this.horas.unshift(relatorio);
+
+          this.totalHours += this.pocketHoras.timeElapsed(
+            relatorio.hora_start,
+            relatorio.hora_end,
+          ).hoursNumber;
         });
       });
 
@@ -53,28 +62,25 @@ export class ViewHoursComponent {
       .subscribe((data) => {
         data.forEach((hora: any) => {
           if (hora.interacao_start != '') {
-            hora.hora_start = this.getTimeFromDate(hora.interacao_start);
+            hora.hora_start = this.pocketHoras.getTimeFromDate(
+              hora.interacao_start,
+            );
           }
 
           if (hora.interacao_end != '') {
-            hora.hora_end = this.getTimeFromDate(hora.interacao_end);
+            hora.hora_end = this.pocketHoras.getTimeFromDate(
+              hora.interacao_end,
+            );
           }
 
           hora.type = 'hora';
 
           this.horas.push(hora);
+          this.totalHours += this.pocketHoras.timeElapsed(
+            hora.hora_start,
+            hora.hora_end,
+          ).hoursNumber;
         });
       });
-  }
-
-  getTimeFromDate(date: string): string {
-    let dateDate: Date = new Date(date);
-    let timestring = dateDate
-      .toLocaleTimeString('pt-br')
-      .split(' ')[0]
-      .split(':')
-      .slice(0, 2)
-      .join(':');
-    return timestring;
   }
 }

@@ -43,13 +43,15 @@ export class ConfirmFinalizarComponent {
         //Todo update with new data from relatorios
         data.forEach((relatorio: any) => {
           if (relatorio.interacao_start != '') {
-            relatorio.hora_start = this.getTimeFromDate(
+            relatorio.hora_start = this.pocketHoras.getTimeFromDate(
               relatorio.interacao_start,
             );
           }
 
           if (relatorio.interacao_end != '') {
-            relatorio.hora_end = this.getTimeFromDate(relatorio.interacao_end);
+            relatorio.hora_end = this.pocketHoras.getTimeFromDate(
+              relatorio.interacao_end,
+            );
           }
 
           relatorio.type = 'relatorio';
@@ -62,11 +64,13 @@ export class ConfirmFinalizarComponent {
     this.pocketHoras.getHorasUsers(id, this.data.id).subscribe((data) => {
       data.forEach((hora: any) => {
         if (hora.interacao_start != '') {
-          hora.hora_start = this.getTimeFromDate(hora.interacao_start);
+          hora.hora_start = this.pocketHoras.getTimeFromDate(
+            hora.interacao_start,
+          );
         }
 
         if (hora.interacao_end != '') {
-          hora.hora_end = this.getTimeFromDate(hora.interacao_end);
+          hora.hora_end = this.pocketHoras.getTimeFromDate(hora.interacao_end);
         }
 
         hora.type = 'hora';
@@ -108,17 +112,6 @@ export class ConfirmFinalizarComponent {
         date_end,
       );
     }
-  }
-
-  getTimeFromDate(date: string): string {
-    let dateDate: Date = new Date(date);
-    let timestring = dateDate
-      .toLocaleTimeString('pt-br')
-      .split(' ')[0]
-      .split(':')
-      .slice(0, 2)
-      .join(':');
-    return timestring;
   }
 
   addHoras() {

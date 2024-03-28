@@ -18,6 +18,8 @@
 -✅ Arrumar problema de sincronização de start_time, end_time visual
 -Agora usa o horário do servidor e calcula as diferenças
 
+----Nova versão------
+
 -✅ Fazer o sistema de anotações
 -✅ Sincronização tempo real dos blocos
 -✅ Só os admins podem adicionar blocos publicos na tela principal
@@ -31,28 +33,44 @@
 -✅ Adicionar visualização de quando o chamado está bloqueado por ter sido finalizado pelo usuário
 -✅ Mostrar técnico que já finalizou o chamado
 -✅ Resolver o problema de relatório vazios
+-✅ Resolver sincronização do painel de registros
+
+-Resolver o problema da exibição de emails no view-service (algumas empresas possuiem muitos emails)
+
+-Sistema de agendamento de chamado e lista de chamados agendados de cada técnico
+-Mostrar chamados agendados, arquivados e em andamento
+-Agendamento de anotações fazer ela mudar a cor quando chegar na data agendada
+
+-Resolver bug de mostrar chamados não proprios para usuários não admins
 -Adicionar botão de remover relatório
 -✅ Adicionar a api backend para cancelar, terminar um chamado
--Implementar api can cancelar, terminar ao frontend
--Mostrar chamados agendados, arquivados e em andamento
+-✅ Implementar api can cancelar, terminar ao frontend
 -✅ Remover seus chamados tab possivelmente redudante
+
 -Resolver bugs de sincronização de ações das anotações (Quando exclui)
 -Facilitar a transferencia de anotações
--Resolver lógica de mostrar botão de adicionar mídias ou esconde titulo quando vazio
+
+-✅ Resolver lógica de mostrar descrição, midias e relatórios finalizado somente se possui conteudo
+
 -✅ Resolver problema da ultima hora trabalhada não estar sendo adicionada
 -✅ Separar as horas dos relatórios
--Sistema de agendamento de chamado e lista de chamados agendados de cada técnico
--Painel de horas para cada técnico com uma possivel mensagem de aviso do tecnico
+
+-✅ Painel de horas para cada técnico (com uma possivel mensagem de aviso do tecnico)
+-✅ Calculo do total de horas de cada técnico
+-✅ calculo de horas trabalhadas totais de todos os técnicos
+
 -✅ Botão de reabrir o chamado para técnico e admins com metodos diferentes
--Adicionar botão de terminar chamado só para adms
--Refazer a parte de calculo de horas trabalhadas totais
--Agendamento de anotações fazer ela mudar a cor quando chegar na data agendada
+-✅ Adicionar botão de terminar chamado só para adms
+
+-Repensar design da pagina de registros
+-Adicionar um numero total de registros/registros encontrados
+
 -Adicionar um sistema de arrastar anotação de bloco pra bloco, no bloco global só admins podem fazer isso
 -Adicionar sistema de tempo real dos mouses (✅Basico implementado porem desabilitado)
 -Painel de ajudas, parecido com one note
 -✅ Features de mídias parecidas ao trelo para anotações e serviços
--Possivel sistema de registros de ações
--Sistema status com base na atividade dos técnicos
+-Possivel sistema de registros de ações ( De começo registrar somente ações de api)
+-Sistema status com base na atividade dos técnicos ( Possivelmente desnecessário)
 
 **Error Handling**
 --✅ Fazer handling de login

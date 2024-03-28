@@ -1,10 +1,10 @@
 <div
-  class="flex max-h-screen w-[600px] flex-col overflow-auto rounded-md bg-slate-800 p-4"
+  class="flex max-h-screen w-[500px] flex-col overflow-auto rounded-md bg-slate-800 p-4"
 >
   <h1 class="text-center text-2xl font-bold text-white">Horas do técnico</h1>
 
   @if (!horas || horas.length == 0) {
-    <h1 class="text-md px-2 text-center text-red-300">
+    <h1 class="text-md mt-4 px-2 text-center text-red-300">
       Nenhuma hora registrada
     </h1>
   }
@@ -55,8 +55,26 @@
               [disabled]="true"
             />
           </div>
+
+          <div class="ml-8 flex-col">
+            <label
+              for="end-time"
+              class="text-center text-sm font-bold text-white"
+              >Duração</label
+            >
+            <div class="h-8 rounded-md font-medium text-green-400">
+              {{
+                pocketHoras.timeElapsed(hora.hora_start, hora.hora_end)
+                  .hourFormat
+              }}
+            </div>
+          </div>
         </div>
       }
     }
+    <hr class="mt-2 h-px w-full border-0 bg-gray-200 px-4" />
+    <div class="h-8 rounded-md font-medium text-green-400">
+      Total de horas trabalhadas: {{ pocketHoras.hoursFormat(totalHours) }}
+    </div>
   </div>
 </div>

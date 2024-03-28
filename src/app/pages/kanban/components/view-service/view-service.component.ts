@@ -49,6 +49,8 @@ import { MatInputModule } from '@angular/material/input';
 import { SanitizeHtmlPipe } from '../../../../sanitize-html.pipe';
 import { MediaComponent } from '../../../../shared/media/media.component';
 import { ViewHoursComponent } from './components/view-hours/view-hours.component';
+import { ConfirmTerminarComponent } from './components/confirm-terminar/confirm-terminar.component';
+import { PocketHorasService } from './components/service-horas/pocket-horas.service';
 
 @Component({
   selector: 'app-view-service',
@@ -132,6 +134,7 @@ export class ViewServiceComponent implements OnDestroy {
     public dialog: MatDialog,
     public AuthSrv: AuthService,
     public pocketSrv: PocketChamadosService,
+    private pocketHoras: PocketHorasService,
     private api: ApiService,
   ) {
     this.data = dataInjected.data;
@@ -208,7 +211,7 @@ export class ViewServiceComponent implements OnDestroy {
   }
 
   getTotalWorkedTime(): string {
-    return this.getTimeFromMill(this.total_worked_time * 1000);
+    return this.pocketHoras.hoursFormat(this.total_worked_time);
   }
 
   getTimeFromMill(timeMilliseconds: number): string {
@@ -272,6 +275,10 @@ export class ViewServiceComponent implements OnDestroy {
   }
 
   initiliazeData() {
+    this.pocketHoras.getTotalHoras(this.data.id).subscribe((data) => {
+      this.total_worked_time = data;
+    });
+
     this.isAdmin = this.AuthSrv.IsAdmin();
 
     this.dataInjectedSubscription = this.dataInjected.dataObservable.subscribe(
@@ -319,6 +326,17 @@ export class ViewServiceComponent implements OnDestroy {
     if (this.data.status == 'em_andamento') {
       this.em_andamento = true;
     }
+
+    console.log(
+      'Descrição:',
+      this.data.description,
+      ' Logic:',
+      this.data.description == '',
+      ' Finalizado:',
+      this.finalizado,
+      ' UserFinalizado:',
+      this.userFinalized,
+    );
   }
 
   editorCarregado() {
@@ -496,6 +514,21 @@ export class ViewServiceComponent implements OnDestroy {
       .subscribe((data) => this.dialog.closeAll());
   }
 
+  terminarChamado() {
+    this.dialog
+      .open(ConfirmTerminarComponent, { data: this.data })
+      .afterClosed()
+      .subscribe((res) => {
+        console.log(res);
+        if (res == true) {
+          this.api.TerminarChamado(this.data).subscribe((data) => {
+            console.log(data);
+          });
+
+          this.dialog.closeAll();
+        }
+      });
+  }
   cancelarChamado() {
     this.dialog
       .open(ConfirmCancelarComponent)
@@ -503,11 +536,9 @@ export class ViewServiceComponent implements OnDestroy {
       .subscribe((res) => {
         console.log(res);
         if (res == true) {
-          this.api
-            .FinalizarChamado(this.data, 'cancelado')
-            .subscribe((data) => {
-              console.log(data);
-            });
+          this.api.CancelarChamado(this.data).subscribe((data) => {
+            console.log(data);
+          });
 
           this.dialog.closeAll();
         }

@@ -747,11 +747,9 @@ export class PocketChamadosService {
 
   getUsers(): Observable<RecordModel[]> {
     return from(
-      this.pb
-        .collection('users')
-        .getFullList({
-          requestKey: Math.floor(Math.random() * 1000000000).toString(),
-        }),
+      this.pb.collection('users').getFullList({
+        requestKey: Math.floor(Math.random() * 1000000000).toString(),
+      }),
     );
   }
 

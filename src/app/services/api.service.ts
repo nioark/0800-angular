@@ -27,15 +27,30 @@ export class ApiService {
     return this.http.get<any[]>(environment.apiUrl + '/fetchPessoas');
   }
 
-  FinalizarChamado(
-    chamado: RecordModel,
-    status = 'finalizado',
-  ): Observable<any> {
+  FinalizarChamado(chamado: RecordModel): Observable<any> {
     const formData = new FormData();
     formData.append('chamado_id', chamado.id);
-    formData.append('status', status);
+    formData.append('status', 'finalizado');
     return this.http.post<any>(
       environment.apiUrl + `/finalizarChamado`,
+      formData,
+    );
+  }
+
+  TerminarChamado(chamado: RecordModel): Observable<any> {
+    const formData = new FormData();
+    formData.append('chamado_id', chamado.id);
+    return this.http.post<any>(
+      environment.apiUrl + `/terminarChamado`,
+      formData,
+    );
+  }
+
+  CancelarChamado(chamado: RecordModel): Observable<any> {
+    const formData = new FormData();
+    formData.append('chamado_id', chamado.id);
+    return this.http.post<any>(
+      environment.apiUrl + `/cancelarChamado`,
       formData,
     );
   }
